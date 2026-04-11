@@ -26,5 +26,19 @@ Após configurar a chave no GitHub, execute o instalador da stack para clonar os
 mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@github.com:amazoniacentral/fsilva-cloud.git . && chmod +x scripts/install.sh && ./scripts/install.sh
 ```
 
+1. Remover projeto
+1.1. Remova a pasta do submódulo do índice do git
+```bash
+git rm -f scripts/docker-vps
+```
+
+1.2. Remova a pasta física do disco
+```bash
+rm -rf .git/modules/scripts/docker-vps
+```
+2. Adicionar projeto
+```bash
+git submodule add git@github.com:amazoniacentral/docker-vps.git repos/docker-vps
+```
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

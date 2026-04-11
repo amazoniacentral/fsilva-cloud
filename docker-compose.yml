@@ -1,0 +1,10 @@
+# fsilva-cloud/docker-compose.yml
+include:
+  - ./proxy/docker-compose.traefik.yml
+  - ./gvendas-suite/django/docker-compose.django.yml
+  - ./gvendas-suite/node/docker-compose.node.yml
+
+networks:
+  proxy_network:
+    name: proxy_network
+    driver: bridge

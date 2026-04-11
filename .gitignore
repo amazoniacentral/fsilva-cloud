@@ -20,3 +20,34 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Docker & Logs ---
+*.log
+.docker/
+data/
+pgdata/
+
+# --- Environment Secrets (CRÍTICO) ---
+# Ignora arquivos .env na raiz e dentro das pastas dos submódulos
+**/.env
+**/.env.local
+**/.env.production
+
+# --- Git Submodules ---
+# Não ignore as pastas dos submódulos! O Git precisa rastrear os ponteiros.
+# Se você baixar algo temporário na raiz que não seja submodule, adicione abaixo:
+/temp/
+
+
+

@@ -1,12 +1,12 @@
 [submodule "scripts/docker-vps"]
 	path = scripts/docker-vps
-	url = https://github.com/amazoniacentral/docker-vps.git
+	url = git@github.com:amazoniacentral/docker-vps.git
 [submodule "gvendas-suite/django"]
 	path = gvendas-suite/django
-	url = https://github.com/amazoniacentral/sgn.git
+	url = git@github.com:amazoniacentral/sgn.git
 [submodule "gvendas-suite/app-react"]
 	path = gvendas-suite/app-react
-	url = https://github.com/amazoniacentral/gvendas.git
+	url = git@github.com:amazoniacentral/gvendas.git
 [submodule "gvendas-suite/app-node"]
 	path = gvendas-suite/app-node
-	url = https://github.com/amazoniacentral/push.git
+	url = git@github.com:amazoniacentral/push.git

@@ -1,3 +1,6 @@
 [submodule "scripts/docker-vps"]
 	path = scripts/docker-vps
 	url = https://github.com/amazoniacentral/docker-vps.git
+[submodule "gvendas-suite/django"]
+	path = gvendas-suite/django
+	url = https://github.com/amazoniacentral/sgn.git

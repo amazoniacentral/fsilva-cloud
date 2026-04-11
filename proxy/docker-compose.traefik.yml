@@ -1,0 +1,63 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    hostname: traefik-edge
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    networks:
+      - web
+    ports:
+      - 80:80
+      - 443:443
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    command:
+      - "--api.dashboard=true"
+      - "--log.level=INFO"
+      # LIGA OS LOGS DE ACESSO (Necessário para os gráficos de requisições)
+      - "--accesslog=true"
+      # HABILITA O SISTEMA DE MÉTRICAS INTERNAS
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      # CONFIGURAÇÕES DE PROVIDERS
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--providers.file.directory=/dynamic"
+      - "--providers.file.watch=true"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/acme.json
+      - ./dynamic:/dynamic:ro
+      - ./.htpasswd:/.htpasswd:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.francsilva.com.br`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/.htpasswd"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
+      
+networks:
+  web:
+    external: true

@@ -1,0 +1,37 @@
+name: Deploy FSilva Cloud
+
+on:
+  push:
+    branches: [ main ] # Dispara quando você dá push na main do fsilva-cloud
+  repository_dispatch:
+    types: [ submodule_update ]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Crucial: traz o código do SGN e GVendas
+          fetch-depth: 0
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/fsilva-cloud
+            
+            # 1. Atualiza o projeto principal e os submódulos
+            git pull origin main
+            git submodule update --init --recursive --remote
+            
+            # 2. Sobe apenas o que mudou usando o arquivo mestre da raiz
+            # O Docker Compose vai buildar apenas as imagens cujos arquivos foram alterados
+            docker compose -f docker-compose.yml up -d --build
+            
+            # 3. Limpeza de imagens órfãs para não encher o disco da VPS
+            docker image prune -f

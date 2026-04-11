@@ -27,12 +27,12 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 ```
 
 1. Remover projeto
-1.1. Remova a pasta do submódulo do índice do git
+- Remova a pasta do submódulo do índice do git
 ```bash
 git rm -f scripts/docker-vps
 ```
 
-1.2. Remova a pasta física do disco
+- Remova a pasta física do disco
 ```bash
 rm -rf .git/modules/scripts/docker-vps
 ```

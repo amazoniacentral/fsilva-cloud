@@ -2,7 +2,7 @@ services:
   nginx:
     build: 
       # VERDADE: O contexto deve ser a raiz para enxergar o código em /repos ou /gvendas-suite
-      context: ./
+      context: ../../
       dockerfile: ./gvendas-suite/app-react/Dockerfile
     container_name: app-sgn-pwa
     restart: always

@@ -7,8 +7,8 @@ services:
     hostname: static-server
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - static_data:/code/staticfiles:ro
-      - media_data:/code/media:ro
+      - static_data:/code/volumes/staticfiles:ro
+      - media_data:/code/volumes/media:ro
     networks:
       - web
     labels:
@@ -42,10 +42,10 @@ services:
     command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
     volumes:
       - ../../repos/sgn:/code
-      - /opt/infra-vps-docker/traefik/dynamic:/etc/traefik/dynamic
-      - /opt/infra-vps-docker/app-sgn-pwa/html:/code/media/build
-      - static_data:/code/staticfiles
-      - media_data:/code/media
+      - static_data:/code/volumes/staticfiles
+      - media_data:/code/volumes/media
+      - fsilva-cloud_build_pwa:/code/volumes/build_pwa
+      - fsilva-cloud_dynamic:/code/volumes/dynamic
     env_file:
       - .env
     environment:
@@ -128,3 +128,7 @@ networks:
 volumes:
   static_data:
   media_data:
+  fsilva-cloud_build_pwa:
+    external: true
+  fsilva-cloud_dynamic:
+    external: true

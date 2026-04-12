@@ -78,9 +78,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.error-service.loadbalancer.server.port=80"
+      
+      # MIDDLEWARE DEFINITION
       - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
       - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
       - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
+
+      # CATCH-ALL ROUTER: Captura qualquer coisa que chegue no Traefik e não bateu em outra regra
+      - "traefik.http.routers.catch-all.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.catch-all.entrypoints=websecure"
+      - "traefik.http.routers.catch-all.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.catch-all.priority=1" # Prioridade mínima
+      - "traefik.http.routers.catch-all.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all.service=error-service"
+
     deploy:
       resources:
         limits:

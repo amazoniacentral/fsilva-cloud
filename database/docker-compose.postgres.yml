@@ -34,12 +34,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
     networks:
-      - web
+      - net_db
 
 
 volumes:
   postgres_data:
 
 networks:
-  web:
+  net_db:
     external: true

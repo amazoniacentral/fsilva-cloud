@@ -12,3 +12,15 @@ networks:
   web:
     name: web
     driver: bridge
+  net_proxy:
+    driver: bridge
+    internal: true
+  net_boot:
+    driver: bridge
+    internal: true
+  net_db:
+    driver: bridge
+    internal: true
+  net_data:
+    driver: bridge
+    internal: true

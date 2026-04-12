@@ -28,7 +28,7 @@ services:
       - /etc/os-release:/host/etc/os-release:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - web
+      - net_data
     environment:
       - NETDATA_CHECK_FOR_UPDATES=yes
     labels:
@@ -51,5 +51,5 @@ volumes:
   netdatacache:
 
 networks:
-  web:
+  net_data:
     external: true

@@ -10,7 +10,7 @@ services:
       - static_data:/code/volumes/staticfiles:ro
       - media_data:/code/volumes/media:ro
     networks:
-      - web
+      - net_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nginx-sgn.rule=Host(`${DOMAIN}`)"
@@ -55,8 +55,8 @@ services:
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
     networks:
-      - web
-      - internal_network
+      - net_proxy
+      - net_db
     deploy:
       resources:
         limits:
@@ -91,8 +91,8 @@ services:
       - MALLOC_ARENA_MAX=2
       - PYTHONHASHSEED=random
     networks:
-      - web
-      - internal_network
+      - net_db
+      - net_boot
     deploy:
       resources:
         limits:
@@ -121,7 +121,7 @@ services:
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
     networks:
-      - web
+      - net_db
     deploy:
       resources:
         limits:
@@ -132,9 +132,11 @@ services:
           memory: 128M
 
 networks:
-  web:
+  net_proxy:
     external: true
-  internal_network:      # <--- Define a rede como externa para encontrar o outro container
+  net_db:
+    external: true
+  net_boot:
     external: true
 
 volumes:

@@ -1,6 +1,6 @@
 # Submodules
 
-Adicionar *[submodule](/)* no projeto
+Adicionar *[submodule](./)* no projeto
 - Instalação de Módulos
 ```bash
 git submodule add git@github.com:amazoniacentral/docker-vps.git repos/docker-vps

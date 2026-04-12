@@ -11,7 +11,7 @@
             background-color: #ffffff;
             color: #1a1a1a;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Evita scroll desnecessário em telas pequenas */
+            overflow: hidden;
         }
 
         .error-container {
@@ -25,7 +25,7 @@
         }
 
         .error-code {
-            font-size: clamp(6rem, 20vw, 10rem); /* Responsivo e agressivo */
+            font-size: clamp(6rem, 20vw, 10rem);
             font-weight: 900;
             line-height: 1;
             letter-spacing: -5px;
@@ -54,11 +54,13 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            border-radius: 4px; /* Quadrado sutil, mais sério */
+            border-radius: 4px;
             background-color: #000;
             border: none;
             color: #fff;
             transition: opacity 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-home:hover {
@@ -77,6 +79,11 @@
             color: #999;
             text-transform: uppercase;
         }
+
+        /* Classe para esconder o botão via JS */
+        .d-none {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -87,18 +94,25 @@
         <p class="error-description">
             O recurso que você procura não está disponível ou foi movido permanentemente.
         </p>
-        <a href="/" class="btn btn-home">
+        
+        <a href="/" id="btn-home" class="btn-home">
             Voltar ao Início
         </a>
     </div>
 
     <footer>
-        Família Cloud @ <span id="current-year"></span>
+        Fsilva Cloud @ <span id="current-year"></span>
     </footer>
 
     <script>
-        // Assinatura dinâmica do ano
+        // 1. Atualiza o ano automaticamente
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // 2. A VERDADE: Se o caminho for a raiz, remove o botão
+        // Verificamos se o pathname é '/' ou vazio
+        if (window.location.pathname === '/' || window.location.pathname === '') {
+            document.getElementById('btn-home').classList.add('d-none');
+        }
     </script>
 
 </body>

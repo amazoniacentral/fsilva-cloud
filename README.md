@@ -93,7 +93,8 @@ rm -rf .git/modules/scripts/docker-vps
 ```
 
 ## Outras configurações
-* **PostgreSQL:** [/database](/database/README.md)
+* **Banco de Dados:** [/database](/database/README.md)
+* **Monitoramento:** [/netdata](/netdata/README.md)
 * **Módulos:** [/repos](/repos)
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

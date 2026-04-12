@@ -48,6 +48,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./acme.json:/acme.json
       - ./dynamic:/dynamic:ro
+      - dynamic:/dynamic
       - ./.htpasswd:/.htpasswd:ro
     labels:
       - "traefik.enable=true"
@@ -58,6 +59,11 @@ services:
       - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/.htpasswd"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       
+
+volumes:
+  dynamic:
+
 networks:
   web:
     external: true
+    

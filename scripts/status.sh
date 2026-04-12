@@ -152,7 +152,8 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-ACME_FILE="/opt/infra-vps-docker/traefik/acme.json"
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+ACME_FILE="$SCRIPT_DIR/../proxy/acme.json"
 if [ -f "$ACME_FILE" ]; then
     CERT_COUNT=$(grep -o '"certificate":' "$ACME_FILE" | wc -l)
     PERM=$(stat -c "%a" "$ACME_FILE")

@@ -1,0 +1,143 @@
+services:
+  # NGINX - Porta de entrada
+  nginx:
+    image: nginx:alpine
+    container_name: sgn-nginx
+    restart: always
+    hostname: static-server
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_data:/code/staticfiles:ro
+      - media_data:/code/media:ro
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-sgn.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.nginx-sgn.entrypoints=websecure"
+      - "traefik.http.routers.nginx-sgn.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nginx-sgn.loadbalancer.server.port=80"
+      
+      # Otimização para Streaming (SSE / QR Code)
+      - "traefik.http.services.nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
+      # - "traefik.http.middlewares.streaming-compress.compress=false"
+      # - "traefik.http.middlewares.cors-sse.headers.accessControlAllowMethods=GET,OPTIONS"
+      # - "traefik.http.middlewares.cors-sse.headers.accessControlAllowOriginList=https://localhost:3000,*"
+      # - "traefik.http.middlewares.cors-sse.headers.accessControlMaxAge=100"
+      # - "traefik.http.middlewares.cors-sse.headers.addVaryHeader=true"
+
+      # Middlewares de segurança que você já usa
+      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
+      - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header"
+      # - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,streaming-compress,cors-sse"
+      
+
+
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  # APP PRINCIPAL (Django)
+  django:
+    build: .
+    container_name: sgn-django
+    restart: always
+    hostname: api-backend
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    working_dir: /code
+    #command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 3600 --max-requests 500 --max-requests-jitter 50 --keep-alive 5
+    command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
+
+
+    volumes:
+      - .:/code
+      - /opt/infra-vps-docker/traefik/dynamic:/etc/traefik/dynamic
+      - /opt/infra-vps-docker/app-sgn-pwa/html:/code/media/build
+      - static_data:/code/staticfiles
+      - media_data:/code/media
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/code
+      - MALLOC_ARENA_MAX=2
+    networks:
+      - web
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 128M
+
+  # WORKER
+  celery-worker:
+    build: .
+    container_name: sgn-celery-worker
+    restart: always
+    hostname: worker-task
+    working_dir: /code
+    # Aumentei o limite de tarefas para evitar o ciclo infinito de restart do Django
+    command: >
+      celery -A sgn worker 
+      -l info 
+      --concurrency=1 
+      --max-tasks-per-child=50 
+      --max-memory-per-child=150000
+    volumes:
+      - .:/code
+    env_file: 
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/code
+      - MALLOC_ARENA_MAX=2
+      # Adicione esta linha para otimizar o consumo de memória do Python
+      - PYTHONHASHSEED=random
+    networks:
+      - web
+    deploy:
+      resources:
+        limits:
+          memory: 512M      # Reduzi de 768M. Se ele não rodar com 512M, seu código tem um leak real.
+        reservations:
+          memory: 128M
+
+
+  # BEAT
+  celery-beat:
+    build: .
+    container_name: sgn-celery-beat
+    restart: always
+    hostname: worker-beat
+    working_dir: /code
+    command: celery -A sgn beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler --max-interval 120
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/code
+      - MALLOC_ARENA_MAX=2
+    networks:
+      - web
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 128M
+
+networks:
+  web:
+    external: true
+
+volumes:
+  static_data:
+  media_data:

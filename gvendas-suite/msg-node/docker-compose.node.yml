@@ -1,0 +1,35 @@
+services:
+  node:
+    build: .
+    container_name: msg-node
+    restart: always
+    hostname: whatsapp-server
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    volumes:
+      - .:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+      - sessions:/usr/src/app/sessions
+      - logs:/usr/src/app/logs
+    env_file: 
+      - .env
+    networks:
+      - web
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 64M
+
+volumes:
+  node_modules:
+  sessions:
+  logs:
+
+networks:
+  web:
+    external: true

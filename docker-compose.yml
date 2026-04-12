@@ -1,9 +1,9 @@
 # fsilva-cloud/docker-compose.yml
 include:
   - ./proxy/docker-compose.traefik.yml
-  - ./gvendas-suite/django/docker-compose.django.yml
+  - ./gvendas-suite/sgn-django/docker-compose.django.yml
   - ./gvendas-suite/app-react/docker-compose.react.yml
-  - ./gvendas-suite/app-node/docker-compose.node.yml
+  - ./gvendas-suite/msg-node/docker-compose.node.yml
   - ./pgdata/docker-compose.redis.yml
   - ./pgdata/docker-compose.postgres.yml
   - ./pgdata/docker-compose.netdata.yml

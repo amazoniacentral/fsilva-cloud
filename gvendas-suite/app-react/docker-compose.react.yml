@@ -1,0 +1,38 @@
+services:
+  nginx:
+    build: .
+    container_name: app-sgn-pwa
+    restart: always
+    hostname: pwa-frontend
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # O build já está na imagem, montamos apenas os dados externos (mídia)
+      - app-sgn_media_data:/usr/share/nginx/html/media
+      # Opcional: manter o arquivo de config externo para trocas rápidas sem rebuild
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - web
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.app-sgn-pwa-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.app-sgn-pwa-internal.service=app-sgn-pwa-service"
+      - "traefik.http.routers.app-sgn-pwa-internal.rule=Host(`internal.pwa`)"
+      - "traefik.http.routers.app-sgn-pwa-internal.priority=1"
+
+volumes:
+  app-sgn_media_data:
+    external: true
+    
+networks:
+  web:
+    external: true

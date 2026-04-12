@@ -75,6 +75,7 @@ services:
       - ../proxy/errors:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
       - "traefik.http.services.error-service.loadbalancer.server.port=80"
       
       # 1. DEFINIÇÃO DO MIDDLEWARE

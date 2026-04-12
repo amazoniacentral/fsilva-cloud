@@ -64,6 +64,25 @@ services:
       - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/.htpasswd"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       
+  error-handler:
+    image: nginx:alpine
+    container_name: global-error-server
+    restart: always
+    networks:
+      - net_proxy
+    volumes:
+      - ../proxy/errors:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      # Nome do serviço interno para o Traefik
+      - "traefik.http.services.error-service.loadbalancer.server.port=80"
+      
+      # O MIDDLEWARE: Ele diz "Se o status for entre 400 e 599, vá para esse serviço"
+      # O {status}.html faz ele procurar 404.html, 500.html, etc, automaticamente
+      - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
+      - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
+      - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
+
 
 volumes:
   dynamic:

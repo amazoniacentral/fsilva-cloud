@@ -20,6 +20,7 @@ services:
       - "traefik.http.services.nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header"
+      - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
     deploy:
       resources:
         limits:

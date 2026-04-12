@@ -44,3 +44,4 @@ networks:
     name: net_data
     driver: bridge
     internal: true
+    

@@ -22,7 +22,7 @@ COPY --from=build-stage /app/build .
 
 # A VERDADE ABSOLUTA: O default.conf está na pasta do Dockerfile, 
 # então o caminho parte da raiz conforme definido no docker-compose.
-COPY gvendas-suite/app-react/default.conf /etc/nginx/conf.d/default.conf
+COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/app_nginx.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

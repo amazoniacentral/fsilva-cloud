@@ -6,7 +6,7 @@ services:
     restart: always
     hostname: static-server
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./sgn_nginx.conf:/etc/nginx/conf.d/sgn_nginx.conf:ro
       - static_data:/code/volumes/staticfiles:ro
       - media_data:/code/volumes/media:ro
     networks:

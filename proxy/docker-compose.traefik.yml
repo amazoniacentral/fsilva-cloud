@@ -24,8 +24,8 @@ services:
         reservations:
           cpus: '0.01'
           memory: 64M
-    environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    # environment:
+    #   - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     command:
       - "--api.dashboard=true"
       - "--log.level=INFO"
@@ -57,7 +57,7 @@ services:
       - ../proxy/.htpasswd:/.htpasswd:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.francsilva.com.br`)"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"

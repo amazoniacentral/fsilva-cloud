@@ -37,7 +37,6 @@ services:
       - "traefik.enable=true"
       # Roteador e Domínio
       - "traefik.http.routers.netdata.rule=Host(`${DOMAIN}`)"
-      #- "traefik.http.routers.netdata.rule=Host(`monitoramento.francsilva.com.br`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"
       - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
       

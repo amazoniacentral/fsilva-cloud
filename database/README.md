@@ -2,7 +2,7 @@
 
 Configuração inicial
 
-[database/.env](/.env.example)
+[database/.env](database/.env.example)
 ```.env
 POSTGRES_USER=admin_principal
 POSTGRES_PASSWORD=sua_senha_segura

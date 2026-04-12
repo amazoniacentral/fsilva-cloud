@@ -43,7 +43,7 @@ services:
   # APP PRINCIPAL (Django)
   django:
     build: 
-      context: ./repos/sgn
+      context: ../../repos/sgn
     container_name: sgn-django
     restart: always
     hostname: api-backend
@@ -79,7 +79,7 @@ services:
   # WORKER
   celery-worker:
     build: 
-      context: ./repos/sgn
+      context: ../../repos/sgn
     container_name: sgn-celery-worker
     restart: always
     hostname: worker-task
@@ -114,7 +114,7 @@ services:
   # BEAT
   celery-beat:
     build: 
-      context: ./repos/sgn
+      context: ../../repos/sgn
     container_name: sgn-celery-beat
     restart: always
     hostname: worker-beat

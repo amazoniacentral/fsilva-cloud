@@ -1,7 +1,7 @@
 services:
   nginx:
     build: 
-      context: ../repos/gvendas
+      context: ../../repos/gvendas
     container_name: app-sgn-pwa
     restart: always
     hostname: pwa-frontend

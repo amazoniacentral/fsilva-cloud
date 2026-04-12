@@ -4,9 +4,9 @@ include:
   - ./gvendas-suite/sgn-django/docker-compose.django.yml
   - ./gvendas-suite/app-react/docker-compose.react.yml
   - ./gvendas-suite/msg-node/docker-compose.node.yml
-  - ./pgdata/docker-compose.redis.yml
-  - ./pgdata/docker-compose.postgres.yml
-  - ./pgdata/docker-compose.netdata.yml
+  - ./database/docker-compose.redis.yml
+  - ./database/docker-compose.postgres.yml
+  - ./database/docker-compose.netdata.yml
 
 networks:
   proxy_network:

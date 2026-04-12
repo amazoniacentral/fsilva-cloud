@@ -1,0 +1,53 @@
+services:
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
+    restart: always
+    hostname: monitoramento
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 100M
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - netdataconfig:/etc/netdata
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - web
+    environment:
+      - NETDATA_CHECK_FOR_UPDATES=yes
+    labels:
+      - "traefik.enable=true"
+      # Roteador e Domínio
+      - "traefik.http.routers.netdata.rule=Host(`monitoramento.francsilva.com.br`)"
+      - "traefik.http.routers.netdata.entrypoints=websecure"
+      - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
+      
+      # Vinculação ao Serviço
+      - "traefik.http.routers.netdata.service=netdata-service"
+      - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
+      
+      # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
+      - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
+
+volumes:
+  netdataconfig:
+  netdatalib:
+  netdatacache:
+
+networks:
+  web:
+    external: true

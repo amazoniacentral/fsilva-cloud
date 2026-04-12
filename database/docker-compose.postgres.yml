@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    hostname: db-postgres
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 128M
+
+    env_file: 
+      - .env
+
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "max_connections=100"
+      - "-c"                     
+      - "idle_session_timeout=5000"
+
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - web
+
+
+volumes:
+  postgres_data:
+
+networks:
+  web:
+    external: true

@@ -22,6 +22,10 @@ cat ~/.ssh/id_ed25519.pub
 ## 🏗️ Instalação da Estrutura FSilva Cloud
 Após configurar a chave no GitHub, execute o instalador da stack para clonar os repositórios e subir os containers:
 
+## Eatrutura do projeto 
+```text
+```
+
 ```bash
 mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@github.com:amazoniacentral/fsilva-cloud.git . && chmod +x scripts/install.sh && ./scripts/install.sh
 ```

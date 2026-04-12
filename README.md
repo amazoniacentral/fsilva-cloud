@@ -44,23 +44,27 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── .env.example
 │   │   ├── Dockerfile
 │   │   └── docker-compose.node.yml
-│   └── sgn-django
-│       ├── .env.example
-│       ├── Dockerfile
-│       ├── docker-compose.django.yml
-│       └── nginx.conf
+│   ├── sgn-django
+│   │   ├── .env.example
+│   │   ├── Dockerfile
+│   │   ├── docker-compose.django.yml
+│   │   └── nginx.conf
+│   └── README.md
 ├── netdata
 │   ├── .env.example
+│   ├── README.md
 │   └── docker-compose.netdata.yml
 ├── proxy
 │   ├── dynamic
 │   ├── .env.example
+│   ├── README.md
 │   └── docker-compose.traefik.yml
 ├── repos
 │   ├── docker-vps
 │   ├── gvendas
 │   ├── push
-│   └── sgn
+│   ├── sgn
+│   └── README.md
 ├── scripts
 │   ├── estrutura.sh
 │   └── install.sh
@@ -70,7 +74,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── colocarnosfilhos.yml
 └── docker-compose.yml
 
-15 directories, 25 files
+15 directories, 29 files
 ```
 
 

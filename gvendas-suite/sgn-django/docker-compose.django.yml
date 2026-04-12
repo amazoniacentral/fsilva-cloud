@@ -128,4 +128,3 @@ networks:
 volumes:
   static_data:
   media_data:
-    name: media_data

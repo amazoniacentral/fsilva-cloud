@@ -36,7 +36,7 @@ IPV4_PUB=$(curl -s4 icanhazip.com || echo "N/A")
 printf "%-25s ${YELLOW}%-15s${RESET}\n" "IP PÚBLICO (IPv4):" "$IPV4_PUB"
 
 echo -e "\n${CYAN}Interfaces de Rede Ativas:${RESET}"
-printf "%-18s %-18s %-12s %-12s\n" "INTERFACE" "IP" "RECEBIDO" "ENVIADO"
+printf "%-18s %-15s %-12s %-12s %-15s\n" "INTERFACE" "IP" "RECEBIDO" "ENVIADO" "REDE DOCKER"
 
 for dev in $(ls /sys/class/net/ | grep -v "lo"); do
     ip_addr=$(ip -4 addr show $dev | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
@@ -47,12 +47,32 @@ for dev in $(ls /sys/class/net/ | grep -v "lo"); do
     
     rx_mb=$(awk "BEGIN {printf \"%.2f MB\", $rx/1024/1024}")
     tx_mb=$(awk "BEGIN {printf \"%.2f MB\", $tx/1024/1024}")
+
+    docker_net="-"
+    if [[ $dev == br-* ]]; then
+        net_id=$(echo $dev | cut -d'-' -f2)
+        docker_net=$(docker network ls --filter id=$net_id --format "{{.Name}}" | head -n1)
+    elif [[ $dev == "docker0" ]]; then
+        docker_net="default (bridge)"
+    elif [[ $dev == eth* ]]; then
+        docker_net="WAN/Internet"
+    elif [[ $dev == veth* ]]; then
+        docker_net="veth-pair (con)"
+    fi
     
-    printf "%-18s %-18s %-12s %-12s\n" "$dev" "$ip_addr" "$rx_mb" "$tx_mb"
+    printf "%-18s %-15s %-12s %-12s %-15s\n" "$dev" "$ip_addr" "$rx_mb" "$tx_mb" "$docker_net"
 done
 
-echo -e "\n${CYAN}Redes Docker em Uso:${RESET}"
-docker network ls --format "table {{.Name}}\t{{.Driver}}\t{{.Scope}}"
+echo -e "\n${CYAN}Redes Docker em Uso (Subnets):${RESET}"
+printf "%-15s %-15s %-15s %-10s\n" "NOME" "SUBNET" "GATEWAY" "DRIVER"
+docker network ls --filter "driver=bridge" --format "{{.Name}}" | while read -r net_name; do
+    # Inspeciona a rede para pegar Subnet e Gateway
+    SUBNET=$(docker network inspect "$net_name" --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}' 2>/dev/null || echo "-")
+    GATEWAY=$(docker network inspect "$net_name" --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' 2>/dev/null || echo "-")
+    DRIVER=$(docker network inspect "$net_name" --format '{{.Driver}}')
+    
+    printf "%-15s %-15s %-15s %-10s\n" "$net_name" "$SUBNET" "$GATEWAY" "$DRIVER"
+done
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}           RECURSOS DA VPS (MEMÓRIA DO SISTEMA)${RESET}"
@@ -138,7 +158,6 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           MAPEAMENTO DE IDENTIDADE E REDE (DOCKER)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# Lista de Containers com formatação expandida para não picotar informações
 printf "%-22s %-18s %-30s %-12s %-25s\n" "NOME" "HOSTNAME" "IP INTERNO" "STATUS" "REDES"
 
 for cid in $(docker ps -q); do
@@ -146,7 +165,6 @@ for cid in $(docker ps -q); do
     HOST=$(docker inspect -f '{{.Config.Hostname}}' $cid)
     STAT=$(docker inspect -f '{{.State.Status}}' $cid)
     
-    # Coleta IPs e Redes sem limitar caracteres
     IPS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}, {{end}}' $cid | sed 's/, $//')
     NETS=$(docker inspect -f '{{range $p, $conf := .NetworkSettings.Networks}}{{$p}}, {{end}}' $cid | sed 's/, $//')
 
@@ -163,7 +181,6 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# Caminho absoluto para o acme.json conforme sua estrutura fsilva-cloud
 ACME_FILE="/opt/fsilva-cloud/proxy/acme.json"
 
 if [ -f "$ACME_FILE" ]; then
@@ -179,7 +196,7 @@ if [ -f "$ACME_FILE" ]; then
         grep -Po '(?<="main": ")[^"]*' "$ACME_FILE" | sort -u | sed 's/^/ - /'
     fi
 else
-    printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado em $ACME_FILE"
+    printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado"
 fi
 
 echo -e ""

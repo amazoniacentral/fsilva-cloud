@@ -12,7 +12,7 @@ fi
 
 echo "== Atualizando projeto principal e submódulos =="
 
-# Garante que estamos no diretório correto (baseado no local do script)
+# Garante que estamos no diretório correto (um nível acima do script)
 cd "$SCRIPT_DIR/.."
 
 while true; do
@@ -39,22 +39,22 @@ done
 # Atualiza os submódulos (essencial para SGN e GVendas)
 git submodule update --init --recursive --remote
 
-# Garante a criação dos diretórios necessários usando o caminho absoluto do script
-mkdir -p "$SCRIPT_DIR/../../proxy/dynamic"
+# Garante a criação dos diretórios necessários voltando um nível do script
+mkdir -p "$SCRIPT_DIR/../proxy/dynamic"
 
-# Verifica se o arquivo acme.json não existe
-if [ ! -f "$SCRIPT_DIR/../../proxy/acme.json" ]; then
+# Verifica se o arquivo acme.json não existe voltando um nível do script
+if [ ! -f "$SCRIPT_DIR/../proxy/acme.json" ]; then
   # Cria o arquivo
-  touch "$SCRIPT_DIR/../../proxy/acme.json"
+  touch "$SCRIPT_DIR/../proxy/acme.json"
   # Aplica a permissão 600 (obrigatória para o Traefik)
-  chmod 600 "$SCRIPT_DIR/../../proxy/acme.json"
+  chmod 600 "$SCRIPT_DIR/../proxy/acme.json"
   echo "Arquivo acme.json criado com sucesso."
 else
   echo "Arquivo acme.json já existe. Pulando..."
 fi
 
 echo "== Subindo serviços com Docker Compose =="
-# Executa o compose no diretório correto do projeto
+# Garante que está na raiz do projeto para o docker compose
 cd "$SCRIPT_DIR/.."
 docker compose -f docker-compose.yml up -d --build
 

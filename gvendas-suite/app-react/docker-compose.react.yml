@@ -32,9 +32,8 @@ services:
       - "traefik.http.routers.app-sgn-pwa-internal.priority=1"
 
 volumes:
-  django_media:
+  media_data:
     external: true
-    name: fsilva-cloud_media_data
     
 networks:
   web:

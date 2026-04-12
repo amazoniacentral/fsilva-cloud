@@ -14,15 +14,17 @@ RUN npm run build
 FROM nginx:stable-alpine
 WORKDIR /usr/share/nginx/html
 
-# Remove arquivos padrão
+# Remove arquivos padrão do site
 RUN rm -rf ./*
+
+# A VERDADE ABSOLUTA: Removemos o default.conf padrão para evitar conflitos e erros de upstream
+RUN rm /etc/nginx/conf.d/default.conf
 
 # Copia o build do estágio anterior
 COPY --from=build-stage /app/build .
 
-# A VERDADE ABSOLUTA: O default.conf está na pasta do Dockerfile, 
-# então o caminho parte da raiz conforme definido no docker-compose.
-COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/app_nginx.conf
+# Copia o SEU arquivo de configuração como o único default.conf
+COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

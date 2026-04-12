@@ -138,9 +138,25 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           MAPEAMENTO DE IDENTIDADE E REDE (DOCKER)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# Lista de Containers com Nome, Hostname, IP, Status e Redes
-printf "%-20s %-20s %-15s %-15s %-15s\n" "NOME" "HOSTNAME" "IP INTERNO" "STATUS" "REDES"
-docker inspect -f '{{.Name}} {{.Config.Hostname}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} {{.State.Status}} {{range $p, $conf := .NetworkSettings.Networks}}{{$p}} {{end}}' $(docker ps -q) | sed 's/\///' | awk '{printf "%-20s %-20s %-15s %-15s %-15s\n", $1, $2, $3, $4, $5}'
+# Lista de Containers corrigida para evitar colagem de IPs e Redes
+printf "%-22s %-18s %-18s %-12s %-15s\n" "NOME" "HOSTNAME" "IP INTERNO" "STATUS" "REDES"
+
+for cid in $(docker ps -q); do
+    # Extrai dados básicos
+    NAME=$(docker inspect -f '{{.Name}}' $cid | sed 's/\///')
+    HOST=$(docker inspect -f '{{.Config.Hostname}}' $cid)
+    STAT=$(docker inspect -f '{{.State.Status}}' $cid)
+    
+    # Extrai IPs e Redes separando por espaço para legibilidade
+    IPS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' $cid | xargs | sed 's/ /, /g')
+    NETS=$(docker inspect -f '{{range $p, $conf := .NetworkSettings.Networks}}{{$p}} {{end}}' $cid | xargs | sed 's/ /, /g')
+
+    # Ajusta o tamanho da string se houver muitos IPs para não quebrar o layout
+    IPS_CLEAN=$(echo $IPS | cut -c1-18)
+    NETS_CLEAN=$(echo $NETS | cut -c1-20)
+
+    printf "%-22s %-18s %-18s %-12s %-15s\n" "$NAME" "$HOST" "$IPS_CLEAN" "$STAT" "$NETS_CLEAN"
+done
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}           CONSUMO DOS CONTAINERS (DOCKER)${RESET}"
@@ -152,8 +168,10 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
+# Caminho baseado na estrutura do projeto fsilva-cloud
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-ACME_FILE="$SCRIPT_DIR/../proxy/acme.json"
+ACME_FILE="/opt/fsilva-cloud/proxy/acme.json"
+
 if [ -f "$ACME_FILE" ]; then
     CERT_COUNT=$(grep -o '"certificate":' "$ACME_FILE" | wc -l)
     PERM=$(stat -c "%a" "$ACME_FILE")
@@ -162,12 +180,12 @@ if [ -f "$ACME_FILE" ]; then
     
     echo -e "\n${CYAN}Domínios com SSL Ativo:${RESET}"
     if command -v jq >/dev/null 2>&1; then
-        jq -r '.[].Certificates[].domain.main' "$ACME_FILE" 2>/dev/null | sort -u | sed 's/^/ - /'
+        jq -r '..|.main? // empty' "$ACME_FILE" 2>/dev/null | sort -u | sed 's/^/ - /'
     else
         grep -Po '(?<="main": ")[^"]*' "$ACME_FILE" | sort -u | sed 's/^/ - /'
     fi
 else
-    printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado"
+    printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado em $ACME_FILE"
 fi
 
 echo -e ""

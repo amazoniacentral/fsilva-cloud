@@ -56,6 +56,7 @@ services:
       - MALLOC_ARENA_MAX=2
     networks:
       - web
+      - internal_network
     deploy:
       resources:
         limits:
@@ -91,6 +92,7 @@ services:
       - PYTHONHASHSEED=random
     networks:
       - web
+      - internal_network
     deploy:
       resources:
         limits:
@@ -131,6 +133,8 @@ services:
 
 networks:
   web:
+    external: true
+  internal_network:      # <--- Define a rede como externa para encontrar o outro container
     external: true
 
 volumes:

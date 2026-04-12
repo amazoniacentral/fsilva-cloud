@@ -9,6 +9,6 @@ include:
   - ./netdata/docker-compose.netdata.yml
 
 networks:
-  proxy_network:
-    name: proxy_network
+  web:
+    name: web
     driver: bridge

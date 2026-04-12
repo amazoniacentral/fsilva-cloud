@@ -82,10 +82,10 @@ docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "GRANT ALL PRIVILEGES 
 docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;"
 
 echo "----------------------------------------------------------------"
-echo "Criando arquivo de ambiente: dbkeys.$DB_NAME"
+echo "Criando arquivo de ambiente: .env.$DB_NAME"
 
 # 4. Salvar Arquivo com DATABASE_URL
-ENV_PATH="$SCRIPT_DIR/dbkeys.$DB_NAME"
+ENV_PATH="$SCRIPT_DIR/.env.$DB_NAME"
 DB_HOST="localhost"
 DB_PORT="5432"
 
@@ -106,5 +106,5 @@ echo "================================================================"
 echo "  PROCESSO CONCLUÍDO COM SUCESSO!"
 cat "$ENV_PATH"
 echo ""
-echo "  Configurações salvas em: dbkeys.$DB_NAME"
+echo "  Configurações salvas em: .env.$DB_NAME"
 echo "================================================================"

@@ -35,5 +35,6 @@ volumes:
   logs:
 
 networks:
-  web:
-    external: true
+  internal_network:
+    driver: bridge
+    internal: true

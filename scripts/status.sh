@@ -138,24 +138,19 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           MAPEAMENTO DE IDENTIDADE E REDE (DOCKER)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# Lista de Containers corrigida para evitar colagem de IPs e Redes
-printf "%-22s %-18s %-18s %-12s %-15s\n" "NOME" "HOSTNAME" "IP INTERNO" "STATUS" "REDES"
+# Lista de Containers com formatação expandida para não picotar informações
+printf "%-22s %-18s %-30s %-12s %-25s\n" "NOME" "HOSTNAME" "IP INTERNO" "STATUS" "REDES"
 
 for cid in $(docker ps -q); do
-    # Extrai dados básicos
     NAME=$(docker inspect -f '{{.Name}}' $cid | sed 's/\///')
     HOST=$(docker inspect -f '{{.Config.Hostname}}' $cid)
     STAT=$(docker inspect -f '{{.State.Status}}' $cid)
     
-    # Extrai IPs e Redes separando por espaço para legibilidade
-    IPS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' $cid | xargs | sed 's/ /, /g')
-    NETS=$(docker inspect -f '{{range $p, $conf := .NetworkSettings.Networks}}{{$p}} {{end}}' $cid | xargs | sed 's/ /, /g')
+    # Coleta IPs e Redes sem limitar caracteres
+    IPS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}, {{end}}' $cid | sed 's/, $//')
+    NETS=$(docker inspect -f '{{range $p, $conf := .NetworkSettings.Networks}}{{$p}}, {{end}}' $cid | sed 's/, $//')
 
-    # Ajusta o tamanho da string se houver muitos IPs para não quebrar o layout
-    IPS_CLEAN=$(echo $IPS | cut -c1-18)
-    NETS_CLEAN=$(echo $NETS | cut -c1-20)
-
-    printf "%-22s %-18s %-18s %-12s %-15s\n" "$NAME" "$HOST" "$IPS_CLEAN" "$STAT" "$NETS_CLEAN"
+    printf "%-22s %-18s %-30s %-12s %-25s\n" "$NAME" "$HOST" "$IPS" "$STAT" "$NETS"
 done
 
 echo -e "\n${CYAN}================================================================${RESET}"
@@ -168,8 +163,7 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# Caminho baseado na estrutura do projeto fsilva-cloud
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+# Caminho absoluto para o acme.json conforme sua estrutura fsilva-cloud
 ACME_FILE="/opt/fsilva-cloud/proxy/acme.json"
 
 if [ -f "$ACME_FILE" ]; then

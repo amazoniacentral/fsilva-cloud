@@ -34,6 +34,3 @@ volumes:
   sessions:
   logs:
 
-networks:
-  net_boot:
-    external: true

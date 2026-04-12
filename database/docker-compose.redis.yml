@@ -30,6 +30,3 @@ services:
 volumes:
   redis_data:
 
-networks:
-  net_db:
-    external: true

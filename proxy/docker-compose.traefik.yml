@@ -66,9 +66,3 @@ services:
 volumes:
   dynamic:
 
-networks:
-  web:
-    external: true
-  net_proxy:
-    external: true
-    

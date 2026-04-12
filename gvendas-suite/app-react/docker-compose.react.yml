@@ -41,6 +41,3 @@ volumes:
   fsilva-cloud_media_data:
     external: true
     
-networks:
-  net_proxy:
-    external: true

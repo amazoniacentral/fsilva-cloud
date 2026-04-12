@@ -8,19 +8,39 @@ include:
   - ./database/docker-compose.postgres.yml
   - ./netdata/docker-compose.netdata.yml
 
+volumes:
+  postgres_data:
+    name: postgres_data
+  redis_data:
+    name: redis_data
+  traefik_certs:
+    name: traefik_certs
+  traefik_dynamics:
+    name: traefik_dynamics
+  sgn_statics:
+    name: sgn_statics
+  sgn_media:
+    name: sgn_media
+  sgn_pwa:
+    name: sgn_pwa
+    
 networks:
   web:
     name: web
     driver: bridge
   net_proxy:
+    name: net_proxy
     driver: bridge
     internal: true
   net_boot:
+    name: net_boot
     driver: bridge
     internal: true
   net_db:
+    name: net_db
     driver: bridge
     internal: true
   net_data:
+    name: net_data
     driver: bridge
     internal: true

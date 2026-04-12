@@ -50,6 +50,3 @@ volumes:
   netdatalib:
   netdatacache:
 
-networks:
-  net_data:
-    external: true

@@ -131,13 +131,6 @@ services:
           cpus: '0.05'
           memory: 128M
 
-networks:
-  net_proxy:
-    external: true
-  net_db:
-    external: true
-  net_boot:
-    external: true
 
 volumes:
   static_data:

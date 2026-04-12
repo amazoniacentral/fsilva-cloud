@@ -29,12 +29,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - net_data
+    env_file:
+      - .env
     environment:
       - NETDATA_CHECK_FOR_UPDATES=yes
     labels:
       - "traefik.enable=true"
       # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`monitoramento.francsilva.com.br`)"
+      - "traefik.http.routers.netdata.rule=Host(`${DOMAIN}`)"
+      #- "traefik.http.routers.netdata.rule=Host(`monitoramento.francsilva.com.br`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"
       - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
       

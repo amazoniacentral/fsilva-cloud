@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Define o diretório onde o script está localizado
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
 # Verifica se o usuário é root
 if [ "$EUID" -ne 0 ]; then 
   echo "Execute este script como root"
@@ -9,8 +12,8 @@ fi
 
 echo "== Atualizando projeto principal e submódulos =="
 
-# Garante que estamos no diretório correto
-cd /opt/fsilva-cloud
+# Garante que estamos no diretório correto (baseado no local do script)
+cd "$SCRIPT_DIR/.."
 
 while true; do
     echo -n "Deseja resetar repositório do Git local agora? (s/n): "
@@ -36,13 +39,23 @@ done
 # Atualiza os submódulos (essencial para SGN e GVendas)
 git submodule update --init --recursive --remote
 
-mkdir -p ../proxy/dynamic certs
-if [ ! -f ../proxy/acme.json ]; then
-  touch ../proxy/acme.json
-  chmod 600 ../proxy/acme.json
+# Garante a criação dos diretórios necessários usando o caminho absoluto do script
+mkdir -p "$SCRIPT_DIR/../../proxy/dynamic"
+
+# Verifica se o arquivo acme.json não existe
+if [ ! -f "$SCRIPT_DIR/../../proxy/acme.json" ]; then
+  # Cria o arquivo
+  touch "$SCRIPT_DIR/../../proxy/acme.json"
+  # Aplica a permissão 600 (obrigatória para o Traefik)
+  chmod 600 "$SCRIPT_DIR/../../proxy/acme.json"
+  echo "Arquivo acme.json criado com sucesso."
+else
+  echo "Arquivo acme.json já existe. Pulando..."
 fi
 
 echo "== Subindo serviços com Docker Compose =="
+# Executa o compose no diretório correto do projeto
+cd "$SCRIPT_DIR/.."
 docker compose -f docker-compose.yml up -d --build
 
 echo "== Limpeza de imagens órfãs =="

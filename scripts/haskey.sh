@@ -20,12 +20,20 @@ read -s USER_PASS
 echo "" # Pula linha após a senha
 
 # Cria o diretório de destino caso ele não exista
-mkdir -p "$SCRIPT_DIR/../proxy"
+mkdir -p "$(dirname "$CAMINHO_HTPASSWD")"
 
-# Gera o hash Bcrypt e salva no arquivo .htpasswd no local correto
-htpasswd -bB -c "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
+# Lógica de criação/atualização:
+# Se o arquivo não existir, usa -c (create). Se existir, remove o -c para apenas adicionar/atualizar.
+if [ ! -f "$CAMINHO_HTPASSWD" ]; then
+    htpasswd -bB -c "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
+else
+    htpasswd -bB "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
+fi
 
 if [ $? -eq 0 ]; then
+    # Garante que o arquivo possa ser lido pelo Docker (Traefik)
+    chmod 644 "$CAMINHO_HTPASSWD"
+    
     echo "------------------------------------------------"
     echo "Sucesso! Credenciais atualizadas."
     echo "Arquivo gerado em: $CAMINHO_HTPASSWD"

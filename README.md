@@ -41,6 +41,6 @@ rm -rf .git/modules/scripts/docker-vps
 git submodule add git@github.com:amazoniacentral/docker-vps.git repos/docker-vps
 ```
 # Outras configurações
-* **PostgresSql:** [amazoniacentral/fsilva-cloud/database](https://github.com/amazoniacentral/fsilva-cloud/database)
+* **PostgresSql:** [/database](/database)
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

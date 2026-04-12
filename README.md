@@ -27,7 +27,7 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 ```
 
 ## Módulos
-Adicionar modulos no projeto
+Adicionar *[submodule](/repos)* no projeto
 - Instalação de Módulos
 ```bash
 git submodule add git@github.com:amazoniacentral/docker-vps.git repos/docker-vps

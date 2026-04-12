@@ -7,8 +7,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.9'
           memory: 1024M
         reservations:
+          cpus: '0.05'
           memory: 128M
 
     env_file: 

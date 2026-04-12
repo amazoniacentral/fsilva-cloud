@@ -7,8 +7,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.20'
           memory: 256M
         reservations:
+          cpus: '0.10'
           memory: 100M
     cap_add:
       - SYS_PTRACE

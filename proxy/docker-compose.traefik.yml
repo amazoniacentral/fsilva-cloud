@@ -16,8 +16,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.2'
           memory: 128M
         reservations:
+          cpus: '0.01'
           memory: 64M
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}

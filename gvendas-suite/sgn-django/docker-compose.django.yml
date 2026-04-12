@@ -23,8 +23,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.10'
           memory: 128M
         reservations:
+          cpus: '0.05'
           memory: 64M
 
   # APP PRINCIPAL (Django)
@@ -57,8 +59,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.6'
           memory: 768M
         reservations:
+          cpus: '0.05'
           memory: 128M
 
   # WORKER
@@ -90,8 +94,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.5'
           memory: 512M
         reservations:
+          cpus: '0.05'
           memory: 128M
 
   # BEAT
@@ -117,8 +123,10 @@ services:
     deploy:
       resources:
         limits:
+          cpus: '0.1'
           memory: 768M
         reservations:
+          cpus: '0.05'
           memory: 128M
 
 networks:

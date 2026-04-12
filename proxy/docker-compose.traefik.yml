@@ -1,5 +1,7 @@
 services:
   traefik:
+    build: 
+      context: ../
     image: traefik:v3.0
     container_name: traefik
     restart: always
@@ -49,10 +51,10 @@ services:
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./acme.json:/acme.json
-      - ./dynamic:/dynamic:ro
+      - ../proxy/acme.json:/acme.json
+      - ../proxy/dynamic:/dynamic:ro
       - dynamic:/dynamic
-      - ./.htpasswd:/.htpasswd:ro
+      - ../proxy/.htpasswd:/.htpasswd:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.francsilva.com.br`)"

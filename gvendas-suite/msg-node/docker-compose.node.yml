@@ -1,6 +1,7 @@
 services:
   node:
-    build: .
+    build: 
+      context: ./repos/push
     container_name: msg-node
     restart: always
     hostname: whatsapp-server

@@ -1,9 +1,13 @@
 # Estágio 1: Build da aplicação
 FROM node:20-alpine AS build-stage
 WORKDIR /app
-COPY package*.json ./
+
+# Copia dependências a partir da raiz do contexto
+COPY repos/gvendas/package*.json ./
 RUN npm install
-COPY . .
+
+# Copia o código da aplicação
+COPY repos/gvendas/ .
 RUN npm run build
 
 # Estágio 2: Nginx
@@ -14,10 +18,11 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copia o build do estágio anterior
-COPY --from=build-stage /app/dist .
+COPY --from=build-stage /app/build .
 
-# Copia sua configuração personalizada do Nginx para dentro da imagem
-COPY default.conf /etc/nginx/conf.d/default.conf
+# A VERDADE ABSOLUTA: O default.conf está na pasta do Dockerfile, 
+# então o caminho parte da raiz conforme definido no docker-compose.
+COPY gvendas-suite/app-react/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

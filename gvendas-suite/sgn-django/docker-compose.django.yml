@@ -44,6 +44,7 @@ services:
   django:
     build: 
       context: ../../repos/sgn
+      dockerfile: ./gvendas-suite/sgn-django/Dockerfile
     container_name: sgn-django
     restart: always
     hostname: api-backend

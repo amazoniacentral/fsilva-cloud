@@ -20,15 +20,16 @@ WORKDIR /code
 RUN pip install --no-cache-dir "pip<25.0" && \
     pip install --no-cache-dir pip-tools
 
-# Copia o arquivo de entrada das dependências
-COPY requirements.in .
+# 1. COPIA o arquivo de entrada das dependências da pasta correta no repositório
+# Como o contexto é a raiz, apontamos para repos/sgn/
+COPY repos/sgn/requirements.in .
 
 # Compila o requirements.in para requirements.txt e instala as dependências
 RUN pip-compile requirements.in --output-file=requirements.txt && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do código do projeto
-COPY . .
+# 2. COPIA o restante do código do projeto da pasta repos/sgn para dentro de /code
+COPY repos/sgn/ .
 
 # Expõe a porta que o Gunicorn vai rodar
 EXPOSE 8000

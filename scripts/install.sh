@@ -36,6 +36,12 @@ done
 # Atualiza os submódulos (essencial para SGN e GVendas)
 git submodule update --init --recursive --remote
 
+mkdir -p ../proxy/dynamic certs
+if [ ! -f ../proxy/acme.json ]; then
+  touch ../proxy/acme.json
+  chmod 600 ../proxy/acme.json
+fi
+
 echo "== Subindo serviços com Docker Compose =="
 docker compose -f docker-compose.yml up -d --build
 

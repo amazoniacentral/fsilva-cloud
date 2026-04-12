@@ -9,6 +9,11 @@ POSTGRES_PASSWORD=sua_senha_segura
 POSTGRES_DB=banco_principal 
 ```
 
+Recomendado usar uma senha segura, gere uma senha segura rodando o seguinte comando.
+```bash
+openssl rand -base64 15
+```
+
 - Se você quiser isolar as aplicações com senhas diferentes:
 Para que a nova aplicação tenha seu próprio usuário e sua própria senha, execute estes comandos dentro do container:
 1. Acesse o console:

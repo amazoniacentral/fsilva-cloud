@@ -2,6 +2,7 @@ services:
   traefik:
     build: 
       context: ../
+      dockerfile: ./proxy/Dockerfile
     image: traefik:v3.0
     container_name: traefik
     restart: always

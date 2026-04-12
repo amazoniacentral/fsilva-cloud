@@ -26,7 +26,8 @@ Após configurar a chave no GitHub, execute o instalador da stack para clonar os
 mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@github.com:amazoniacentral/fsilva-cloud.git . && chmod +x scripts/install.sh && ./scripts/install.sh
 ```
 
-## Eatrutura do projeto 
+## Estrutura do projeto 
+Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ```estrutura
 ..
 ├── database
@@ -57,68 +58,11 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 │   └── docker-compose.traefik.yml
 ├── repos
 │   ├── docker-vps
-│   │   ├── .gitignore
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   └── preparar_vps.sh
 │   ├── gvendas
-│   │   ├── assets
-│   │   ├── public
-│   │   ├── scripts
-│   │   ├── src
-│   │   ├── .env
-│   │   ├── .gitignore
-│   │   ├── README.md
-│   │   ├── default.conf
-│   │   ├── docker-compose.node.yml
-│   │   ├── dump.rdb
-│   │   ├── output.log
-│   │   ├── package-lock.json
-│   │   ├── package.json
-│   │   └── teste.html
 │   ├── push
-│   │   ├── src
-│   │   ├── .env.example
-│   │   ├── .gitignore
-│   │   ├── DockerFile
-│   │   ├── LICENSE
-│   │   ├── README-PUSH.md
-│   │   ├── README-VAPID.md
-│   │   ├── README-WHATSAPP.md
-│   │   ├── README.md
-│   │   ├── README.mdd
-│   │   ├── docker-compose.node.yml
-│   │   ├── package-lock.json
-│   │   └── package.json
 │   └── sgn
-│       ├── assistente_ia
-│       ├── conecta
-│       ├── core
-│       ├── docker
-│       ├── feedback
-│       ├── financas
-│       ├── login_cli
-│       ├── loja
-│       ├── pagamento_online
-│       ├── rede
-│       ├── sgn
-│       ├── templates
-│       ├── utils
-│       ├── .env.exemplo
-│       ├── .gitignore
-│       ├── DELETE
-│       ├── Dockerfile
-│       ├── README.md
-│       ├── docker-compose.django.yml
-│       ├── entrypoint.sh
-│       ├── gestaovendasgooogleapi.json
-│       ├── manage.py
-│       ├── nginx.conf
-│       ├── reqtermux.txt
-│       └── requirements.in
 ├── scripts
 │   ├── estrutura.sh
-│   ├── estrutura_temp.txt
 │   └── install.sh
 ├── .gitignore
 ├── .gitmodules
@@ -126,7 +70,7 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 ├── colocarnosfilhos.yml
 └── docker-compose.yml
 
-33 directories, 64 files
+15 directories, 25 files
 ```
 
 

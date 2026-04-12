@@ -1,7 +1,8 @@
 services:
   node:
     build: 
-      context: ../../repos/push
+      context: ../../
+      dockerfile: ./gvendas-suite/msg-node/Dockerfile
     container_name: msg-node
     restart: always
     hostname: whatsapp-server
@@ -9,7 +10,7 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     volumes:
-      - .:/usr/src/app
+      - ../../repos/push:/usr/src/app
       - node_modules:/usr/src/app/node_modules
       - sessions:/usr/src/app/sessions
       - logs:/usr/src/app/logs

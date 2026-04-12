@@ -1,7 +1,8 @@
 services:
   nginx:
     build: 
-      context: ../../repos/gvendas
+      context: ../../
+      dockerfile: ./gvendas-suite/app-react/Dockerfile
     container_name: app-sgn-pwa
     restart: always
     hostname: pwa-frontend
@@ -14,7 +15,7 @@ services:
       # O build já está na imagem, montamos apenas os dados externos (mídia)
       - app-sgn_media_data:/usr/share/nginx/html/media
       # Opcional: manter o arquivo de config externo para trocas rápidas sem rebuild
-      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./gvendas-suite/app-react/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - web
     deploy:

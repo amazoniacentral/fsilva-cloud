@@ -31,6 +31,7 @@ jobs:
             
             # 2. Sobe apenas o que mudou usando o arquivo mestre da raiz
             # O Docker Compose vai buildar apenas as imagens cujos arquivos foram alterados
+            docker network create web 2>/dev/null || true
             docker compose -f docker-compose.yml up -d --build
             
             # 3. Limpeza de imagens órfãs para não encher o disco da VPS

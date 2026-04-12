@@ -82,6 +82,15 @@ services:
       - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
       - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
       - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 64M
+        reservations:
+          cpus: '0.01'
+          memory: 32M
 
 
 volumes:

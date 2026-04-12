@@ -3,7 +3,6 @@ Stack central de orquestração e infraestrutura para o ecossistema FSilva. Gere
 
 ## 🚀 Instalação Rápida na VPS
 * **Repositório:** [amazoniacentral/docker-vps](https://github.com/amazoniacentral/docker-vps)
-* **Script de Instalação:** [preparar_vps.sh](https://raw.githubusercontent.com/amazoniacentral/docker-vps/main/preparar_vps.sh)
 
 **Comando de execução direta:**
 ```bash

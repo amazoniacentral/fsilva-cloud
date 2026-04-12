@@ -10,6 +10,7 @@ services:
     networks:
       - web
       - net_proxy
+      - net_data
     ports:
       - 80:80
       - 443:443

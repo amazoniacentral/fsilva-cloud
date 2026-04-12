@@ -39,6 +39,8 @@ if [ $? -eq 0 ]; then
     echo "Arquivo gerado em: $CAMINHO_HTPASSWD"
     echo "Usuário definido: $USER_NAME"
     echo "------------------------------------------------"
+    cat $CAMINHO_HTPASSWD
+    echo "------------------------------------------------"
     echo "Para aplicar as mudanças no Traefik, execute:"
     echo "cd $SCRIPT_DIR/../proxy && docker compose up -d"
 else

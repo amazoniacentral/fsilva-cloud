@@ -4,8 +4,22 @@ set -e
 # Nome do container fixo
 CONTAINER_NAME="postgres"
 
-# Define o diretório onde o script está localizado para salvar o arquivo de env
+# Define o diretório onde o script está localizado
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+# Localização do arquivo .env principal do banco para pegar o admin_principal
+MAIN_DB_ENV="$SCRIPT_DIR/../database/.env"
+
+# Verifica se o arquivo .env principal existe e extrai o POSTGRES_USER
+if [ -f "$MAIN_DB_ENV" ]; then
+    # Extrai o valor de POSTGRES_USER removendo possíveis espaços e aspas
+    ADMIN_USER=$(grep '^POSTGRES_USER=' "$MAIN_DB_ENV" | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+fi
+
+# Se não encontrar no .env ou o arquivo não existir, assume 'postgres' como fallback
+if [ -z "$ADMIN_USER" ]; then
+    ADMIN_USER="postgres"
+fi
 
 # Função para garantir que a entrada não seja vazia
 get_input() {
@@ -25,6 +39,7 @@ get_input() {
 
 echo "================================================================"
 echo "           CONFIGURAÇÃO DE BANCO DE DADOS POSTGRES              "
+echo "           (Usando Admin: $ADMIN_USER)                          "
 echo "================================================================"
 
 # 1. Nome do Banco (Obrigatório)
@@ -32,7 +47,7 @@ get_input "Nome do NOVO banco de dados: " DB_NAME
 
 echo "----------------------------------------------------------------"
 echo "Criando o banco de dados '$DB_NAME'..."
-docker exec -i "$CONTAINER_NAME" psql -U postgres -c "CREATE DATABASE $DB_NAME;"
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "CREATE DATABASE $DB_NAME;"
 
 # 2. Decisão de Usuário
 while true; do
@@ -45,7 +60,7 @@ while true; do
             get_input "Senha para o novo usuário: " DB_PASS
             
             echo "Criando usuário '$DB_USER'..."
-            docker exec -i "$CONTAINER_NAME" psql -U postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+            docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
             break
             ;;
         [Ee]* ) 
@@ -62,9 +77,9 @@ done
 
 # 3. Associação de Permissões
 echo "Atribuindo privilégios do banco '$DB_NAME' ao usuário '$DB_USER'..."
-docker exec -i "$CONTAINER_NAME" psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-# Garante permissões em schemas (necessário para o Django e outras aplicações)
-docker exec -i "$CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;"
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+# Garante permissões em schemas
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;"
 
 echo "----------------------------------------------------------------"
 echo "Criando arquivo de ambiente: dbkeys.$DB_NAME"
@@ -89,6 +104,7 @@ chmod 600 "$ENV_PATH"
 
 echo "================================================================"
 echo "  PROCESSO CONCLUÍDO COM SUCESSO!"
-cat "dbkeys.$DB_NAME"
+cat "$ENV_PATH"
+echo ""
 echo "  Configurações salvas em: dbkeys.$DB_NAME"
 echo "================================================================"

@@ -1,5 +1,5 @@
 services:
-  nginx:
+  pwa:
     build: 
       # VERDADE: O contexto deve ser a raiz para enxergar o código em /repos ou /gvendas-suite
       context: ../../

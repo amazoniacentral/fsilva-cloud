@@ -31,8 +31,6 @@ services:
           cpus: '0.05'
           memory: 64M
 
-
-
   # APP PRINCIPAL (Django)
   django:
     build: 

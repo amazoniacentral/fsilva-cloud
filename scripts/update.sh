@@ -1,31 +1,63 @@
 #!/bin/bash
 
-# Define a branch que você deseja aplicar a todos os submódulos
-TARGET_BRANCH="develop"
+# Obtém o diretório onde o script está localizado
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Iniciando a atualização dos submódulos para a branch: $TARGET_BRANCH"
+# Navega para o diretório pai (../) onde deve estar o .gitmodules
+cd "$SCRIPT_DIR/.." || exit
 
-# Percorre todos os caminhos de submódulos registrados no .gitmodules
-git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | while read -r module_path; do
-    echo "--------------------------------------------------------"
-    echo "Processando submódulo: $module_path"
+# Verifica se o arquivo .gitmodules existe no diretório atual
+if [ ! -f ".gitmodules" ]; then
+    echo "ERRO: Arquivo .gitmodules não encontrado em: $(pwd)"
+    exit 1
+fi
 
-    # 1. Configura a branch no .gitmodules
-    git config -f .gitmodules submodule."$module_path".branch "$TARGET_BRANCH"
-    
-    # 2. Sincroniza a URL (caso tenha mudado no remoto)
-    git submodule sync -- "$module_path"
-    
-    # 3. Atualiza o conteúdo para o commit mais recente da branch alvo
-    git submodule update --remote --merge -- "$module_path"
-    
-    echo "Submódulo $module_path atualizado para $TARGET_BRANCH."
-done
+echo "Diretório de trabalho definido para: $(pwd)"
 
-# Adiciona as alterações ao stage
+# Solicita o nome ou caminho do submódulo
+read -p "Digite o caminho ou nome do submódulo (ex: sgn ou repos/sgn): " INPUT_PATH
+
+# Tenta encontrar o caminho exato registrado no .gitmodules
+# Se o usuário digitou 'sgn', ele busca algo que termine com 'sgn' no .gitmodules
+MODULE_PATH=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep -E "(/|^)$INPUT_PATH$" | head -n 1)
+
+# Se não encontrar nada, usa o que o usuário digitou para a próxima validação
+if [ -z "$MODULE_PATH" ]; then
+    MODULE_PATH="$INPUT_PATH"
+fi
+
+# Solicita a branch que deseja usar
+read -p "Digite a branch que deseja usar (ex: develop): " TARGET_BRANCH
+
+# Verifica se o caminho final existe no arquivo .gitmodules
+if ! git config --file .gitmodules --get-regexp path | grep -q "$MODULE_PATH"; then
+    echo "ERRO: O submódulo '$MODULE_PATH' não foi encontrado no arquivo .gitmodules."
+    echo "Caminhos disponíveis:"
+    git config --file .gitmodules --get-regexp path | awk '{print " - " $2}'
+    exit 1
+fi
+
 echo "--------------------------------------------------------"
-echo "Finalizando e adicionando alterações ao Git..."
-git add .gitmodules
-git add .
+echo "Iniciando a atualização do submódulo: $MODULE_PATH para a branch: $TARGET_BRANCH"
 
-echo "Pronto! Agora basta você executar: git commit -m 'Fixando todos os submódulos na branch $TARGET_BRANCH'"
+# 1. Configura a branch específica para esse submódulo no .gitmodules
+git config -f .gitmodules submodule."$MODULE_PATH".branch "$TARGET_BRANCH"
+
+# 2. Sincroniza a URL
+git submodule sync -- "$MODULE_PATH"
+
+# 3. Atualiza o conteúdo para o commit mais recente da branch alvo
+if git submodule update --remote --merge -- "$MODULE_PATH"; then
+    echo "--------------------------------------------------------"
+    echo "Submódulo $MODULE_PATH atualizado para $TARGET_BRANCH com sucesso."
+
+    # Adiciona as alterações ao stage
+    git add .gitmodules "$MODULE_PATH"
+    git commit -m "'Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH'"
+    echo "As alterações foram adicionadas ao stage."
+    #echo "Execute: git commit -m 'Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH'"
+else
+    echo "--------------------------------------------------------"
+    echo "ERRO ao atualizar o submódulo. Verifique se a branch '$TARGET_BRANCH' existe no remoto."
+    exit 1
+fi

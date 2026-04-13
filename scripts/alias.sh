@@ -47,12 +47,19 @@ GCOMMIT_FUNCTION="gcommit() {
   git submodule update --remote --recursive
   if [ -f \"package.json\" ]; then
     npm version patch --no-git-tag-version
-  else
-    echo \"Aviso: package.json não encontrado. Pulando atualização de versão.\"
   fi
   git add .
   git commit -m \"\${1:-Salvando Alterações}\"
   git push
+}"
+
+DEXEC_FUNCTION="dexec() {
+  if [ -z \"\$1\" ]; then
+    echo \"ERRO: O nome do container é obrigatório.\"
+    echo \"Uso: dexec <nome-do-container>\"
+    return 1
+  fi
+  docker exec -it \"\$1\" sh
 }"
 
 # ==========================================================
@@ -63,6 +70,16 @@ declare -a ALIASES=(
     "dprune='docker system prune -af'"
     "update='sudo apt update && sudo apt upgrade -y'"
     "cls='clear'"
+    "dhome='cd $SCRIPT_DIR/../'"
+    "drepos='cd $SCRIPT_DIR/../repos'"
+    "dgvendas='cd $SCRIPT_DIR/../gvendas-suite'"
+    "dgapp='cd $SCRIPT_DIR/../gvendas-suite/app-react'"
+    "dgmsg='cd $SCRIPT_DIR/../gvendas-suite/msg-node'"
+    "dgsgn='cd $SCRIPT_DIR/../gvendas-suite/sgn-django'"
+    "dscripts='cd $SCRIPT_DIR/../scripts'"
+    "dproxy='cd $SCRIPT_DIR/../proxy'"
+    "dnetdata='cd $SCRIPT_DIR/../netdata'"
+    "ddatabase='cd $SCRIPT_DIR/../netdata'"
     "status='bash $SCRIPT_DIR/status.sh'"
     "instalar='bash $SCRIPT_DIR/install.sh'"
     "atalhos='bash $SCRIPT_DIR/alias.sh'"
@@ -82,6 +99,7 @@ echo -e "${CYAN}--------------------------------------------------------${RESET}
 # Remove blocos antigos (do nome da função até a chave de fechamento no início da linha)
 sed -i '/gtag()/,/^}/d' "$TARGET_FILE"
 sed -i '/gcommit()/,/^}/d' "$TARGET_FILE"
+sed -i '/dexec()/,/^}/d' "$TARGET_FILE"
 
 # Insere as novas funções no final do arquivo
 echo "$GTAG_FUNCTION" >> "$TARGET_FILE"
@@ -89,6 +107,9 @@ echo "FUNÇÃO ATUALIZADA: gtag"
 
 echo "$GCOMMIT_FUNCTION" >> "$TARGET_FILE"
 echo "FUNÇÃO ATUALIZADA: gcommit"
+
+echo "$DEXEC_FUNCTION" >> "$TARGET_FILE"
+echo "FUNÇÃO ATUALIZADA: dexec"
 
 # --- PROCESSANDO ALIASES (SUBSTITUIÇÃO TOTAL PELO NOME) ---
 for NOVO_ALIAS in "${ALIASES[@]}"; do
@@ -117,11 +138,6 @@ echo -e "${CYAN}--------------------------------------------------------${RESET}
 grep "^alias " "$TARGET_FILE" | tail -n 5
 grep -q "gtag()" "$TARGET_FILE" && echo "Função gtag: Ativa"
 grep -q "gcommit()" "$TARGET_FILE" && echo "Função gcommit: Ativa"
+grep -q "dexec()" "$TARGET_FILE" && echo "Função dexec: Ativa"
 
-if [ "$MUDOU" = true ]; then
-    echo -e "\n${CYAN}--------------------------------------------------------${RESET}"
-    echo -e "${YELLOW}        Para aplicar agora, execute:${RESET}"
-    echo -e "${YELLOW}        source $TARGET_FILE ${RESET}"
-    echo -e "\n${CYAN}--------------------------------------------------------${RESET}"
-fi
 echo -e "\n${CYAN}-------------------- by Francisco Silva ----------------${RESET}\n"

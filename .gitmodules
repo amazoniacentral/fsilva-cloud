@@ -1,16 +1,16 @@
 [submodule "repos/docker-vps"]
 	path = repos/docker-vps
 	url = git@github.com:amazoniacentral/docker-vps.git
-	branch = develop
+	branch = main
 [submodule "repos/sgn"]
 	path = repos/sgn
 	url = git@github.com:amazoniacentral/sgn.git
-	branch = develop
+	branch = main
 [submodule "repos/gvendas"]
 	path = repos/gvendas
 	url = git@github.com:amazoniacentral/gvendas.git
-	branch = develop
+	branch = main
 [submodule "repos/push"]
 	path = repos/push
 	url = git@github.com:amazoniacentral/push.git
-	branch = develop
+	branch = main

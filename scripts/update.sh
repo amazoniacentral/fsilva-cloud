@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define a branch que você deseja aplicar a todos os submódulos
-TARGET_BRANCH="develop"
+TARGET_BRANCH="main"
 
 echo "Iniciando a atualização dos submódulos para a branch: $TARGET_BRANCH"
 

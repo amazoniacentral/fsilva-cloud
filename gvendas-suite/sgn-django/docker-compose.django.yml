@@ -17,7 +17,7 @@ services:
       - "traefik.http.routers.nginx-sgn.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.nginx-sgn.entrypoints=websecure"
       - "traefik.http.routers.nginx-sgn.tls.certresolver=letsencrypt"
-      - "traefik.http.services.nginx-sgn.loadbalancer.server.port=80"
+      - "traefik.http.services.nginx-sgn.loadbalancer.server.port=8000"
       - "traefik.http.services.nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
       # MIDDLEWARES
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="

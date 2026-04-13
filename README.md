@@ -6,7 +6,7 @@ Stack central de orquestração e infraestrutura para o ecossistema FSilva. Gere
 
 **Comando de execução direta:**
 ```bash
-apt update && apt install -y curl && curl -sSL https://raw.githubusercontent.com/amazoniacentral/docker-vps/main/preparar_vps.sh | sudo bash
+apt update && apt install -y curl && curl -sSL https://raw.githubusercontent.com/amazoniacentral/docker-vps/main/setup.sh | sudo bash
 ```
 
 ## 🔐 Autenticação no GitHub

@@ -32,12 +32,10 @@ read -p "Digite o caminho ou nome do submódulo (ex: repos/sgn): " INPUT_PATH
 # Tenta encontrar o caminho exato registrado no .gitmodules
 MODULE_PATH=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep -E "(/|^)$INPUT_PATH$" | head -n 1)
 
-# Se não encontrar nada, tenta usar a entrada direta
 if [ -z "$MODULE_PATH" ]; then
     MODULE_PATH="$INPUT_PATH"
 fi
 
-# Verifica se o caminho final realmente existe no arquivo .gitmodules
 if ! git config --file .gitmodules --get-regexp path | grep -q "$MODULE_PATH"; then
     echo -e "${RED}ERRO: O submódulo '$MODULE_PATH' não foi encontrado no .gitmodules.${RESET}"
     echo "Caminhos disponíveis:"
@@ -45,35 +43,35 @@ if ! git config --file .gitmodules --get-regexp path | grep -q "$MODULE_PATH"; t
     exit 1
 fi
 
-# Solicita a branch
 read -p "Digite a branch que deseja usar (ex: main, develop): " TARGET_BRANCH
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 echo -e "Atualizando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"
 
-# 1. Configura a branch específica para esse submódulo no .gitmodules
+# 1. Configura a branch e sincroniza
 git config -f .gitmodules submodule."$MODULE_PATH".branch "$TARGET_BRANCH"
-
-# 2. Sincroniza a URL
 git submodule sync -- "$MODULE_PATH"
 
-# 3. Atualiza o conteúdo para o commit mais recente da branch alvo
-# --remote busca no servidor, --merge mescla no seu local
+# 2. Atualiza o conteúdo
 if git submodule update --remote --merge -- "$MODULE_PATH"; then
     echo -e "${CYAN}--------------------------------------------------------${RESET}"
-    echo -e "${GREEN}SUCESSO: Submódulo $MODULE_PATH atualizado para $TARGET_BRANCH.${RESET}"
+    echo -e "${GREEN}SUCESSO: Submódulo $MODULE_PATH atualizado.${RESET}"
 
-    # Adiciona as alterações ao stage
-    git add .gitmodules "$MODULE_PATH"
-    
-    # Faz o commit automático
-    git commit -m "Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH"
-    
-    echo -e "${GREEN}Alterações commitadas no projeto principal.${RESET}"
+    # 3. Adiciona as mudanças. 
+    # Usamos 'git add -u' para adicionar todas as modificações de arquivos já rastreados (incluindo outros submódulos como o gvendas)
+    git add .gitmodules
+    git add -u
+
+    # 4. Tenta o commit apenas se houver algo no stage
+    if ! git diff --cached --quiet; then
+        git commit -m "Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH e atualizando dependências"
+        echo -e "${GREEN}Alterações commitadas com sucesso.${RESET}"
+    else
+        echo -e "${YELLOW}AVISO: Nada novo para commitar.${RESET}"
+    fi
 else
     echo -e "${CYAN}--------------------------------------------------------${RESET}"
-    echo -e "${RED}ERRO ao atualizar o submódulo.${RESET}"
-    echo "Verifique se a branch '$TARGET_BRANCH' existe no repositório remoto de $MODULE_PATH."
+    echo -e "${RED}ERRO ao atualizar o submódulo $MODULE_PATH.${RESET}"
     exit 1
 fi
 

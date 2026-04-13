@@ -86,7 +86,7 @@ echo "Criando arquivo de ambiente: .env.$DB_NAME"
 
 # 4. Salvar Arquivo com DATABASE_URL
 ENV_PATH="$SCRIPT_DIR/.env.$DB_NAME"
-DB_HOST="localhost"
+DB_HOST="postgres"
 DB_PORT="5432"
 
 cat <<EOF > "$ENV_PATH"

@@ -45,8 +45,9 @@ fi
 
 read -p "Digite a branch que deseja usar (ex: main, develop): " TARGET_BRANCH
 
+
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "Limpando e Resetando de forma absoluta: ${YELLOW}$MODULE_PATH${RESET}"
+echo -e "Mudando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"
 
 # 1. Atualiza a configuração da branch no .gitmodules e sincroniza
 git config -f .gitmodules submodule."$MODULE_PATH".branch "$TARGET_BRANCH"

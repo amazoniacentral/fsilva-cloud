@@ -36,7 +36,3 @@ services:
     networks:
       - net_db
 
-
-volumes:
-  postgres_data:
-

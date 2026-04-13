@@ -14,10 +14,10 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       # O volume externo que o Django já criou (com o prefixo que você decidiu manter)
-      - fsilva-cloud_media_data:/usr/share/nginx/html/media
+      - sgn_media:/usr/share/nginx/html/media
       # O caminho do conf deve partir da raiz do projeto principal
       #- ./gvendas-suite/app-react/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - build_pwa:/usr/share/nginx/html
+      - sgn_pwa:/usr/share/nginx/html
     networks:
       - net_proxy
     deploy:
@@ -36,8 +36,3 @@ services:
       - "traefik.http.routers.app-sgn-pwa-internal.rule=Host(`internal.pwa`)"
       - "traefik.http.routers.app-sgn-pwa-internal.priority=1"
 
-volumes:
-  build_pwa:
-  fsilva-cloud_media_data:
-    external: true
-    

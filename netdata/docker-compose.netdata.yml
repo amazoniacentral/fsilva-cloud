@@ -46,9 +46,3 @@ services:
       
       # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
       - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
-
-volumes:
-  netdataconfig:
-  netdatalib:
-  netdatacache:
-

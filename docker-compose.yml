@@ -13,8 +13,6 @@ volumes:
     name: postgres_data
   redis_data:
     name: redis_data
-  traefik_certs:
-    name: traefik_certs
   traefik_dynamics:
     name: traefik_dynamics
   sgn_statics:
@@ -23,6 +21,18 @@ volumes:
     name: sgn_media
   sgn_pwa:
     name: sgn_pwa
+  netdataconfig:
+    name: netdataconfig
+  netdatalib:
+    name: netdatalib
+  netdatacache:
+    name: netdatacache
+  msg_node_modules:
+    name: msg_node_modules
+  msg_sessions:
+    name: msg_sessions
+  msg_logs:
+    name: msg_logs
     
 networks:
   web:

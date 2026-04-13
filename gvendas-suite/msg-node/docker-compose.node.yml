@@ -11,9 +11,9 @@ services:
       - 8.8.8.8
     volumes:
       - ../../repos/push:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
-      - sessions:/usr/src/app/sessions
-      - logs:/usr/src/app/logs
+      - msg_node_modules:/usr/src/app/node_modules
+      - msg_sessions:/usr/src/app/sessions
+      - msg_logs:/usr/src/app/logs
     env_file: 
       - .env
     networks:
@@ -28,9 +28,4 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
-
-volumes:
-  node_modules:
-  sessions:
-  logs:
 

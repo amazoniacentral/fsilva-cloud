@@ -53,7 +53,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../proxy/acme.json:/acme.json
       - ../proxy/dynamic:/dynamic:ro
-      - dynamic:/dynamic
+      - traefik_dynamics:/dynamic
       - ../proxy/.htpasswd:/.htpasswd:ro
     labels:
       - "traefik.enable=true"
@@ -110,7 +110,4 @@ services:
           memory: 32M
 
 
-
-volumes:
-  dynamic:
 

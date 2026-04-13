@@ -53,8 +53,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../proxy/acme.json:/acme.json
       - ../proxy/dynamic:/dynamic:ro
-      - traefik_dynamics:/dynamic
       - ../proxy/.htpasswd:/.htpasswd:ro
+      - traefik_dynamics:/dynamic
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN}`)"

@@ -15,26 +15,8 @@ echo "== Atualizando projeto principal e submódulos =="
 # Garante que estamos no diretório correto (um nível acima do script)
 cd "$SCRIPT_DIR/.."
 
-while true; do
-    echo -n "Deseja resetar repositório do Git local agora? (s/n): "
-    read -r CONFIRM_GIT < /dev/tty
-    
-    case $CONFIRM_GIT in
-        [Ss]* ) 
-            echo "Resetando..."
-            # Atualiza o código
-            git fetch origin main
-            git reset --hard origin/main
-            ;;
-        [Nn]* ) 
-            git pull origin main
-            break 
-            ;;
-        * ) 
-            echo "Resposta inválida. Por favor, digite 's' para Sim ou 'n' para Não."
-            ;;
-    esac
-done
+git fetch origin main
+git reset --hard origin/main
 
 # Atualiza os submódulos (essencial para SGN e GVendas)
 git submodule update --init --recursive --remote

@@ -10,6 +10,13 @@ RESET='\033[0m'
 BACKUP_DIR="/var/lib/docker/volumes/backups/_data"
 CONTAINER_DJANGO="sgn-django"
 CONTAINER_PG="sgn-postgres"
+DOT_ENV_PATH="./.env"
+
+# 0. CARGA DO ARQUIVO .ENV
+if [ -f "$DOT_ENV_PATH" ]; then
+    echo -e "📖 Carregando configurações de: ${CYAN}$DOT_ENV_PATH${RESET}"
+    export $(grep -v '^#' "$DOT_ENV_PATH" | xargs)
+fi
 
 echo -e "${CYAN}📁 Gestão de Backup do Banco de Dados${RESET}"
 echo "------------------------------------------------"
@@ -18,15 +25,15 @@ echo "2) Selecionar backup existente no volume"
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
-    # Solicita dados de origem
-    while [[ -z "${RSYNC_ORIGEM_USER:-}" ]]; do read -rp "Usuário remoto: " RSYNC_ORIGEM_USER; done
-    while [[ -z "${RSYNC_ORIGEM_IP:-}" ]]; do read -rp "IP remoto: " RSYNC_ORIGEM_IP; done
-    while [[ -z "${RSYNC_ORIGEM_PATH_2:-}" ]]; do read -rp "Caminho do arquivo remoto: " RSYNC_ORIGEM_PATH_2; done
+    # Solicita dados de origem apenas se não estiverem no .env
+    [[ -z "${RSYNC_ORIGEM_USER:-}" ]] && read -rp "Usuário remoto: " RSYNC_ORIGEM_USER
+    [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "IP remoto: " RSYNC_ORIGEM_IP
+    [[ -z "${RSYNC_ORIGEM_PATH:-}" ]] && read -rp "Caminho do arquivo remoto: " RSYNC_ORIGEM_PATH
 
     ARQUIVO_PARA_RESTAURAR=$(mktemp ${BACKUP_DIR}/banco_XXXXXX.backup)
     
     echo -e "\n🔄 Iniciando download para: $ARQUIVO_PARA_RESTAURAR"
-    rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${RSYNC_ORIGEM_PATH_2}" "$ARQUIVO_PARA_RESTAURAR"
+    rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${RSYNC_ORIGEM_PATH}" "$ARQUIVO_PARA_RESTAURAR"
     echo -e "✅ Download concluído."
 
 else
@@ -47,9 +54,10 @@ else
 fi
 
 echo -e "\n🔍 Extraindo credenciais do container $CONTAINER_DJANGO..."
-# Extrai DATABASE_URL e faz o parse simples (ajuste se seu Django usar envs separadas)
+# Extrai DATABASE_URL e faz o parse
 DB_URL=$(docker exec "$CONTAINER_DJANGO" env | grep DATABASE_URL | cut -d'=' -f2)
-# Exemplo de parse de postgres://user:pass@host:port/dbname
+
+# Parse robusto para extração de credenciais
 PG_USER=$(echo "$DB_URL" | sed -e 's|.*//\(.*\):.*@.*|\1|')
 PG_PASSWORD=$(echo "$DB_URL" | sed -e 's|.*: \(.*\)@.*|\1|' | cut -d':' -f2 | cut -d'@' -f1)
 PG_NAME=$(echo "$DB_URL" | awk -F'/' '{print $NF}' | cut -d'?' -f1)

@@ -33,7 +33,7 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     ARQUIVO_PARA_RESTAURAR=$(mktemp ${BACKUP_DIR}/banco_XXXXXX.backup)
     
     echo -e "\n🔄 Iniciando download para: $ARQUIVO_PARA_RESTAURAR"
-    sudo rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${RSYNC_ORIGEM_PATH}" "$ARQUIVO_PARA_RESTAURAR"
+    rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${RSYNC_ORIGEM_PATH}" "$ARQUIVO_PARA_RESTAURAR"
     echo -e "✅ Download concluído."
 
 else

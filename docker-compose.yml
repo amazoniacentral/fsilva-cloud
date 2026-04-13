@@ -33,6 +33,8 @@ volumes:
     name: msg_sessions
   msg_logs:
     name: msg_logs
+  backups:
+    name: backups
     
 networks:
   web:

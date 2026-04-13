@@ -12,27 +12,31 @@ RUN apk add --no-cache \
     postgresql-dev \
     libffi-dev \
     jpeg-dev \
-    zlib-dev
+    zlib-dev \
+    bash
 
 WORKDIR /code
 
-# Instala pip compatível e pip-tools para gerenciar requirements.in
+# Instala pip compatível e pip-tools
 RUN pip install --no-cache-dir "pip<25.0" && \
     pip install --no-cache-dir pip-tools
 
-# 1. COPIA o arquivo de entrada das dependências da pasta correta no repositório
-# Como o contexto é a raiz, apontamos para repos/sgn/
+# 1. COPIA o arquivo de entrada das dependências
 COPY repos/sgn/requirements.in .
 
-# Compila o requirements.in para requirements.txt e instala as dependências
+# Compila e instala as dependências
 RUN pip-compile requirements.in --output-file=requirements.txt && \
     pip install --no-cache-dir -r requirements.txt
 
-# 2. COPIA o restante do código do projeto da pasta repos/sgn para dentro de /code
+# 2. COPIA o restante do código
 COPY repos/sgn/ .
 
-# Expõe a porta que o Gunicorn vai rodar
+# Copia um script de inicialização e dá permissão de execução
+COPY scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expõe a porta
 EXPOSE 8000
 
-# O comando real está no docker-compose, mas deixamos um fallback aqui
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Define o entrypoint que executará as migrações antes de iniciar o app
+ENTRYPOINT ["/entrypoint.sh"]

@@ -39,6 +39,9 @@ services:
     container_name: sgn-django
     restart: always
     hostname: api-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
     dns:
       - 1.1.1.1
       - 8.8.8.8

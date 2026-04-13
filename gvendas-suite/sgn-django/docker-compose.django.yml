@@ -52,6 +52,7 @@ services:
       - sgn_statics:/code/volumes/staticfiles
       - sgn_media:/code/volumes/media
       - sgn_pwa:/code/volumes/build_pwa
+      - backups:/code/volumes/backups
       - traefik_dynamics:/code/volumes/dynamic
     env_file:
       - .env

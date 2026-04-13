@@ -5,7 +5,7 @@
 [submodule "repos/sgn"]
 	path = repos/sgn
 	url = git@github.com:amazoniacentral/sgn.git
-	branch = 
+	branch = develop
 [submodule "repos/gvendas"]
 	path = repos/gvendas
 	url = git@github.com:amazoniacentral/gvendas.git

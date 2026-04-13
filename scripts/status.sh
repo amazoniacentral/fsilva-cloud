@@ -28,12 +28,33 @@ printf "%-25s ${GREEN}%-15s${RESET}\n" "TEMPO DE VIDA (UP):" "$UPTIME_ALIVE"
 printf "%-25s %-15s\n" "DATA/HORA ATUAL:" "$CURRENT_DATE"
 
 echo -e "\n${CYAN}================================================================${RESET}"
+echo -e "${YELLOW}           SEGURANÇA E FIREWALL (UFW)${RESET}"
+echo -e "${CYAN}================================================================${RESET}"
+
+# Verifica Status do UFW
+UFW_STATUS=$(ufw status | head -n 1 | awk '{print $2}')
+if [ "$UFW_STATUS" == "active" ]; then
+    printf "%-25s ${GREEN}%-15s${RESET}\n" "STATUS DO FIREWALL:" "ATIVO/PROTEGIDO"
+    echo -e "${CYAN}Regras Ativas:${RESET}"
+    ufw status numbered | sed 's/^/  /'
+else
+    printf "%-25s ${RED}%-15s${RESET}\n" "STATUS DO FIREWALL:" "DESATIVADO (PERIGO)"
+fi
+
+echo -e "\n${CYAN}Portas em Escuta (Listen):${RESET}"
+printf "%-10s %-10s %-20s %-15s\n" "PROTO" "PORTA" "ENDEREÇO" "SERVIÇO"
+ss -tulpn | grep LISTEN | awk '{split($5,a,":"); port=a[length(a)]; proto=$1; addr=$5; service=$7; printf "%-10s %-10s %-20s %-15s\n", proto, port, addr, service}' | sed 's/users:(("//g; s/",.*//g'
+
+echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}           REDES E CONECTIVIDADE DA VPS${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# IP Público
+# IPs Públicos
 IPV4_PUB=$(curl -s4 icanhazip.com || echo "N/A")
+IPV6_PUB=$(curl -s6 --connect-timeout 2 icanhazip.com || echo -e "${RED}Inativo/Sem Rota${RESET}")
+
 printf "%-25s ${YELLOW}%-15s${RESET}\n" "IP PÚBLICO (IPv4):" "$IPV4_PUB"
+printf "%-25s %-15s\n" "IP PÚBLICO (IPv6):" "$IPV6_PUB"
 
 echo -e "\n${CYAN}Interfaces de Rede Ativas:${RESET}"
 printf "%-18s %-15s %-12s %-12s %-15s\n" "INTERFACE" "IP" "RECEBIDO" "ENVIADO" "REDE DOCKER"
@@ -66,7 +87,6 @@ done
 echo -e "\n${CYAN}Redes Docker em Uso (Subnets):${RESET}"
 printf "%-15s %-15s %-15s %-10s\n" "NOME" "SUBNET" "GATEWAY" "DRIVER"
 docker network ls --filter "driver=bridge" --format "{{.Name}}" | while read -r net_name; do
-    # Inspeciona a rede para pegar Subnet e Gateway
     SUBNET=$(docker network inspect "$net_name" --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}' 2>/dev/null || echo "-")
     GATEWAY=$(docker network inspect "$net_name" --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' 2>/dev/null || echo "-")
     DRIVER=$(docker network inspect "$net_name" --format '{{.Driver}}')

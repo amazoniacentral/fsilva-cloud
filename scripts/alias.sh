@@ -136,8 +136,8 @@ echo -e "\n${CYAN}--------------------------------------------------------${RESE
 echo -e "${YELLOW}             CONFIGURAÇÕES ATUAIS (RESUMO):${RESET}"
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 grep "^alias " "$TARGET_FILE" | tail -n 5
-grep -q "gtag()" "$TARGET_FILE" && echo "Função gtag: Ativa"
-grep -q "gcommit()" "$TARGET_FILE" && echo "Função gcommit: Ativa"
-grep -q "dexec()" "$TARGET_FILE" && echo "Função dexec: Ativa"
+grep -q "gtag()" "$TARGET_FILE" && echo "Função gtag: Versionamento de código no git"
+grep -q "gcommit()" "$TARGET_FILE" && echo "Função gcommit: Enviar Commit pronto"
+grep -q "dexec()" "$TARGET_FILE" && echo "Função dexec: Entrar no container"
 
 echo -e "\n${CYAN}-------------------- by Francisco Silva ----------------${RESET}\n"

@@ -1,7 +1,17 @@
 #!/bin/bash
 
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+RESET='\033[0m'
 # Obtém o diretório onde o script está localizado
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+clear
+echo -e "${CYAN}--------------------------------------------------------${RESET}"
+echo -e "${YELLOW}          INICIANDO GITMODULES${RESET}"
+echo -e "${CYAN}--------------------------------------------------------${RESET}"
 
 # Navega para o diretório pai (../) onde deve estar o .gitmodules
 cd "$SCRIPT_DIR/.." || exit
@@ -15,7 +25,9 @@ fi
 echo "Diretório de trabalho definido para: $(pwd)"
 
 # Solicita o nome ou caminho do submódulo
+echo -e "${CYAN}--------------------------------------------------------${RESET}"
 read -p "Digite o caminho ou nome do submódulo (ex: sgn ou repos/sgn): " INPUT_PATH
+echo -e "${CYAN}--------------------------------------------------------${RESET}"
 
 # Tenta encontrar o caminho exato registrado no .gitmodules
 # Se o usuário digitou 'sgn', ele busca algo que termine com 'sgn' no .gitmodules

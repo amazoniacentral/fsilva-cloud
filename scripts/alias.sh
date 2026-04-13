@@ -25,6 +25,7 @@ declare -a ALIASES=(
     "atalhos='bash $SCRIPT_DIR/alias.sh'"
     "estrutura='bash $SCRIPT_DIR/estrutura.sh'"
     "gitmodules='bash $SCRIPT_DIR/gitmodules.sh'"
+    "resetar='bash $SCRIPT_DIR/reset.sh'"
     "refresh='source $HOME/.bashrc'"
 )
 

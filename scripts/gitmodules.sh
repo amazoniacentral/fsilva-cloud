@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 clear
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "${YELLOW}          INICIANDO GITMODULES ATUALIZAÇÃO${RESET}"
+echo -e "${YELLOW}          INICIANDO SUBSTITUIÇÃO TOTAL (GIT)${RESET}"
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 
 # Navega para o diretório pai (onde deve estar o .gitmodules)
@@ -46,52 +46,50 @@ fi
 read -p "Digite a branch que deseja usar (ex: main, develop): " TARGET_BRANCH
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "Limpando e Resetando: ${YELLOW}$MODULE_PATH${RESET}"
+echo -e "Limpando e Resetando de forma absoluta: ${YELLOW}$MODULE_PATH${RESET}"
 
-# --- RESOLUÇÃO AGRESSIVA DE CONFLITOS NO SUBMÓDULO ---
-if [ -d "$MODULE_PATH" ]; then
-    cd "$MODULE_PATH" || exit
-    # Aborta qualquer tentativa de merge ou rebase anterior travada
-    git merge --abort 2>/dev/null
-    git rebase --abort 2>/dev/null
-    # Reseta o estado local para o último commit conhecido (limpa modificações)
-    git reset --hard HEAD
-    git clean -fd
-    cd - > /dev/null
-fi
-
-echo -e "Atualizando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"
-
-# 1. Configura a branch e sincroniza
+# 1. Atualiza a configuração da branch no .gitmodules e sincroniza
 git config -f .gitmodules submodule."$MODULE_PATH".branch "$TARGET_BRANCH"
 git submodule sync -- "$MODULE_PATH"
 
-# 2. Atualiza o conteúdo usando REBASE (mais limpo que merge em submódulos)
-# Se o rebase falhar, ele tenta um reset para a versão remota
-if git submodule update --remote --rebase -- "$MODULE_PATH"; then
-    echo -e "${GREEN}Update via Rebase concluído.${RESET}"
-else
-    echo -e "${YELLOW}Rebase falhou, tentando reset forçado para origin/$TARGET_BRANCH...${RESET}"
+# 2. Executa a substituição forçada dentro do submódulo
+if [ -d "$MODULE_PATH" ]; then
     cd "$MODULE_PATH" || exit
+    
+    # Aborta qualquer operação de merge/rebase travada anterior
+    git merge --abort 2>/dev/null
+    git rebase --abort 2>/dev/null
+    
+    # Busca a branch alvo do servidor
     git fetch origin "$TARGET_BRANCH"
+    
+    # Força a troca para a branch alvo e reseta para ficar IDÊNTICO ao servidor
+    # Isso apaga qualquer commit local que não esteja no servidor
+    git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
     git reset --hard "origin/$TARGET_BRANCH"
+    git clean -fd
+    
     cd - > /dev/null
+else
+    # Se a pasta não existir, inicializa do zero
+    git submodule update --init --force -- "$MODULE_PATH"
 fi
 
-# 3. Finalização
+# 3. Finalização e Commit no projeto principal
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "${GREEN}SUCESSO: Submódulo $MODULE_PATH atualizado.${RESET}"
 
-# Adiciona as mudanças
-git add .gitmodules
+# Adiciona as alterações do .gitmodules e a nova referência do submódulo
+git add .gitmodules "$MODULE_PATH"
+
+# Adiciona qualquer outra mudança pendente (como arquivos deletados no pai)
 git add -u
 
 # Commit apenas se houver algo no stage
 if ! git diff --cached --quiet; then
-    git commit -m "Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH"
-    echo -e "${GREEN}Alterações commitadas no projeto principal.${RESET}"
+    git commit -m "Substituição total: $MODULE_PATH fixado em $TARGET_BRANCH"
+    echo -e "${GREEN}SUCESSO: Submódulo atualizado e alterações commitadas.${RESET}"
 else
-    echo -e "${YELLOW}AVISO: Nada novo para commitar.${RESET}"
+    echo -e "${YELLOW}AVISO: O submódulo já estava idêntico ao servidor. Nada para commitar.${RESET}"
 fi
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"

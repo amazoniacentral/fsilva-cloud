@@ -46,33 +46,52 @@ fi
 read -p "Digite a branch que deseja usar (ex: main, develop): " TARGET_BRANCH
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
+echo -e "Limpando e Resetando: ${YELLOW}$MODULE_PATH${RESET}"
+
+# --- RESOLUÇÃO AGRESSIVA DE CONFLITOS NO SUBMÓDULO ---
+if [ -d "$MODULE_PATH" ]; then
+    cd "$MODULE_PATH" || exit
+    # Aborta qualquer tentativa de merge ou rebase anterior travada
+    git merge --abort 2>/dev/null
+    git rebase --abort 2>/dev/null
+    # Reseta o estado local para o último commit conhecido (limpa modificações)
+    git reset --hard HEAD
+    git clean -fd
+    cd - > /dev/null
+fi
+
 echo -e "Atualizando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"
 
 # 1. Configura a branch e sincroniza
 git config -f .gitmodules submodule."$MODULE_PATH".branch "$TARGET_BRANCH"
 git submodule sync -- "$MODULE_PATH"
 
-# 2. Atualiza o conteúdo
-if git submodule update --remote --merge -- "$MODULE_PATH"; then
-    echo -e "${CYAN}--------------------------------------------------------${RESET}"
-    echo -e "${GREEN}SUCESSO: Submódulo $MODULE_PATH atualizado.${RESET}"
-
-    # 3. Adiciona as mudanças. 
-    # Usamos 'git add -u' para adicionar todas as modificações de arquivos já rastreados (incluindo outros submódulos como o gvendas)
-    git add .gitmodules
-    git add -u
-
-    # 4. Tenta o commit apenas se houver algo no stage
-    if ! git diff --cached --quiet; then
-        git commit -m "Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH e atualizando dependências"
-        echo -e "${GREEN}Alterações commitadas com sucesso.${RESET}"
-    else
-        echo -e "${YELLOW}AVISO: Nada novo para commitar.${RESET}"
-    fi
+# 2. Atualiza o conteúdo usando REBASE (mais limpo que merge em submódulos)
+# Se o rebase falhar, ele tenta um reset para a versão remota
+if git submodule update --remote --rebase -- "$MODULE_PATH"; then
+    echo -e "${GREEN}Update via Rebase concluído.${RESET}"
 else
-    echo -e "${CYAN}--------------------------------------------------------${RESET}"
-    echo -e "${RED}ERRO ao atualizar o submódulo $MODULE_PATH.${RESET}"
-    exit 1
+    echo -e "${YELLOW}Rebase falhou, tentando reset forçado para origin/$TARGET_BRANCH...${RESET}"
+    cd "$MODULE_PATH" || exit
+    git fetch origin "$TARGET_BRANCH"
+    git reset --hard "origin/$TARGET_BRANCH"
+    cd - > /dev/null
+fi
+
+# 3. Finalização
+echo -e "${CYAN}--------------------------------------------------------${RESET}"
+echo -e "${GREEN}SUCESSO: Submódulo $MODULE_PATH atualizado.${RESET}"
+
+# Adiciona as mudanças
+git add .gitmodules
+git add -u
+
+# Commit apenas se houver algo no stage
+if ! git diff --cached --quiet; then
+    git commit -m "Fixando submódulo $MODULE_PATH na branch $TARGET_BRANCH"
+    echo -e "${GREEN}Alterações commitadas no projeto principal.${RESET}"
+else
+    echo -e "${YELLOW}AVISO: Nada novo para commitar.${RESET}"
 fi
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"

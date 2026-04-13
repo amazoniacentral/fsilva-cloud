@@ -14,3 +14,5 @@
 	path = repos/push
 	url = git@github.com:amazoniacentral/push.git
 	branch = main
+[submodule "sgn"]
+	branch = develop

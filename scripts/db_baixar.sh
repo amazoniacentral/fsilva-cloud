@@ -29,7 +29,7 @@ echo "2) Selecionar backup existente no volume"
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
-    REMOTE_PATH="${RSYNC_ORIGEM_PATH_2:-${DESTINO_PATH_BANCO:-}}"
+    REMOTE_PATH="${RSYNC_ORIGEM_PATH:-${DESTINO_PATH_BANCO:-}}"
     [[ -z "${RSYNC_ORIGEM_USER:-}" ]] && read -rp "Usuário remoto: " RSYNC_ORIGEM_USER
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "IP remoto: " RSYNC_ORIGEM_IP
     [[ -z "$REMOTE_PATH" ]] && read -rp "Caminho do arquivo remoto: " REMOTE_PATH

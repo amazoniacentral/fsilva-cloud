@@ -41,8 +41,10 @@ if [ $? -eq 0 ]; then
     echo "------------------------------------------------"
     cat $CAMINHO_HTPASSWD
     echo "------------------------------------------------"
-    echo "Para aplicar as mudanças no Traefik, execute:"
-    echo "cd $SCRIPT_DIR/../proxy && docker compose up -d"
+    echo "Aplicando docker compose up -d"
+    cd $SCRIPT_DIR
+    docker compose up -d
+    echo "Finalizado"
 else
     echo "Erro ao gerar o arquivo de credenciais."
 fi

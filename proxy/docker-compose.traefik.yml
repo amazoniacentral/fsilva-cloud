@@ -48,6 +48,10 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--providers.file.directory=/dynamic"
       - "--providers.file.watch=true"
+      # CLOUDFLARE 
+      # --certificatesresolvers.meuresolver.acme.dnschallenge=true  <-- COMENTE ISSO
+      # --certificatesresolvers.meuresolver.acme.dnschallenge.provider=cloudflare <-- E ISSO
+
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

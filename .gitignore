@@ -41,6 +41,7 @@ pgdata/
 # --- Environment Secrets (CRÍTICO) ---
 # Ignora arquivos .env na raiz e dentro das pastas dos submódulos
 **/.env
+**/.htpasswd
 **/.env.local
 **/.env.production
 

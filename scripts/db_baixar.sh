@@ -20,7 +20,6 @@ echo -e "${CYAN}================================================================
 echo -e "${YELLOW}           RESTAURAÇÃO BANCO DE DADOS${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-
 # 0. CARGA DO ARQUIVO .ENV LOCAL
 if [ -f "$DOT_ENV_PATH" ]; then
     echo -e "📖 Carregando configurações de: ${CYAN}$DOT_ENV_PATH${RESET}"
@@ -34,7 +33,7 @@ echo "2) Selecionar backup existente no volume"
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
-    REMOTE_PATH="${RSYNC_ORIGEM_PATH:-${DESTINO_PATH_BANCO:-}}"
+    REMOTE_PATH="${RSYNC_ORIGEM_PATH_2:-${DESTINO_PATH_BANCO:-}}"
     [[ -z "${RSYNC_ORIGEM_USER:-}" ]] && read -rp "👉 Usuário remoto (SSH): " RSYNC_ORIGEM_USER
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
     [[ -z "$REMOTE_PATH" ]] && read -rp "👉 Caminho do arquivo remoto: " REMOTE_PATH
@@ -79,15 +78,13 @@ echo -e "\n------------------------------------------------"
 echo -e "🚀 Parando serviços para liberar conexões..."
 docker stop "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT" || true
 
-# 7. LIMPEZA RADICAL (Forçando via usuário 'postgres' do Sistema Operacional do container)
+# 7. LIMPEZA RADICAL
 echo -e "\n------------------------------------------------"
 echo -e "🧹 Realizando limpeza atômica do schema public..."
 LIMPAR_CMD="DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public; GRANT ALL ON SCHEMA public TO $PG_USER_APP; ALTER SCHEMA public OWNER TO $PG_USER_APP;"
 
-# Executa como usuário root do docker chamando o psql do usuário postgres interno
 if ! docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c "$LIMPAR_CMD"; then
     echo -e "${RED}❌ Erro crítico na limpeza. Tentando alternativa via comando direto...${RESET}"
-    # Segunda tentativa forçada
     docker exec -u postgres -i "$CONTAINER_PG" psql -d "$PG_NAME" -c "$LIMPAR_CMD" || { 
         echo -e "${RED}FALHA TOTAL NA LIMPEZA.${RESET}"; 
         docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"; 
@@ -108,10 +105,12 @@ fi
 
 # 9. REINICIAR TUDO
 echo -e "\n------------------------------------------------"
-echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
+echo -e "🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
-docker exec -i "$CONTAINER_DJANGO" python manage.py migrate
+
+# O comando abaixo agora tem "|| true" para não travar o script se a migração falhar
+docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || echo -e "${RED}⚠️ Erro ao aplicar migrações. Verifique os logs acima.${RESET}"
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "✅  SISTEMA RESTAURADO E ONLINE!"

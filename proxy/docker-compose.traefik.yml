@@ -68,6 +68,7 @@ services:
     image: nginx:alpine
     container_name: global-error-server
     restart: always
+    hostname: pagina-erros
     networks:
       - net_proxy
     volumes:

@@ -105,12 +105,10 @@ fi
 
 # 9. REINICIAR TUDO
 echo -e "\n------------------------------------------------"
-echo -e "🚀 Reiniciando serviços e rodando migrações..."
+echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
-
-# O comando abaixo agora tem "|| true" para não travar o script se a migração falhar
-docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || echo -e "${RED}⚠️ Erro ao aplicar migrações. Verifique os logs acima.${RESET}"
+docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || echo -e "${RED}⚠️ Erro nas migrações, mas continuando...${RESET}"
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "✅  SISTEMA RESTAURADO E ONLINE!"

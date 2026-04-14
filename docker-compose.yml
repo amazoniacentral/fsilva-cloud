@@ -21,6 +21,8 @@ volumes:
     name: sgn_media
   sgn_pwa:
     name: sgn_pwa
+  documentos:
+    name: documentos
   netdataconfig:
     name: netdataconfig
   netdatalib:
@@ -33,6 +35,8 @@ volumes:
     name: msg_sessions
   msg_logs:
     name: msg_logs
+  certificados:
+    name: certificados
   backups:
     name: backups
     

@@ -51,9 +51,11 @@ services:
       - ../../repos/sgn:/code
       - sgn_statics:/code/volumes/staticfiles
       - sgn_media:/code/volumes/media
-      - sgn_pwa:/code/volumes/build_pwa
-      - backups:/code/volumes/backups
+      - sgn_pwa:/code/volumes/html
+      - documentos:/code/volumes/documentos
+      - certificados:/code/volumes/certificados
       - traefik_dynamics:/code/volumes/dynamic
+      - backups:/code/volumes/backups
     env_file:
       - .env
     environment:

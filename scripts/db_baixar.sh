@@ -15,6 +15,12 @@ CONTAINER_CELERY="sgn-celery-worker"
 CONTAINER_BEAT="sgn-celery-beat"
 DOT_ENV_PATH="./.env"
 
+clear
+echo -e "${CYAN}================================================================${RESET}"
+echo -e "${YELLOW}           RESTAURAÇÃO BANCO DE DADOS${RESET}"
+echo -e "${CYAN}================================================================${RESET}"
+
+
 # 0. CARGA DO ARQUIVO .ENV LOCAL
 if [ -f "$DOT_ENV_PATH" ]; then
     echo -e "📖 Carregando configurações de: ${CYAN}$DOT_ENV_PATH${RESET}"
@@ -50,6 +56,7 @@ else
     ARQUIVO_PARA_RESTAURAR="${BACKUPS[$((SELECAO-1))]}"
 fi
 
+echo "------------------------------------------------"
 echo -e "\n🔍 Extraindo credenciais dos containers..."
 
 # 1. Dados do Django
@@ -68,10 +75,12 @@ PG_SUPER_PASS=$(docker exec "$CONTAINER_PG" env | grep POSTGRES_PASSWORD | cut -
 
 [[ -z "$PG_SUPER_PASS" ]] && read -rsp "👉 Senha do Super-usuário Postgres: " PG_SUPER_PASS && echo
 
+echo "\n------------------------------------------------"
 echo -e "🚀 Parando serviços para liberar conexões..."
 docker stop "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT" || true
 
 # 7. LIMPEZA RADICAL (Forçando via usuário 'postgres' do Sistema Operacional do container)
+echo "\n------------------------------------------------"
 echo -e "🧹 Realizando limpeza atômica do schema public..."
 LIMPAR_CMD="DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public; GRANT ALL ON SCHEMA public TO $PG_USER_APP; ALTER SCHEMA public OWNER TO $PG_USER_APP;"
 
@@ -87,6 +96,7 @@ if ! docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_
 fi
 
 # 8. RESTAURAÇÃO
+echo "\n------------------------------------------------"
 echo -e "⏳ Restaurando dados de: $(basename "$ARQUIVO_PARA_RESTAURAR")"
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then
     echo -e "📦 Formato BINÁRIO (pg_restore)..."
@@ -97,6 +107,7 @@ else
 fi
 
 # 9. REINICIAR TUDO
+echo "\n------------------------------------------------"
 echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5

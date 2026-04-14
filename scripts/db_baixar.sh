@@ -108,7 +108,15 @@ echo -e "\n------------------------------------------------"
 echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
-docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || echo -e "${RED}⚠️ Erro nas migrações, mas continuando...${RESET}"
+
+# Captura erro do Django se houver
+if ! MIGRATE_OUTPUT=$(docker exec -i "$CONTAINER_DJANGO" python manage.py migrate 2>&1); then
+    echo -e "${RED}❌ Erro detectado nas migrações:${RESET}"
+    echo -e "${YELLOW}$MIGRATE_OUTPUT${RESET}"
+    echo -e "${RED}⚠️ Continuando o script apesar do erro acima...${RESET}"
+else
+    echo -e "${GREEN}✅ Migrações aplicadas com sucesso.${RESET}"
+fi
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "✅  SISTEMA RESTAURADO E ONLINE!"

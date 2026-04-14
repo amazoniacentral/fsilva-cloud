@@ -109,10 +109,8 @@ echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
 
-# EXECUÇÃO DAS MIGRAÇÕES E EXIBIÇÃO DO ERRO LITERAL
-if ! docker exec -i "$CONTAINER_DJANGO" python manage.py migrate; then
-    echo -e "${RED}ERRO NA MIGRAÇÃO DETECTADO EM $(date)${RESET}"
-fi
+# EXECUÇÃO E EXIBIÇÃO DIRETA DO RETORNO DO ERRO
+docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || true
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "✅  SISTEMA RESTAURADO E ONLINE!"

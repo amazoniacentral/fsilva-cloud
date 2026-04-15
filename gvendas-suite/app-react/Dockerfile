@@ -2,6 +2,9 @@
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 
+# Configura o limite de memória do Node.js para 1GB
+ENV NODE_OPTIONS="--max-old-space-size=1024"
+
 # 1. Dependências
 COPY repos/gvendas/package*.json ./
 RUN npm install

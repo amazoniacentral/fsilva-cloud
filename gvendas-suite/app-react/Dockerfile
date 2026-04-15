@@ -7,7 +7,7 @@ COPY repos/gvendas/package*.json ./
 RUN npm install
 
 # 2. Copia todo o código da aplicação
-WORKDIR /app
+WORKDIR /code
 COPY repos/gvendas/ .
 
 # 3. A VERDADE: Copia o .env POR ÚLTIMO para garantir que nada o sobrescreva
@@ -24,7 +24,8 @@ RUN rm -rf ./*
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copia o build do estágio anterior
-COPY --from=build-stage /app/build .
+COPY --from=build-stage /code/build .
+RUN rm -rf /code/*
 
 # Copia sua configuração de Nginx
 COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/default.conf

@@ -9,6 +9,8 @@ RUN npm install
 # 2. Copia todo o código da aplicação
 COPY repos/gvendas/ .
 
+# 3. A VERDADE: Copia o .env POR ÚLTIMO para garantir que nada o sobrescreva
+COPY gvendas-suite/app-react/.env .env
 
 # 4. Agora sim, roda o build com o .env correto injetado
 RUN npm run build

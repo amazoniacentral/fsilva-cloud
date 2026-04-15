@@ -17,8 +17,7 @@ services:
       - sgn_media:/usr/share/nginx/html/media:ro
       # O caminho do conf deve partir da raiz do projeto principal
       #- ./gvendas-suite/app-react/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./gvendas-suite/app-react/.env:/usr/share/nginx/html/.env:ro
-      - sgn_pwa:/usr/share/nginx/html:ro
+      - sgn_pwa:/usr/share/nginx/html
       - documentos:/usr/share/nginx/documentos:ro
       - certificados:/usr/share/nginx/html/.well-known:ro
     networks:

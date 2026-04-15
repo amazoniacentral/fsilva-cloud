@@ -25,10 +25,11 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 # Copia o build do estágio anterior
 COPY --from=build-stage /code/build .
-RUN rm -rf /code/*
 
 # Copia sua configuração de Nginx
 COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/default.conf
+
+RUN rm -rf /code/build
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

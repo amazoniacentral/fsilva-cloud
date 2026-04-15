@@ -7,6 +7,7 @@ COPY repos/gvendas/package*.json ./
 RUN npm install
 
 # 2. Copia todo o código da aplicação
+WORKDIR /app
 COPY repos/gvendas/ .
 
 # 3. A VERDADE: Copia o .env POR ÚLTIMO para garantir que nada o sobrescreva

@@ -1,6 +1,7 @@
 # Estágio 1: Build da aplicação
 FROM node:20-alpine AS build-stage
 WORKDIR /app
+COPY gvendas-suite/app-react/.env .env
 
 # Copia dependências a partir da raiz do contexto
 COPY repos/gvendas/package*.json ./

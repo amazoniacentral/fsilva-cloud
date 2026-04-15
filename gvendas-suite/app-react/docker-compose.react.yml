@@ -12,8 +12,6 @@ services:
       - 8.8.8.8
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    env_file:
-      - .env
     volumes:
       # O volume externo que o Django já criou (com o prefixo que você decidiu manter)
       - sgn_media:/usr/share/nginx/html/media:ro

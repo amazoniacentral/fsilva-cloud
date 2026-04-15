@@ -2,33 +2,34 @@
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 
-# 1. Copia dependências
+# 1. Dependências
 COPY repos/gvendas/package*.json ./
 RUN npm install
 
-# 2. Copia todo o código para /app
+# 2. Código e Env
 COPY repos/gvendas/ .
-
-# 3. Copia o .env
 COPY gvendas-suite/app-react/.env .env
 
-# 4. Executa o build e verifica se a pasta foi criada
-# Adicionamos o "ls" aqui para garantir visualmente no log que os arquivos existem
-RUN npm run build && ls -la /app/build
+# 3. Build (gera em /app/build)
+RUN npm run build
 
 # Estágio 2: Nginx
 FROM nginx:stable-alpine
 
-# Limpa diretórios
-RUN rm -rf /usr/share/nginx/html/*
-RUN rm -f /etc/nginx/conf.d/default.conf
+# Criamos um diretório temporário para guardar o build antes do volume ser montado
+WORKDIR /app_temp
+COPY --from=build-stage /app/build .
 
-# 5. Copia os arquivos do estágio de build
-# Usamos o caminho absoluto /app/build
-COPY --from=build-stage /app/build /usr/share/nginx/html
-
-# 6. Copia a configuração do Nginx
+# Copia a configuração do Nginx
 COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/default.conf
 
+# Script para copiar os arquivos para o volume na hora que o container subir
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'cp -rp /app_temp/. /usr/share/nginx/html/' >> /entrypoint.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# O entrypoint garante que, mesmo com volume montado, os arquivos sejam copiados para lá
+ENTRYPOINT ["/entrypoint.sh"]

@@ -31,5 +31,6 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 
 EXPOSE 80
 
+WORKDIR /usr/share/nginx
 # O entrypoint garante que, mesmo com volume montado, os arquivos sejam copiados para lá
 ENTRYPOINT ["/entrypoint.sh"]

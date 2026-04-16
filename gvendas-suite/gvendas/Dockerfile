@@ -11,7 +11,7 @@ RUN npm install
 
 # 2. Código e Env
 COPY repos/gvendas/ .
-#COPY gvendas-suite/app-react/.env .env
+#COPY gvendas-suite/gvendas/.env .env
 ARG REACT_APP_API_DOMAIN
 ENV REACT_APP_API_DOMAIN=$REACT_APP_API_DOMAIN
 # 3. Build (gera em /app/build)
@@ -25,7 +25,7 @@ WORKDIR /app_temp
 COPY --from=build-stage /app/build .
 
 # Copia a configuração do Nginx
-COPY gvendas-suite/app-react/app_nginx.conf /etc/nginx/conf.d/default.conf
+COPY gvendas-suite/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Script para copiar os arquivos para o volume na hora que o container subir
 RUN echo '#!/bin/sh' > /entrypoint.sh && \

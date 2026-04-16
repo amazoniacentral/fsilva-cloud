@@ -2,7 +2,7 @@ name: Deploy FSilva Cloud
 
 on:
   push:
-    branches: [ main ] # Dispara quando você dá push na main do fsilva-cloud
+    branches: [ main-odf ] # Dispara quando você dá push na main do fsilva-cloud
   repository_dispatch:
     types: [ submodule_update ]
     

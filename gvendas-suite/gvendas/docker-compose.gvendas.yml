@@ -8,7 +8,7 @@ services:
     build: 
       context: ../../
       args:
-        - REACT_APP_API_DOMAIN=${API_DOMAIN}
+        - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
       dockerfile: ./gvendas-suite/gvendas/Dockerfile
     container_name: gvendas
     restart: always

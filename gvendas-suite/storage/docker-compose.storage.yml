@@ -1,7 +1,7 @@
 services:
   # STORAGE - Arquivos Privados
   storage:
-    image: nginx:alpine
+    image: bbernhard/nginx-static-secure:latest
     container_name: storage
     restart: always
     hostname: storage

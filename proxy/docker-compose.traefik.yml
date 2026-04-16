@@ -56,9 +56,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../proxy/acme.json:/acme.json
-      - ../proxy/dynamic:/dynamic:ro
       - ../proxy/.htpasswd:/.htpasswd:ro
-      - traefik_dynamics:/dynamic
+      - traefik_dynamics:/dynamic:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN}`)"
@@ -76,7 +75,7 @@ services:
     networks:
       - net_proxy
     volumes:
-      - ../proxy/error_nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../proxy/errors:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"

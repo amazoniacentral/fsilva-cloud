@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-WORKDIR /usr/src/app
+WORKDIR /code
 
 # Copia apenas os arquivos de pacotes primeiro (otimiza o cache)
 COPY repos/push/package*.json ./

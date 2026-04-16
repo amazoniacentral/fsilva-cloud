@@ -1,0 +1,35 @@
+services:
+  node:
+    build: 
+      context: ../../
+      dockerfile: ./gvendas-suite/whatsapp/Dockerfile
+    container_name: whatsapp
+    restart: always
+    hostname: whatsapp
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    working_dir: /code/src
+    volumes:
+      - ../../repos/push:/code
+      - whatsapp_node_modules:/code/node_modules
+      - whatsapp_sessions:/code/src/sessions
+      - whatsapp_logs:/code/src/logs
+    env_file:
+      - path: ../env
+        required: true
+      - path: .env
+        required: false
+    networks:
+      - net_boot
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 1024M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
+

@@ -11,8 +11,9 @@ RUN npm install
 
 # 2. Código e Env
 COPY repos/gvendas/ .
-COPY gvendas-suite/app-react/.env .env
-
+#COPY gvendas-suite/app-react/.env .env
+ARG REACT_APP_API_DOMAIN
+ENV REACT_APP_API_DOMAIN=$REACT_APP_API_DOMAIN
 # 3. Build (gera em /app/build)
 RUN npm run build
 
@@ -34,6 +35,5 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 
 EXPOSE 80
 
-WORKDIR /usr/share/nginx
 # O entrypoint garante que, mesmo com volume montado, os arquivos sejam copiados para lá
 ENTRYPOINT ["/entrypoint.sh"]

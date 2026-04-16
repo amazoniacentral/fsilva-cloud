@@ -1,37 +1,5 @@
 services:
   # NGINX - Porta de entrada
-  cdn:
-    image: nginx:alpine
-    container_name: cdn-nginx
-    restart: always
-    hostname: cdn-server
-    volumes:
-      # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
-      - ./cdn-nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - sgn_media:/media:ro
-      - sgn_statics:/sgn-static:ro
-    working_dir: /media
-    networks:
-      - net_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cdn-nginx.rule=Host(`${CDN_DOMAIN}`)"
-      - "traefik.http.routers.cdn-nginx.entrypoints=websecure"
-      - "traefik.http.routers.cdn-nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.services.cdn-nginx.loadbalancer.server.port=80"
-      - "traefik.http.services.cdn-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
-      # MIDDLEWARES
-      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.cdn-nginx.middlewares=block-internal-header,error-pages-middleware"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.10'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
-  
   nginx:
     image: nginx:alpine
     container_name: sgn-nginx
@@ -39,10 +7,14 @@ services:
     hostname: static-server
     volumes:
       # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
-      - ./sgn_nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - sgn_statics:/code/volumes/staticfiles:ro
-      - sgn_media:/code/volumes/media:ro
-    working_dir: /code/volumes
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - sgn_data:/volumes/staticfiles:ro
+    working_dir: /volumes
+    env_file:
+      - path: ../env
+        required: true
+      - path: .env
+        required: false
     networks:
       - net_proxy
     labels:
@@ -68,10 +40,10 @@ services:
   django:
     build: 
       context: ../../
-      dockerfile: ./gvendas-suite/sgn-django/Dockerfile
+      dockerfile: ./gvendas-suite/sgn/Dockerfile
     container_name: sgn-django
     restart: always
-    hostname: api-backend
+    hostname: api
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,23 +51,25 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     working_dir: /code
+    env_file:
+      - path: ../env
+        required: true
+      - path: .env
+        required: false
     command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
     volumes:
       - ../../repos/sgn:/code
-      - sgn_statics:/code/volumes/staticfiles
-      - sgn_media:/code/volumes/media
-      - sgn_pwa:/code/volumes/html
-      - documentos:/code/volumes/documentos
-      - certificados:/code/volumes/certificados
+      - sgn_data:/code/volumes/staticfiles
+      - media_data:/code/volumes/media
+      - gvendas_data:/code/volumes/html
+      - storage_data:/code/volumes/documentos
+      - certificados_data:/code/volumes/certificados
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
-    env_file:
-      - .env
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
-      - CONTAINER_NAME=sgn-django
     networks:
       - net_proxy
       - net_db
@@ -114,12 +88,11 @@ services:
       retries: 5
       start_period: 30s # Dá 30 segundos para as migrações rodarem
 
-
   # WORKER
   celery-worker:
     build: 
       context: ../../
-      dockerfile: ./gvendas-suite/sgn-django/Dockerfile
+      dockerfile: ./gvendas-suite/sgn/Dockerfile
     container_name: sgn-celery-worker
     restart: always
     hostname: worker-task
@@ -132,8 +105,11 @@ services:
       --max-memory-per-child=150000
     volumes:
       - ../../repos/sgn:/code
-    env_file: 
-      - .env
+    env_file:
+      - path: ../env
+        required: true
+      - path: .env
+        required: false
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code
@@ -155,7 +131,7 @@ services:
   celery-beat:
     build: 
       context: ../../
-      dockerfile: ./gvendas-suite/sgn-django/Dockerfile
+      dockerfile: ./gvendas-suite/sgn/Dockerfile
     container_name: sgn-celery-beat
     restart: always
     hostname: worker-beat
@@ -164,7 +140,10 @@ services:
     volumes:
       - ../../repos/sgn:/code
     env_file:
-      - .env
+      - path: ../env
+        required: true
+      - path: .env
+        required: false
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code

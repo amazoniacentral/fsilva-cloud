@@ -1,9 +1,11 @@
 # fsilva-cloud/docker-compose.yml
 include:
   - ./proxy/docker-compose.traefik.yml
-  - ./gvendas-suite/sgn-django/docker-compose.django.yml
-  - ./gvendas-suite/app-react/docker-compose.react.yml
-  - ./gvendas-suite/msg-node/docker-compose.node.yml
+  - ./gvendas-suite/sgn/docker-compose.sgn.yml
+  - ./gvendas-suite/gvendas/docker-compose.gvendas.yml
+  - ./gvendas-suite/whatsapp/docker-compose.whatsapp.yml
+  - ./gvendas-suite/cdn/docker-compose.cdn.yml
+  - ./gvendas-suite/storage/docker-compose.storage.yml
   - ./database/docker-compose.redis.yml
   - ./database/docker-compose.postgres.yml
   - ./netdata/docker-compose.netdata.yml
@@ -17,26 +19,28 @@ volumes:
     name: traefik_dynamics
   sgn_statics:
     name: sgn_statics
-  sgn_media:
-    name: sgn_media
-  sgn_pwa:
-    name: sgn_pwa
-  documentos:
-    name: documentos
+  gvendas_data:
+    name: gvendas_data
+  storage_data:
+    name: storage_data
+  media_data:
+    name: media_data
+  sgn_data:
+    name: sgn_data
   netdataconfig:
     name: netdataconfig
   netdatalib:
     name: netdatalib
   netdatacache:
     name: netdatacache
-  msg_node_modules:
-    name: msg_node_modules
-  msg_sessions:
-    name: msg_sessions
-  msg_logs:
-    name: msg_logs
-  certificados:
-    name: certificados
+  whatsapp_node_modules:
+    name: whatsapp_node_modules
+  whatsapp_sessions:
+    name: whatsapp_sessions
+  whatsapp_logs:
+    name: whatsapp_logs
+  certificados_data:
+    name: certificados_data
   backups:
     name: backups
     

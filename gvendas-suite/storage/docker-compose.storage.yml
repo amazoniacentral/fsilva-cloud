@@ -6,8 +6,6 @@ services:
     restart: always
     hostname: storage-server
     volumes:
-      # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
-      - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - storage_data:/storage:ro
     working_dir: /storage
@@ -24,10 +22,17 @@ services:
       - "traefik.http.routers.storage-nginx.entrypoints=websecure"
       - "traefik.http.routers.storage-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.storage-nginx.loadbalancer.server.port=80"
-      - "traefik.http.services.storage-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
-      # MIDDLEWARES
-      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.storage-nginx.middlewares=block-internal-header,error-pages-middleware"
+      
+      # --- MIDDLEWARE DE AUTENTICAÇÃO VIA DJANGO ---
+      # 1. Define o ForwardAuth apontando para a sua função no Django
+      - "traefik.http.middlewares.auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
+      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
+      # Copia headers de resposta do Django (como ID da empresa) para o Nginx usar
+      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
+
+      # --- APLICAÇÃO DOS MIDDLEWARES ---
+      # Adicionei o 'auth-django' na lista. O Traefik processará na ordem escrita.
+      - "traefik.http.routers.storage-nginx.middlewares=block-internal-header,auth-django,error-pages-middleware"
     deploy:
       resources:
         limits:
@@ -36,4 +41,3 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
-  

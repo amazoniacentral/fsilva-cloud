@@ -4,7 +4,7 @@ include:
   - ./gvendas-suite/sgn/docker-compose.sgn.yml
   - ./gvendas-suite/gvendas/docker-compose.gvendas.yml
   - ./gvendas-suite/whatsapp/docker-compose.whatsapp.yml
-  - ./gvendas-suite/cdn/docker-compose.cdn.yml
+  - ./gvendas-suite/media/docker-compose.media.yml
   - ./gvendas-suite/storage/docker-compose.storage.yml
   - ./database/docker-compose.redis.yml
   - ./database/docker-compose.postgres.yml

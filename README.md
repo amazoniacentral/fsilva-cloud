@@ -36,29 +36,42 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── docker-compose.postgres.yml
 │   └── docker-compose.redis.yml
 ├── gvendas-suite
-│   ├── app-react
-│   │   ├── Dockerfile
-│   │   ├── default.conf
-│   │   └── docker-compose.react.yml
-│   ├── msg-node
+│   ├── gvendas
 │   │   ├── .env.example
 │   │   ├── Dockerfile
-│   │   └── docker-compose.node.yml
-│   ├── sgn-django
-│   │   ├── .env.example
-│   │   ├── Dockerfile
-│   │   ├── docker-compose.django.yml
+│   │   ├── docker-compose.gvendas.yml
 │   │   └── nginx.conf
-│   └── README.md
+│   ├── media
+│   │   ├── .env.example
+│   │   ├── docker-compose.media.yml
+│   │   └── nginx.conf
+│   ├── sgn
+│   │   ├── .env.example
+│   │   ├── Dockerfile
+│   │   ├── docker-compose.sgn.yml
+│   │   └── nginx.conf
+│   ├── storage
+│   │   ├── .env.example
+│   │   ├── docker-compose.storage.yml
+│   │   └── nginx.conf
+│   ├── whatsapp
+│   │   ├── .env.example
+│   │   ├── Dockerfile
+│   │   └── docker-compose.whatsapp.yml
+│   ├── README.md
+│   └── auth-nginx.conf
 ├── netdata
 │   ├── .env.example
 │   ├── README.md
 │   └── docker-compose.netdata.yml
 ├── proxy
-│   ├── dynamic
+│   ├── errors
+│   │   ├── 404.html
+│   │   └── 500.html
 │   ├── .env.example
 │   ├── README.md
-│   └── docker-compose.traefik.yml
+│   ├── docker-compose.traefik.yml
+│   └── nginx.conf
 ├── repos
 │   ├── docker-vps
 │   ├── gvendas
@@ -66,15 +79,27 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── sgn
 │   └── README.md
 ├── scripts
+│   ├── .env.exemplo
+│   ├── alias.sh
+│   ├── crontab.sh
+│   ├── database.sh
+│   ├── db_baixar.sh
+│   ├── db_restart.sh
+│   ├── entrypoint.sh
 │   ├── estrutura.sh
-│   └── install.sh
+│   ├── gitmodules.sh
+│   ├── haskey.sh
+│   ├── install.sh
+│   ├── reset.sh
+│   └── status.sh
 ├── .gitignore
 ├── .gitmodules
 ├── README.md
 ├── colocarnosfilhos.yml
-└── docker-compose.yml
+├── docker-compose.yml
+└── dump.rdb
 
-15 directories, 29 files
+17 directories, 52 files
 ```
 
 

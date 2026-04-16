@@ -1,12 +1,13 @@
 services:
   # STORAGE - Arquivos Privados
   storage:
-    image: bbernhard/nginx-static-secure:latest
+    image: caddy:latest
     container_name: storage
     restart: always
     hostname: storage
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      #- ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      ./Caddyfile:/etc/caddy/Caddyfile
       - storage_data:/storage:ro
     working_dir: /storage
     env_file:

@@ -1,0 +1,16 @@
+:80 {
+    # Pega o ID da empresa vindo do Traefik
+    @empresa_id header X-Empresa-Id *
+    
+    # Define a raiz baseada no ID (Isolamento total)
+    #root * /storage/{header.X-Empresa-Id}
+    root * /storage
+    
+    # Ativa o servidor de arquivos com visual moderno e busca
+    file_server browse
+    
+    # Log para debug
+    log {
+        output stdout
+    }
+}

@@ -31,12 +31,22 @@ RUN pip-compile requirements.in --output-file=requirements.txt && \
 # 2. COPIA o restante do código
 COPY repos/sgn/ .
 
-# Copia um script de inicialização e dá permissão de execução
-COPY scripts/entrypoint.sh /entrypoint.sh
+# Cria o script de entrypoint que executa migrações e DEPOIS o comando do Compose
+RUN printf "#!/bin/bash\n\
+echo 'Aplicando migrações...'\n\
+python manage.py migrate --noinput\n\
+\n\
+echo 'Coletando arquivos estáticos...'\n\
+python manage.py collectstatic --noinput\n\
+\n\
+echo 'Executando comando:' \"\$@\"\n\
+exec \"\$@\"\n" > /entrypoint.sh
+
+# Dá permissão de execução
 RUN chmod +x /entrypoint.sh
 
 # Expõe a porta
 EXPOSE 8000
 
-# Define o entrypoint que executará as migrações antes de iniciar o app
+# Define o entrypoint
 ENTRYPOINT ["/entrypoint.sh"]

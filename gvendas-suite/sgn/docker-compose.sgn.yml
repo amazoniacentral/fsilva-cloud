@@ -11,7 +11,7 @@ services:
       - sgn_data:/volumes/staticfiles:ro
     working_dir: /volumes
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false
@@ -52,7 +52,7 @@ services:
       - 8.8.8.8
     working_dir: /code
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false
@@ -106,7 +106,7 @@ services:
     volumes:
       - ../../repos/sgn:/code
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false
@@ -140,7 +140,7 @@ services:
     volumes:
       - ../../repos/sgn:/code
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false

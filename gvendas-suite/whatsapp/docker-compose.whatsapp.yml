@@ -16,7 +16,7 @@ services:
       - whatsapp_sessions:/code/src/sessions
       - whatsapp_logs:/code/src/logs
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false

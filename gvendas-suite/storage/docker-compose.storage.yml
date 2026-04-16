@@ -11,7 +11,7 @@ services:
       - storage_data:/storage:ro
     working_dir: /storage
     env_file:
-      - path: ../env
+      - path: ../.env
         required: true
       - path: .env
         required: false

@@ -25,6 +25,7 @@ WORKDIR /app_temp
 COPY --from=build-stage /app/build .
 
 # Copia a configuração do Nginx
+COPY gvendas-suite/auth-nginx.conf /etc/nginx/auth-nginx.conf
 COPY gvendas-suite/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Script para copiar os arquivos para o volume na hora que o container subir

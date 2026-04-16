@@ -20,7 +20,7 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?error}`)"
+      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?media.seudo-minio.com.br}`)"
       - "traefik.http.routers.media-nginx.entrypoints=websecure"
       - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.media-nginx.loadbalancer.server.port=80"

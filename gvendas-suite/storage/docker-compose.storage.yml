@@ -19,7 +19,7 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.storage-nginx.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.storage-nginx.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
       - "traefik.http.routers.storage-nginx.entrypoints=websecure"
       - "traefik.http.routers.storage-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.storage-nginx.loadbalancer.server.port=80"

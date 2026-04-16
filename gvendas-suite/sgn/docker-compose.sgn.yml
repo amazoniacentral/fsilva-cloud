@@ -19,7 +19,7 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx-sgn.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.nginx-sgn.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
       - "traefik.http.routers.nginx-sgn.entrypoints=websecure"
       - "traefik.http.routers.nginx-sgn.tls.certresolver=letsencrypt"
       - "traefik.http.services.nginx-sgn.loadbalancer.server.port=80"

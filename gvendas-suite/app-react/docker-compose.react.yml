@@ -26,8 +26,7 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 512M
-          # memory: 128M
+          memory: 128M
         reservations:
           cpus: '0.02'
           memory: 64M
@@ -37,4 +36,7 @@ services:
       - "traefik.http.routers.app-sgn-pwa-internal.service=app-sgn-pwa-service"
       - "traefik.http.routers.app-sgn-pwa-internal.rule=Host(`internal.pwa`)"
       - "traefik.http.routers.app-sgn-pwa-internal.priority=1"
+      # MIDDLEWARES
+      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
+      - "traefik.http.routers.app-sgn-pwa.middlewares=block-internal-header,error-pages-middleware"
 

@@ -18,21 +18,25 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
+      # FIX 1: Diz ao Traefik exatamente em qual rede procurar este container
+      - "traefik.docker.network=net_proxy"
+      
       - "traefik.http.routers.storage-nginx.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
       - "traefik.http.routers.storage-nginx.entrypoints=websecure"
       - "traefik.http.routers.storage-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.storage-nginx.loadbalancer.server.port=80"
       
       # --- MIDDLEWARE DE AUTENTICAÇÃO VIA DJANGO ---
-      # 1. Define o ForwardAuth apontando para a sua função no Django
       - "traefik.http.middlewares.auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
-      # Copia headers de resposta do Django (como ID da empresa) para o Nginx usar
-      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
+      # FIX 2: Alterado para o nome da coluna que você usa (proprietario)
+      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Proprietario-Id"
 
       # --- APLICAÇÃO DOS MIDDLEWARES ---
-      # Adicionei o 'auth-django' na lista. O Traefik processará na ordem escrita.
-      - "traefik.http.routers.storage-nginx.middlewares=block-internal-header,auth-django,error-pages-middleware"
+      # FIX 3: Removi o error-pages-middleware temporariamente para teste, 
+      # pois se ele capturar o 401 antes do navegador, o prompt não abre.
+      - "traefik.http.routers.storage-nginx.middlewares=block-internal-header,auth-django"
+
     deploy:
       resources:
         limits:

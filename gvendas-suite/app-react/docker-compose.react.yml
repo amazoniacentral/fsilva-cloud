@@ -36,7 +36,8 @@ services:
       - "traefik.http.routers.app-sgn-pwa-internal.service=app-sgn-pwa-service"
       - "traefik.http.routers.app-sgn-pwa-internal.rule=Host(`internal.pwa`)"
       - "traefik.http.routers.app-sgn-pwa-internal.priority=1"
+      - "traefik.http.services.app-sgn-pwa-service.loadbalancer.responseForwarding.flushInterval=100ms"
       # MIDDLEWARES
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.app-sgn-pwa.middlewares=block-internal-header,error-pages-middleware"
+      - "traefik.http.routers.app-sgn-pwa-service.middlewares=block-internal-header,error-pages-middleware"
 

@@ -2,9 +2,9 @@ services:
   # STORAGE - Arquivos Privados
   storage:
     image: nginx:alpine
-    container_name: storage-nginx
-    restart: always
-    hostname: storage-server
+    container_name: always
+    restart: unless-stopped
+    hostname: storage
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - storage_data:/storage:ro
@@ -15,27 +15,21 @@ services:
       - path: .env
         required: false
     networks:
-      - net_proxy
+      - net_storage
     labels:
       - "traefik.enable=true"
       # FIX 1: Diz ao Traefik exatamente em qual rede procurar este container
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=net_storage"
       
-      - "traefik.http.routers.storage-nginx.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
-      - "traefik.http.routers.storage-nginx.entrypoints=websecure"
-      - "traefik.http.routers.storage-nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.services.storage-nginx.loadbalancer.server.port=80"
-      
-      # --- MIDDLEWARE DE AUTENTICAÇÃO VIA DJANGO ---
-      - "traefik.http.middlewares.auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
-      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
-      # FIX 2: Alterado para o nome da coluna que você usa (proprietario)
-      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Proprietario-Id"
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+      - "traefik.http.routers.storage.entrypoints=websecure"
+      - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
+      # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
+      - "traefik.http.routers.storage.middlewares=auth-django"
 
-      # --- APLICAÇÃO DOS MIDDLEWARES ---
-      # FIX 3: Removi o error-pages-middleware temporariamente para teste, 
-      # pois se ele capturar o 401 antes do navegador, o prompt não abre.
-      - "traefik.http.routers.storage-nginx.middlewares=block-internal-header,auth-django"
+      # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
+      # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente
+      - "traefik.http.services.storage.loadbalancer.server.port=80"
 
     deploy:
       resources:
@@ -45,3 +39,5 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
+          
+          

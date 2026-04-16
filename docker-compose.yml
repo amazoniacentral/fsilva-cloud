@@ -64,4 +64,8 @@ networks:
     name: net_data
     driver: bridge
     internal: true
+  net_storage:
+    name: net_storage
+    driver: bridge
+    internal: true
     

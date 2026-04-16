@@ -79,8 +79,11 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 
 
 ## Outras configurações
-* **Banco de Dados:** [/database](/database/README.md)
-* **Monitoramento:** [/netdata](/netdata/README.md)
-* **SubMódulos:** [/repos](/repos/README.md)
+* [**Banco de Dados:**](database/README.md)
+* [**GVendas Suite:**](gvendas-suite/README.md)
+* [**Proxy:**](proxy/README.md)
+* [**Monitoramento:**](netdata/README.md)
+* [**Módulos:**](repos/README.md)
+* [**Scripts geral:**](scripts/)
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

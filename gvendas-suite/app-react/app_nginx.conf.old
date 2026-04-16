@@ -1,0 +1,151 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index $host.html;
+
+    # DNS interno do Docker para resolver nomes de containers dinamicamente
+    resolver 127.0.0.11 valid=30s;
+    
+    # 1. PRIORIDADE MÁXIMA: Service Worker (Sempre sem cache e validando empresa)
+    location = /service-worker.js {
+        auth_request /validar-empresa;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        try_files $uri =404;
+    }
+    
+    # 2. PRIORIDADE MÉDIA: Arquivos Estáticos (Cache longo e NÃO vai ao Django)
+    # Colocamos este bloco ACIMA do 'location /' para o Nginx processar as extensões primeiro
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        # Se o arquivo existir, entrega direto. Se não, 404 (evita tela branca)
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # 3. PRIORIDADE PADRÃO: HTML e Rotas do PWA (Validando empresa e sem cache)
+    location / {
+        auth_request /validar-empresa;
+        
+        # Entrega o HTML multi-tenant para qualquer rota virtual
+        try_files $uri $uri/ /$host.html;
+    
+        # Força o navegador a verificar atualizações toda vez
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        
+        default_type text/html;
+    }
+
+    location /static/ {
+        alias /usr/share/nginx/html/static/;
+        access_log off;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location /manifest.json {
+        alias /usr/share/nginx/html/manifest/;
+        try_files $host.json =404;
+    }
+
+    location /catalogo.xml {
+        auth_request /validar-empresa;
+        auth_request_set $empresa_id $upstream_http_x_empresa_id;
+        alias /usr/share/nginx/documentos/catalogo/;
+        try_files $empresa_id/catalogo.xml =404;
+    }
+
+    location /catalogo.csv {
+        auth_request /validar-empresa;
+        auth_request_set $empresa_id $upstream_http_x_empresa_id;
+        alias /usr/share/nginx/documentos/catalogo/;
+        try_files $empresa_id/catalogo.csv =404;
+    }
+
+    location /backup.xlsx {
+        auth_request /validar-usuario;
+        auth_request_set $backup_file $upstream_http_x_backup_file;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        alias /usr/share/nginx/documentos/backup/;
+        try_files $backup_file =404;
+    }
+
+    # Validação de Empresa no Backend Django
+    location = /validar-empresa {
+        internal;
+        # A variável impede o Nginx de fechar se o sgn-django estiver offline no boot
+        set $backend_django http://sgn-django:8000;
+        proxy_pass $backend_django/api/site/$host/;
+        proxy_set_header Host $host;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+    }
+
+    location /auth {
+        auth_request /validar-usuario;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        return 204;
+    }
+
+    # Validação de Usuário no Backend Django
+    location = /validar-usuario {
+        internal;
+        
+        set $auth_header $http_authorization;
+        
+        # Se não houver Header Authorization e nem token na URL
+        if ($arg_token = "") {
+            set $test_auth "no_token";
+        }
+        
+        if ($auth_header = "") {
+            set $test_auth "${test_auth}_no_header";
+        }
+    
+        # Se ambas as condições forem verdadeiras, dispara o prompt 401
+        if ($test_auth = "no_token_no_header") {
+            add_header WWW-Authenticate 'Basic realm="Acesso Restrito"' always;
+            return 401;
+        }
+    
+        # Se houver token na URL e não houver header, monta o Bearer para o Django
+        if ($auth_header = "") {
+            set $auth_header "Bearer $arg_token";
+        }
+    
+        # A variável impede o Nginx de fechar se o sgn-django estiver offline no boot
+        set $backend_django http://sgn-django:8000;
+        
+        proxy_pass $backend_django/api/user/;
+        proxy_set_header Authorization $auth_header;
+        proxy_set_header Host $host;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        add_header Cache-Control "no-store" always;
+    }
+
+
+    location = /.well-known/assetlinks.json {
+        alias /usr/share/nginx/.well-known/sgn_pwa/;
+        # Tenta encontrar o arquivo baseado no host (multi-tenant)
+        try_files $host.json =404;
+    
+        # Headers para evitar cache de arquivos de configuração de segurança
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        
+        # Define o tipo de conteúdo explicitamente como JSON
+        default_type application/json;
+    }
+}

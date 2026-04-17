@@ -26,6 +26,12 @@ docker run --rm \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf copy /data $DEST \
   --use-server-modtime \
-  --buffer-size 32M
+  --buffer-size 16M \
+  --bwlimit 2M \
+  --transfers 2 \
+  --checkers 4 \
+  --contimeout 60s \
+  --low-level-retries 10
+
 
 echo "--- Backup Finalizado: $(date) ---"

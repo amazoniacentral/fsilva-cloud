@@ -10,13 +10,16 @@ LOGS_DIR=$(readlink -f "$SCRIPT_DIR/../logs")
 # Garante que a pasta de logs existe
 mkdir -p "$LOGS_DIR"
 
-declare -a TAREFAS=(
-    "0 3 * * 0 /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f"
-    "0 */12 * * * /sbin/htpdate -s -t google.com"
-    "0 3 * * 0 (echo \"--- Limpeza: \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') ---\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo --- Inicio: \\\$(date '+\%Y-\%m-\%d \%H:\%M:\%S') --- && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh && echo --- Fim: \\\$(date '+\%Y-\%m-\%d \%H:\%M:\%S') ---\" >> $LOGS_DIR/backup.log 2>&1"
-)
+# Definindo a variável de data para o Log (Escapada para o Crontab)
+# O uso de \$ garante que a data seja gerada na hora da execução, não agora.
+DATA_LOG="\$(date '+\%Y-\%m-\%d \%H:\%M:\%S')"
 
+declare -a TAREFAS=(
+    "0 */12 * * * /sbin/htpdate -s -t google.com"
+    "0 3 * * 0 (echo \"--- Limpeza VPS: $DATA_LOG ---\" && /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f) >> $LOGS_DIR/docker_prune.log 2>&1"
+    "0 3 * * 0 (echo \"--- Limpeza Traefik: $DATA_LOG ---\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
+    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo --- Início Backup: $DATA_LOG --- && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh && echo --- Fim: $DATA_LOG ---\" >> $LOGS_DIR/backup.log 2>&1"
+)
 
 echo "--------------------------------------------------------"
 echo "SINCRONIZANDO CRONTAB COM A LISTA ATUAL..."
@@ -36,11 +39,11 @@ else
     echo "ERRO: Falha ao aplicar o Crontab."
 fi
 
-# 4. Limpeza
+# 4. Limpeza e Permissões
 rm "$TMP_CRON"
+chmod -R 755 "$SCRIPT_DIR"
+chmod +x "$SCRIPT_DIR"/*.sh
 
 echo "--------------------------------------------------------"
 echo "SEU CRONTAB ATUAL (LIMPO E ATUALIZADO):"
-chmod -R 755 $SCRIPT_DIR
-chmod +x $SCRIPT_DIR/*.sh
 crontab -l

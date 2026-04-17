@@ -95,11 +95,15 @@ fi
 # 8. RESTAURAÇÃO
 echo -e "\n------------------------------------------------"
 echo -e "⏳ Restaurando dados de: $(basename "$ARQUIVO_PARA_RESTAURAR")"
+
+# Verificação do cabeçalho do arquivo para decidir o método
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then
-    echo -e "📦 Formato BINÁRIO (pg_restore)..."
-    docker exec -i -e PGPASSWORD="$PG_PASS_APP" "$CONTAINER_PG" pg_restore -U "$PG_USER_APP" -d "$PG_NAME" --no-owner < "$ARQUIVO_PARA_RESTAURAR" || echo "⚠️ Avisos no restore."
+    echo -e "📦 Formato BINÁRIO detectado. Usando ${YELLOW}pg_restore${RESET}..."
+    # O uso de -i sem o redirecionamento < às vezes falha em versões específicas do Docker com binários.
+    # Passamos o conteúdo via cat para o stdin do docker exec.
+    cat "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_PASS_APP" "$CONTAINER_PG" pg_restore -U "$PG_USER_APP" -d "$PG_NAME" --no-owner --no-privileges --clean --if-exists || echo -e "${YELLOW}⚠️ O pg_restore finalizou com alguns avisos (comum ao usar --no-owner).${RESET}"
 else
-    echo -e "📄 Formato SQL TEXTO (psql)..."
+    echo -e "📄 Formato SQL TEXTO detectado. Usando ${YELLOW}psql${RESET}..."
     docker exec -i -e PGPASSWORD="$PG_PASS_APP" "$CONTAINER_PG" psql -U "$PG_USER_APP" -d "$PG_NAME" < "$ARQUIVO_PARA_RESTAURAR"
 fi
 

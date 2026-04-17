@@ -10,15 +10,15 @@ LOGS_DIR=$(readlink -f "$SCRIPT_DIR/../logs")
 # Garante que a pasta de logs existe
 mkdir -p "$LOGS_DIR"
 
-# Definindo a variável de data para o Log (Escapada para o Crontab)
-# O uso de \$ garante que a data seja gerada na hora da execução, não agora.
-DATA_LOG="\$(date '+\%Y-\%m-\%d \%H:\%M:\%S')"
+# A VERDADE: Para interpretar \n, o echo precisa do parâmetro -e
+# Usamos \$ para garantir que o comando date rode apenas no Cron
+DATA_LOG="\\n\\n== \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') ==\\n"
 
 declare -a TAREFAS=(
     "0 */12 * * * /sbin/htpdate -s -t google.com"
-    "0 3 * * 0 (echo \"--- Limpeza VPS: $DATA_LOG ---\" && /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f) >> $LOGS_DIR/docker_prune.log 2>&1"
-    "0 3 * * 0 (echo \"--- Limpeza Traefik: $DATA_LOG ---\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo --- Início Backup: $DATA_LOG --- && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh && echo --- Fim: $DATA_LOG ---\" >> $LOGS_DIR/backup.log 2>&1"
+    "0 3 * * 0 (echo -e \"$DATA_LOG Limpeza VPS\" && /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f) >> $LOGS_DIR/docker_prune.log 2>&1"
+    "0 3 * * 0 (echo -e \"$DATA_LOG Limpeza Traefik\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
+    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo -e \\\"$DATA_LOG Backup Diário\\\" && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
 )
 
 echo "--------------------------------------------------------"
@@ -34,7 +34,6 @@ printf "%s\n" "${TAREFAS[@]}" > "$TMP_CRON"
 # 3. Aplica o arquivo temporário como o novo Crontab (Isso remove as antigas)
 if crontab "$TMP_CRON"; then
     echo "SUCESSO: Crontab atualizado e limpo!"
-    echo "As tarefas antigas que não estavam na lista foram removidas."
 else
     echo "ERRO: Falha ao aplicar o Crontab."
 fi

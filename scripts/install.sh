@@ -12,6 +12,15 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# INTERAÇÃO COM O USUÁRIO VIA TTY
+exec 3<>/dev/tty
+echo -e "\n========================================================" >&3
+echo -e "Escolha o tipo de operação:" >&3
+echo -e "1) Instalação do ZERO (Recria TUDO, build sem cache)" >&3
+echo -e "2) Apenas ATUALIZAR (Somente notificações/código rápido)" >&3
+read -u 3 -rp "Opção (1 ou 2): " TIPO_OPERACOES
+exec 3>&-
+
 # Configuração de Logrotate
 sudo tee /etc/logrotate.d/fsilva-cloud > /dev/null <<EOF
 ${CD_DIR}/logs/*.log {
@@ -36,7 +45,7 @@ git reset --hard origin/main
 
 echo "== [2/6] Atualização Forçada de Submódulos =="
 # Garante que os submódulos não tenham alterações locais e sigam o remoto
-git submodule foreach --recursive git reset --hard origin/main
+git submodule foreach --recursive git reset --hard origin/main || true
 git submodule foreach --recursive git clean -fd
 git submodule update --init --recursive --remote
 
@@ -51,22 +60,31 @@ if [ ! -f "$ACME_FILE" ]; then
   echo "Arquivo $ACME_FILE criado."
 fi
 
-echo "== [4/6] Derrubando containers e removendo órfãos =="
-docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans
+if [ "$TIPO_OPERACOES" == "1" ]; then
+    echo "== [4/6] Modo ZERO: Derrubando containers e removendo volumes órfãos =="
+    docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans
 
-echo "== [5/6] Build TOTAL SEM CACHE (Garante novos arquivos no container) =="
-# O --no-cache impede que o Docker use camadas antigas do models.py ou migrations
-docker compose -f "$CD_DIR/docker-compose.yml" build --no-cache
+    echo "== [5/6] Modo ZERO: Build TOTAL SEM CACHE =="
+    docker compose -f "$CD_DIR/docker-compose.yml" build --no-cache
 
-echo "== [6/6] Subindo serviços e limpando imagens antigas =="
-docker compose -f "$CD_DIR/docker-compose.yml" up -d --force-recreate
+    echo "== [6/6] Modo ZERO: Subindo serviços com recriação total =="
+    docker compose -f "$CD_DIR/docker-compose.yml" up -d --force-recreate
+else
+    echo "== [4/6] Modo ATUALIZAR: Mantendo serviços rodando =="
+    echo "== [5/6] Modo ATUALIZAR: Build incremental (com cache) =="
+    docker compose -f "$CD_DIR/docker-compose.yml" build
+
+    echo "== [6/6] Modo ATUALIZAR: Reiniciando apenas containers alterados =="
+    docker compose -f "$CD_DIR/docker-compose.yml" up -d
+fi
+
+echo "--------------------------------------------------------"
+echo "== Limpando resíduos de build =="
 docker image prune -af
 docker builder prune -f
 
 echo "--------------------------------------------------------"
 echo "== Executando Migrations no SGN-DJANGO =="
-# Tenta aplicar as migrações que vieram do Git.
-# Se der erro de coluna já existente, o comando abaixo falhará e você deverá usar o --fake manual.
 docker exec sgn-django python manage.py migrate --noinput
 
 echo "== SUCESSO: Deploy concluído com código limpo! =="

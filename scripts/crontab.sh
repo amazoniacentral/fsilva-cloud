@@ -7,8 +7,9 @@
 declare -a TAREFAS=(
     "0 3 * * 0 /usr/bin/docker builder prune -f"
     "0 4 * * 0 /usr/bin/docker image prune -f"
-    # "0 5 * * * /caminho/do/seu/outro_script.sh"
     "0 */12 * * * /usr/sbin/htpdate -s -t google.com"
+    "0 3 * * 0 /usr/bin/bash /opt/fsilva-cloud/scripts/limpar_traefik.sh >> /var/log/limpeza_traefik.log 2>&1"
+    "0 4 * * * /usr/bin/bash /opt/fsilva-cloud/scripts/backup_media.sh"
 )
 
 echo "--------------------------------------------------------"

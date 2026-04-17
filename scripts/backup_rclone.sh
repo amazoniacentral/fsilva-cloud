@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Pega o diretório onde o script está e sobe um nível para a raiz do projeto
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/../rclone")
+
+RCLONE_CONFIG="$BASE_DIR/config/rclone"
+LOG_FILE="$BASE_DIR/logs/backup_rclone.log"
+
+# Garante que a pasta de logs existe
+mkdir -p "$BASE_DIR/logs"
+
+echo "--- Backup Iniciado: $(date) ---" >> "$LOG_FILE"
+
+# Executa o container efêmero (nasce, faz o sync e morre)
+docker run --rm \
+  --name rclone_backup_worker \
+  -v "storage_data":/data/privado:ro \
+  -v "media_data":/data/media:ro \
+  -v "$RCLONE_CONFIG":/config/rclone \
+  rclone/rclone sync /data gdrive:backup_sgn \
+  --use-server-modtime \
+  >> "$LOG_FILE" 2>&1
+
+echo "--- Backup Finalizado: $(date) ---" >> "$LOG_FILE"

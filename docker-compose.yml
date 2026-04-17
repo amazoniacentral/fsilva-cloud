@@ -17,8 +17,6 @@ volumes:
     name: redis_data
   traefik_dynamics:
     name: traefik_dynamics
-  sgn_statics:
-    name: sgn_statics
   gvendas_data:
     name: gvendas_data
   storage_data:

@@ -43,10 +43,10 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--providers.file.directory=/dynamic"
+      - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       # CLOUDFLARE 
       # --certificatesresolvers.meuresolver.acme.dnschallenge=true  <-- COMENTE ISSO
@@ -55,16 +55,17 @@ services:
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ../proxy/acme.json:/acme.json
-      - ../proxy/.htpasswd:/.htpasswd:ro
-      - traefik_dynamics:/dynamic:ro
+      - ../proxy/certificados:/etc/traefik/acme
+      - ../proxy/.htpasswd:/etc/traefik/dynamic/.htpasswd:ro
+      - traefik_dynamics:/etc/traefik/dynamic:ro
+    working_dir: /etc/traefik/dynamic
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN:?proxy.seu-dominio.com}`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/.htpasswd"
+      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/dynamic/.htpasswd"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       
   error-handler:

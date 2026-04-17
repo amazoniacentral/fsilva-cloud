@@ -15,8 +15,9 @@ DB_PASS=$(docker inspect "$CONTAINER_DB_ALVO" --format='{{range .Config.Env}}{{p
 BANCOS=$(docker exec "$CONTAINER_DB_ALVO" psql -U "$DB_USER" -t -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres';")
 
 echo "-------------------------------------------"
-echo "Iniciando backups individuais para o volume: $VOLUME_DESTINO"
+echo "BACKUP BANCO DE DADOS"
 echo "-------------------------------------------"
+echo "Iniciando backups individuais para o volume: $VOLUME_DESTINO"
 
 for DB in $BANCOS; do
     echo "Fazendo dump do banco: $DB"

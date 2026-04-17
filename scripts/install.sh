@@ -12,6 +12,7 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Configuração de Logrotate
 sudo tee /etc/logrotate.d/fsilva-cloud > /dev/null <<EOF
 ${CD_DIR}/logs/*.log {
     daily
@@ -23,40 +24,50 @@ ${CD_DIR}/logs/*.log {
 }
 EOF
 
-
-echo "== Atualizando projeto principal e submódulos =="
-
-# Garante que estamos no diretório correto (um nível acima do script)
+echo "== [1/6] Limpeza e Atualização do Repositório Principal =="
 DIRETORIO_ATUAL=$(pwd)
-cd $CD_DIR
+cd "$CD_DIR"
+
+# Força o reset do repositório principal para o estado da origin
+git reset --hard HEAD
+git clean -fd
 git fetch origin main
 git reset --hard origin/main
 
-# Atualiza os submódulos (essencial para SGN e GVendas)
+echo "== [2/6] Atualização Forçada de Submódulos =="
+# Garante que os submódulos não tenham alterações locais e sigam o remoto
+git submodule foreach --recursive git reset --hard origin/main
+git submodule foreach --recursive git clean -fd
 git submodule update --init --recursive --remote
 
-# Garante a criação dos diretórios necessários voltando um nível do script
+echo "== [3/6] Preparação de Infra (Certificados e Proxy) =="
 mkdir -p "$PROXY_DIR/dynamic"
 mkdir -p "$PROXY_DIR/certificados"
 ACME_FILE="$PROXY_DIR/certificados/acme.json"
 
-# Verifica se o arquivo acme.json não existe voltando um nível do script
 if [ ! -f "$ACME_FILE" ]; then
-  # Cria o arquivo
   touch "$ACME_FILE"
-  # Aplica a permissão 600 (obrigatória para o Traefik)
   chmod 600 "$ACME_FILE"
-  echo "Arquivo $ACME_FILE criado com sucesso."
-else
-  echo "Arquivo $ACME_FILE já existe. Pulando..."
+  echo "Arquivo $ACME_FILE criado."
 fi
 
-echo "== Subindo serviços com Docker Compose =="
-# Garante que está na raiz do projeto para o docker compose
-docker compose -f "$CD_DIR/docker-compose.yml" up -d --build
+echo "== [4/6] Derrubando containers e removendo órfãos =="
+docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans
 
-echo "== Limpeza de imagens órfãs =="
-docker image prune -f
+echo "== [5/6] Build TOTAL SEM CACHE (Garante novos arquivos no container) =="
+# O --no-cache impede que o Docker use camadas antigas do models.py ou migrations
+docker compose -f "$CD_DIR/docker-compose.yml" build --no-cache
 
-echo "== Instalação e Deploy concluídos com sucesso! =="
-cd $DIRETORIO_ATUAL
+echo "== [6/6] Subindo serviços e limpando imagens antigas =="
+docker compose -f "$CD_DIR/docker-compose.yml" up -d --force-recreate
+docker image prune -af
+docker builder prune -f
+
+echo "--------------------------------------------------------"
+echo "== Executando Migrations no SGN-DJANGO =="
+# Tenta aplicar as migrações que vieram do Git.
+# Se der erro de coluna já existente, o comando abaixo falhará e você deverá usar o --fake manual.
+docker exec sgn-django python manage.py migrate --noinput
+
+echo "== SUCESSO: Deploy concluído com código limpo! =="
+cd "$DIRETORIO_ATUAL"

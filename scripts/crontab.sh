@@ -17,8 +17,8 @@ DATA_LOG="\\n\\n== \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') == "
 declare -a TAREFAS=(
     "0 */12 * * * /sbin/htpdate -s -t google.com"
     "0 3 * * 0 (echo -e \"$DATA_LOG Limpeza VPS\" && /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f) >> $LOGS_DIR/docker_prune.log 2>&1"
-    "0 3 * * 0 (echo -e \"$DATA_LOG Limpeza Traefik\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo -e \\\"$DATA_LOG Backup Diário\\\" && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
+    "0 3 * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo -e \\\"$DATA_LOG Backup Diário\\\" && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
+    "0 4 * * 0 (echo -e \"$DATA_LOG Limpeza Traefik\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/limpeza_traefik.log 2>&1"
 )
 
 echo "--------------------------------------------------------"

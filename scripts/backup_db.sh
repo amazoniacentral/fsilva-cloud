@@ -25,7 +25,7 @@ for DB in $BANCOS; do
     # Roda o container efêmero
     # Mapeamos o volume 'databases' para a pasta /backup dentro do container
     docker run --rm \
-        --name "db_backup_worker_$(date '+%Y-%m-%d %H:%M:%S')" \
+        --name db_backup_worker \
         --network "$NETWORK_NAME" \
         -v "$VOLUME_DESTINO":/backup \
         -e PGPASSWORD="$DB_PASS" \

@@ -19,7 +19,7 @@ echo "--- Backup Iniciado: ---"
 # 2. Executa o container
 # Ajustamos os volumes para não tentar criar pastas dentro do container (evita o erro read-only)
 docker run --rm \
-  --name "rclone_backup_worker_$(date '+%Y-%m-%d %H:%M:%S')" \
+  --name rclone_backup_worker \
   -v "backups":/data/backups:ro \
   -v "storage_data":/data/documentos:ro \
   -v "media_data":/data/arquivos:ro \

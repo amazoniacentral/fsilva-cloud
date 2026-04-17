@@ -4,12 +4,16 @@
 # LISTA DE TAREFAS PARA O CRONTAB (Adicione novas aqui)
 # Formato: "MINUTO HORA DIA_MES MES DIA_SEMANA COMANDO"
 # ==========================================================
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/..")
+LOGS_DIR=$(readlink -f "$SCRIPT_DIR/../logs")
+
 declare -a TAREFAS=(
-    "0 3 * * 0 /usr/bin/docker builder prune -f"
-    "0 4 * * 0 /usr/bin/docker image prune -f"
+    "0 3 * * 0 /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f"
     "0 */12 * * * /usr/sbin/htpdate -s -t google.com"
-    "0 3 * * 0 /usr/bin/bash /opt/fsilva-cloud/scripts/limpar_traefik.sh >> /var/log/limpeza_traefik.log 2>&1"
-    "0 4 * * * /usr/bin/bash /opt/fsilva-cloud/scripts/backup_media.sh"
+    "0 3 * * 0 /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh >> $LOGS_DIR/limpeza_traefik.log 2>&1"
+    "0 3 * * * /usr/bin/bash $SCRIPT_DIR/backup_db.sh >> $LOGS_DIR/backup_db.log 2>&1"
+    "0 4 * * * /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup_rclone.log 2>&1"
 )
 
 echo "--------------------------------------------------------"

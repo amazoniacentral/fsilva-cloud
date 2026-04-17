@@ -8,13 +8,15 @@ mkdir -p "$BASE_DIR"
 # 1. Definir caminhos (Padronizado para sua estrutura)
 RCLONE_CONFIG_DIR="$BASE_DIR/config/rclone"
 SCRIPTS_DIR="$BASE_DIR/scripts"
-
+echo "-------------------------------------------"
+echo "BACKUP EM NUVEM"
+echo "-------------------------------------------"
 echo "--- Iniciando Instalação do Ambiente de Backup ---"
 
 # 2. Criar diretórios necessários
 mkdir -p "$RCLONE_CONFIG_DIR"
 mkdir -p "$SCRIPTS_DIR"
-mkdir -p "/opt/fsilva-cloud/logs"
+mkdir -p "$BASE_DIR/logs"
 
 # 3. Baixar a imagem do Rclone (Garante que já está na VPS)
 echo "Baixando imagem Docker do Rclone..."

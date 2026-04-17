@@ -21,6 +21,14 @@ rad.json
 #Test results file
 TestResults.xml
 
+# Ignora a pasta de configurações do rclone (CONTÉM SENHAS!)
+/config/rclone/
+
+
+# Ignora backups locais (se você salvou fora de volumes)
+*.sql.gz
+
+
 
 # --- IDEs ---
 .vscode/

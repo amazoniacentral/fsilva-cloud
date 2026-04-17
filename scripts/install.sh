@@ -11,6 +11,18 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+sudo tee /etc/logrotate.d/fsilva-cloud > /dev/null <<EOF
+${CD_DIR}/logs/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    notifempty
+    copytruncate
+}
+EOF
+
+
 echo "== Atualizando projeto principal e submódulos =="
 
 # Garante que estamos no diretório correto (um nível acima do script)

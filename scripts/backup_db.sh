@@ -32,4 +32,7 @@ done
 # 4. Limpeza de backups antigos dentro do volume (mais de 7 dias)
 docker run --rm -v "$VOLUME_DESTINO":/backup alpine find /backup/backups_db -type d -mtime +7 -exec rm -rf {} +
 
-echo "Finalizado. Os arquivos estão seguros no volume $VOLUME_DESTINO."
+echo "-------------------------------------------"
+echo "Finalizado: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Arquivos seguros no volume: $VOLUME_DESTINO"
+echo "-------------------------------------------"

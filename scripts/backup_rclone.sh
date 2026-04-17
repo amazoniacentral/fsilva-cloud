@@ -15,10 +15,11 @@ echo "--- Backup Iniciado: $(date) ---" >> "$LOG_FILE"
 # Executa o container efêmero (nasce, faz o sync e morre)
 docker run --rm \
   --name rclone_backup_worker \
-  -v "storage_data":/data/privado:ro \
-  -v "media_data":/data/media:ro \
+  -v "backups":/data:ro \
+  -v "storage_data":/data/documentos:ro \
+  -v "media_data":/data/arquivos:ro \
   -v "$RCLONE_CONFIG":/config/rclone \
-  rclone/rclone sync /data gdrive:backup_sgn \
+  rclone/rclone copy /data gdrive:backup_sgn \
   --use-server-modtime \
   >> "$LOG_FILE" 2>&1
 

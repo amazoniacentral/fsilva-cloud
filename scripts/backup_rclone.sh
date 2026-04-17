@@ -1,27 +1,31 @@
 #!/bin/bash
 
-# Pega o diretório onde o script está e sobe um nível para a raiz do projeto
+# 1. Ajuste de Caminhos (Baseado na estrutura real da sua VPS)
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-BASE_DIR=$(readlink -f "$SCRIPT_DIR/../rclone")
+# Sobe um nível para /opt/fsilva-cloud
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/..")
 
-RCLONE_CONFIG="$BASE_DIR/config/rclone"
-LOG_FILE="$BASE_DIR/logs/backup_rclone.log"
+# Onde o seu rclone.conf REALMENTE está
+RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
 
 # Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"
+
 echo "-------------------------------------------"
 echo "BACKUP DE DADOS"
 echo "-------------------------------------------"
-echo "--- Backup Iniciado: $(date) ---" >> "$LOG_FILE"
+echo "--- Backup Iniciado: $(date) ---"
 
-# Executa o container efêmero (nasce, faz o sync e morre)
+# 2. Executa o container
+# Ajustamos os volumes para não tentar criar pastas dentro do container (evita o erro read-only)
 docker run --rm \
   --name rclone_backup_worker \
   -v "backups":/data/backups:ro \
   -v "storage_data":/data/documentos:ro \
   -v "media_data":/data/arquivos:ro \
-  -v "$RCLONE_CONFIG":/config/rclone \
-  rclone/rclone copy /data gvendas:backup_sgn \
-  --use-server-modtime 
-  
-echo "--- Backup Finalizado: $(date) ---" 
+  -v "$RCLONE_CONFIG_HOST":/config/rclone \
+  rclone/rclone --config /config/rclone/rclone.conf copy /data gvendas:backup_sgn \
+  --use-server-modtime \
+  --buffer-size 32M
+
+echo "--- Backup Finalizado: $(date) ---"

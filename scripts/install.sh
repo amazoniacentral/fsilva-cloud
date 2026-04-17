@@ -4,6 +4,7 @@ set -e
 # Define o diretório onde o script está localizado
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 CD_DIR=$(readlink -f "$SCRIPT_DIR/..")
+PROXY_DIR=$(readlink -f "$SCRIPT_DIR/../proxy")
 
 # Verifica se o usuário é root
 if [ "$EUID" -ne 0 ]; then 
@@ -35,8 +36,9 @@ git reset --hard origin/main
 git submodule update --init --recursive --remote
 
 # Garante a criação dos diretórios necessários voltando um nível do script
-mkdir -p "$SCRIPT_DIR/dynamic"
-ACME_FILE="$SCRIPT_DIR/certificados/acme.json"
+mkdir -p "$PROXY_DIR/dynamic"
+mkdir -p "$PROXY_DIR/certificados"
+ACME_FILE="$PROXY_DIR/certificados/acme.json"
 
 # Verifica se o arquivo acme.json não existe voltando um nível do script
 if [ ! -f "$ACME_FILE" ]; then

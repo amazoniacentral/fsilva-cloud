@@ -83,9 +83,18 @@ echo "== Limpando resíduos de build =="
 docker image prune -af
 docker builder prune -f
 
+exec 3<>/dev/tty
+echo -e "\n========================================================" >&3
+echo -e "Escolha o tipo de operação:" >&3
+echo -e "1) Iniciar o sistema" >&3
+echo -e "2) Sair" >&3
+read -u 3 -rp "Opção (1 ou 2): " $TIPO_INICIAR
+exec 3>&-
+
+if [ "$TIPO_INICIAR" == "1" ]; then
 echo "--------------------------------------------------------"
 echo "== Executando Migrations no SGN-DJANGO =="
 docker exec sgn-django python manage.py migrate --noinput
-
 echo "== SUCESSO: Deploy concluído com código limpo! =="
+fi
 cd "$DIRETORIO_ATUAL"

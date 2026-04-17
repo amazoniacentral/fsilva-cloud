@@ -7,7 +7,7 @@ BASE_DIR=$(readlink -f "$SCRIPT_DIR/..")
 
 # Onde o seu rclone.conf REALMENTE está
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
-
+DEST="gvendas:backup_sgn"
 # Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"
 
@@ -24,7 +24,7 @@ docker run --rm \
   -v "storage_data":/data/documentos:ro \
   -v "media_data":/data/arquivos:ro \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
-  rclone/rclone --config /config/rclone/rclone.conf copy /data gvendas:backup_sgn \
+  rclone/rclone --config /config/rclone/rclone.conf copy /data $DEST \
   --use-server-modtime \
   --buffer-size 32M
 

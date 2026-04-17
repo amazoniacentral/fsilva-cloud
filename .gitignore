@@ -59,6 +59,9 @@ pgdata/
 # Não ignore as pastas dos submódulos! O Git precisa rastrear os ponteiros.
 # Se você baixar algo temporário na raiz que não seja submodule, adicione abaixo:
 /temp/
+/logs/
+/proxy/certificados/
+/proxy/dynamic/
 
 
 

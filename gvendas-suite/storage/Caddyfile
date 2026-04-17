@@ -9,9 +9,8 @@
     
     # Ativa o servidor de arquivos com visual moderno e busca
    # file_server browse
-    file_server browse {
-        template /etc/caddy/template.html
-    }
+    file_server browse /etc/caddy/template.html
+
     
     # Log para debug
     log {

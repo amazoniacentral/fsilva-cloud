@@ -12,7 +12,7 @@ declare -a TAREFAS=(
     "0 3 * * 0 /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f"
     "0 */12 * * * /usr/sbin/htpdate -s -t google.com"
     "0 3 * * 0 /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "0 3 * * * /usr/bin/bash $SCRIPT_DIR/backup_db.sh >> $LOGS_DIR/backup_db.log 2>&1"
+    "* * * * * /usr/bin/bash $SCRIPT_DIR/backup_db.sh && bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup.log 2>&1"
     "0 4 * * * /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup_rclone.log 2>&1"
 )
 

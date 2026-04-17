@@ -11,12 +11,13 @@ LOGS_DIR=$(readlink -f "$SCRIPT_DIR/../logs")
 mkdir -p "$LOGS_DIR"
 
 declare -a TAREFAS=(
-    "0 3 * * 0 /bin/docker builder prune -f && /bin/docker image prune -a -f"
+    "0 3 * * 0 /usr/bin/docker builder prune -f && /usr/bin/docker image prune -a -f"
     "0 */12 * * * /sbin/htpdate -s -t google.com"
-    "0 3 * * 0 /bin/bash $SCRIPT_DIR/limpar_traefik.sh >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /bin/bash -c \"$SCRIPT_DIR/backup_db.sh && $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
-    "0 4 * * * /bin/bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup_rclone.log 2>&1"
+    "0 3 * * 0 /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh >> $LOGS_DIR/limpeza_traefik.log 2>&1"
+    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"/usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
+    "0 4 * * * /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup_rclone.log 2>&1"
 )
+
 
 echo "--------------------------------------------------------"
 echo "SINCRONIZANDO CRONTAB COM A LISTA ATUAL..."

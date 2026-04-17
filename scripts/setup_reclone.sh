@@ -17,6 +17,7 @@ echo "--- Iniciando Instalação do Ambiente de Backup ---"
 mkdir -p "$RCLONE_CONFIG_DIR"
 mkdir -p "$SCRIPTS_DIR"
 mkdir -p "$BASE_DIR/logs"
+clear
 
 # 3. Baixar a imagem do Rclone (Garante que já está na VPS)
 echo "Baixando imagem Docker do Rclone..."

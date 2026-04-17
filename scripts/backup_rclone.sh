@@ -14,12 +14,12 @@ mkdir -p "$BASE_DIR/logs"
 echo "-------------------------------------------"
 echo "BACKUP DE DADOS"
 echo "-------------------------------------------"
-echo "--- Backup Iniciado: $(date) ---"
+echo "--- Backup Iniciado: ---"
 
 # 2. Executa o container
 # Ajustamos os volumes para não tentar criar pastas dentro do container (evita o erro read-only)
 docker run --rm \
-  --name rclone_backup_worker \
+  --name "rclone_backup_worker_$(date '+%Y-%m-%d %H:%M:%S')" \
   -v "backups":/data/backups:ro \
   -v "storage_data":/data/documentos:ro \
   -v "media_data":/data/arquivos:ro \
@@ -34,4 +34,4 @@ docker run --rm \
   --low-level-retries 10
 
 
-echo "--- Backup Finalizado: $(date) ---"
+echo "--- Backup Finalizado: $(date '+%Y-%m-%d %H:%M:%S') ---"

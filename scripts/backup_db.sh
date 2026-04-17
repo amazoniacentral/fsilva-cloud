@@ -29,7 +29,7 @@ for DB in $BANCOS; do
         -v "$VOLUME_DESTINO":/backup \
         -e PGPASSWORD="$DB_PASS" \
         postgres:15-alpine \
-        sh -c "mkdir -p /backup/backups_db/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/backups_db/$DATA_PASTA/${DB}_$(date +%H%M).sql.gz"
+        sh -c "mkdir -p /backup/database/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/database/$DATA_PASTA/${DB}_$(date +%H%M).sql.gz"
 done
 
 # 4. Limpeza de backups antigos dentro do volume (mais de 7 dias)

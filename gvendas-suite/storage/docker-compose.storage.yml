@@ -6,9 +6,7 @@ services:
     restart: always
     hostname: storage
     volumes:
-      #- ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./template.html:/etc/caddy/template.html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - storage_data:/storage:ro
     working_dir: /storage
     env_file:
@@ -27,7 +25,7 @@ services:
       - "traefik.http.routers.storage.entrypoints=websecure"
       - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
       # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
-      - "traefik.http.routers.storage.middlewares=auth-django"
+      - "traefik.http.routers.storage.middlewares=auth-django,error-pages-middleware"
 
       # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
       # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente

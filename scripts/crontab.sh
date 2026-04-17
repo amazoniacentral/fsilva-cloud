@@ -41,4 +41,6 @@ rm "$TMP_CRON"
 
 echo "--------------------------------------------------------"
 echo "SEU CRONTAB ATUAL (LIMPO E ATUALIZADO):"
+chmod -R 755 $SCRIPT_DIR
+chmod +x $SCRIPT_DIR/*.sh
 crontab -l

@@ -113,9 +113,20 @@ echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
 
+exec 3<>/dev/tty
+echo -e "\n========================================================" >&3
+echo -e "Escolha o tipo de operação:" >&3
+echo -e "1) Iniciar o sistema" >&3
+echo -e "2) Sair" >&3
+read -u 3 -rp "Opção (1 ou 2): " $TIPO_INICIAR
+exec 3>&-
+
+if [ "$TIPO_INICIAR" == "1" ]; then
+echo "--------------------------------------------------------"
+echo "== Executando Migrations no SGN-DJANGO =="
 # EXECUÇÃO E EXIBIÇÃO DIRETA DO RETORNO DO ERRO
 docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || true
-
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "✅  SISTEMA RESTAURADO E ONLINE!"
 echo -e "${CYAN}================================================================${RESET}"
+fi

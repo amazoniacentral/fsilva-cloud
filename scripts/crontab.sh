@@ -12,7 +12,7 @@ mkdir -p "$LOGS_DIR"
 
 # A VERDADE: Para interpretar \n, o echo precisa do parâmetro -e
 # Usamos \$ para garantir que o comando date rode apenas no Cron
-DATA_LOG="\\n\\n== \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') ==\\n"
+DATA_LOG="\\n\\n== \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') == "
 
 declare -a TAREFAS=(
     "0 */12 * * * /sbin/htpdate -s -t google.com"

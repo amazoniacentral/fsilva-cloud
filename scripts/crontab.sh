@@ -2,53 +2,43 @@
 
 # ==========================================================
 # LISTA DE TAREFAS PARA O CRONTAB (Adicione novas aqui)
-# Formato: "MINUTO HORA DIA_MES MES DIA_SEMANA COMANDO"
 # ==========================================================
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/..")
 LOGS_DIR=$(readlink -f "$SCRIPT_DIR/../logs")
 
+# Garante que a pasta de logs existe
+mkdir -p "$LOGS_DIR"
+
 declare -a TAREFAS=(
     "0 3 * * 0 /bin/docker builder prune -f && /bin/docker image prune -a -f"
     "0 */12 * * * /sbin/htpdate -s -t google.com"
     "0 3 * * 0 /bin/bash $SCRIPT_DIR/limpar_traefik.sh >> $LOGS_DIR/limpeza_traefik.log 2>&1"
-    "* * * * * /bin/bash  $SCRIPT_DIR/backup_db.sh && $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup.log 2>&1"
+    "* * * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /bin/bash -c \"$SCRIPT_DIR/backup_db.sh && $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/backup.log 2>&1"
     "0 4 * * * /bin/bash $SCRIPT_DIR/backup_rclone.sh >> $LOGS_DIR/backup_rclone.log 2>&1"
 )
 
 echo "--------------------------------------------------------"
-echo "INICIANDO ATUALIZAÇÃO DO CRONTAB..."
+echo "SINCRONIZANDO CRONTAB COM A LISTA ATUAL..."
 echo "--------------------------------------------------------"
 
-# 1. Lê o crontab atual para um arquivo temporário
+# 1. Cria um arquivo temporário com as novas tarefas
 TMP_CRON=$(mktemp)
-crontab -l 2>/dev/null > "$TMP_CRON"
 
-MUDOU=false
+# 2. Converte o Array em linhas de texto dentro do arquivo temporário
+printf "%s\n" "${TAREFAS[@]}" > "$TMP_CRON"
 
-# 2. Itera sobre a lista de tarefas
-for TAREFA in "${TAREFAS[@]}"; do
-    if grep -Fq "$TAREFA" "$TMP_CRON"; then
-        echo "IGNORADO: A tarefa já existe: $TAREFA"
-    else
-        echo "$TAREFA" >> "$TMP_CRON"
-        echo "ADICIONADO: $TAREFA"
-        MUDOU=true
-    fi
-done
-
-# 3. Aplica o novo crontab se houver mudanças
-if [ "$MUDOU" = true ]; then
-    crontab "$TMP_CRON"
-    echo "--------------------------------------------------------"
-    echo "SUCESSO: Crontab atualizado com novas tarefas!"
+# 3. Aplica o arquivo temporário como o novo Crontab (Isso remove as antigas)
+if crontab "$TMP_CRON"; then
+    echo "SUCESSO: Crontab atualizado e limpo!"
+    echo "As tarefas antigas que não estavam na lista foram removidas."
 else
-    echo "--------------------------------------------------------"
-    echo "AVISO: Nenhuma tarefa nova para adicionar."
+    echo "ERRO: Falha ao aplicar o Crontab."
 fi
 
+# 4. Limpeza
 rm "$TMP_CRON"
 
 echo "--------------------------------------------------------"
-echo "SEU CRONTAB ATUAL:"
+echo "SEU CRONTAB ATUAL (LIMPO E ATUALIZADO):"
 crontab -l

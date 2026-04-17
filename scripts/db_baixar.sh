@@ -17,7 +17,7 @@ DOT_ENV_PATH="./.env"
 
 clear
 echo -e "${CYAN}================================================================${RESET}"
-echo -e "${YELLOW}           RESTAURAÇÃO BANCO DE DADOS${RESET}"
+echo -e "${YELLOW}           RESTAURAÇÃO BANCO DE DADOS (VERSÃO FINAL)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
 # 0. CARGA DO ARQUIVO .ENV LOCAL
@@ -58,17 +58,18 @@ fi
 echo -e "\n------------------------------------------------"
 echo -e "🔍 Extraindo credenciais dos containers..."
 
-# 1. Dados do Django
+# 1. Dados do Django/App
 DB_URL=$(docker exec "$CONTAINER_DJANGO" env | grep DATABASE_URL | cut -d'=' -f2 || echo "")
 PG_USER_APP=$(echo "$DB_URL" | sed -e 's|.*//\(.*\):.*@.*|\1|')
-PG_PASS_APP=$(echo "$DB_URL" | sed -e 's|.*: \(.*\)@.*|\1|' | cut -d':' -f2 | cut -d'@' -f1)
+# Tratamento para extrair senha que pode conter caracteres especiais
+PG_PASS_APP=$(echo "$DB_URL" | sed -e 's|.*://[^:]*:\(.*\)@.*|\1|')
 PG_NAME=$(echo "$DB_URL" | awk -F'/' '{print $NF}' | cut -d'?' -f1)
 
 [[ -z "$PG_USER_APP" ]] && read -rp "👉 Usuário do Banco (App): " PG_USER_APP
 [[ -z "$PG_PASS_APP" ]] && read -rsp "👉 Senha do Banco (App): " PG_PASS_APP && echo
 [[ -z "$PG_NAME" ]] && read -rp "👉 Nome do Banco de Dados: " PG_NAME
 
-# 2. Dados do Super-usuário (Direto do container postgres)
+# 2. Dados do Super-usuário
 PG_SUPER_USER=$(docker exec "$CONTAINER_PG" env | grep POSTGRES_USER | cut -d'=' -f2 || echo "postgres")
 PG_SUPER_PASS=$(docker exec "$CONTAINER_PG" env | grep POSTGRES_PASSWORD | cut -d'=' -f2 || echo "")
 
@@ -78,55 +79,59 @@ echo -e "\n------------------------------------------------"
 echo -e "🚀 Parando serviços para liberar conexões..."
 docker stop "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT" || true
 
-# 7. LIMPEZA RADICAL
+# 7. LIMPEZA RADICAL (Com correção de permissões de Schema)
 echo -e "\n------------------------------------------------"
 echo -e "🧹 Realizando limpeza atômica do schema public..."
-LIMPAR_CMD="DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public; GRANT ALL ON SCHEMA public TO $PG_USER_APP; ALTER SCHEMA public OWNER TO $PG_USER_APP;"
+# Aqui forçamos o dono do schema ser o usuário do APP antes da restauração
+LIMPAR_CMD="DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public; ALTER SCHEMA public OWNER TO \"$PG_USER_APP\"; GRANT ALL ON SCHEMA public TO \"$PG_USER_APP\"; GRANT ALL ON SCHEMA public TO public;"
 
 if ! docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c "$LIMPAR_CMD"; then
-    echo -e "${RED}❌ Erro crítico na limpeza. Tentando alternativa via comando direto...${RESET}"
-    docker exec -u postgres -i "$CONTAINER_PG" psql -d "$PG_NAME" -c "$LIMPAR_CMD" || { 
-        echo -e "${RED}FALHA TOTAL NA LIMPEZA.${RESET}"; 
-        docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"; 
-        exit 1; 
-    }
+    echo -e "${RED}❌ Falha na limpeza. Tentando via usuário postgres interno...${RESET}"
+    docker exec -u postgres -i "$CONTAINER_PG" psql -d "$PG_NAME" -c "$LIMPAR_CMD"
 fi
 
 # 8. RESTAURAÇÃO
 echo -e "\n------------------------------------------------"
 echo -e "⏳ Restaurando dados de: $(basename "$ARQUIVO_PARA_RESTAURAR")"
 
-# Verificação do cabeçalho do arquivo para decidir o método
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then
-    echo -e "📦 Formato BINÁRIO detectado. Usando ${YELLOW}pg_restore${RESET}..."
-    # O uso de -i sem o redirecionamento < às vezes falha em versões específicas do Docker com binários.
-    # Passamos o conteúdo via cat para o stdin do docker exec.
-    cat "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_PASS_APP" "$CONTAINER_PG" pg_restore -U "$PG_USER_APP" -d "$PG_NAME" --no-owner --no-privileges --clean --if-exists || echo -e "${YELLOW}⚠️ O pg_restore finalizou com alguns avisos (comum ao usar --no-owner).${RESET}"
+    echo -e "📦 Formato BINÁRIO detectADO. Usando ${YELLOW}pg_restore${RESET}..."
+    # O SEGREDO: Usar o SuperUser para restaurar, mas apontar o --role para o usuário do APP
+    cat "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" pg_restore -U "$PG_SUPER_USER" -d "$PG_NAME" --no-owner --no-privileges --role="$PG_USER_APP"
 else
     echo -e "📄 Formato SQL TEXTO detectado. Usando ${YELLOW}psql${RESET}..."
-    docker exec -i -e PGPASSWORD="$PG_PASS_APP" "$CONTAINER_PG" psql -U "$PG_USER_APP" -d "$PG_NAME" < "$ARQUIVO_PARA_RESTAURAR"
+    docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" < "$ARQUIVO_PARA_RESTAURAR"
 fi
+
+# Ajuste Final de Permissões (Garantia de que nada ficou "trancado")
+echo -e "🔑 Ajustando permissões finais..."
+AJUSTE_PERMISSOES="GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"$PG_USER_APP\"; GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"$PG_USER_APP\";"
+docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c "$AJUSTE_PERMISSOES"
 
 # 9. REINICIAR TUDO
 echo -e "\n------------------------------------------------"
-echo -e "\n🚀 Reiniciando serviços e rodando migrações..."
+echo -e "\n🚀 Reiniciando serviços..."
 docker start "$CONTAINER_DJANGO" "$CONTAINER_CELERY" "$CONTAINER_BEAT"
 sleep 5
 
-exec 3<>/dev/tty
-echo -e "\n========================================================" >&3
-echo -e "Escolha o tipo de operação:" >&3
-echo -e "1) Iniciar o sistema" >&3
-echo -e "2) Sair" >&3
-read -u 3 -rp "Opção (1 ou 2): " $TIPO_INICIAR
-exec 3>&-
+echo -e "\n========================================================"
+echo -e "Escolha o tipo de operação:"
+echo -e "1) Rodar Migrations e Sincronizar"
+echo -e "2) Sair"
+read -rp "Opção (1 ou 2): " TIPO_INICIAR
 
 if [ "$TIPO_INICIAR" == "1" ]; then
-echo "--------------------------------------------------------"
-echo "== Executando Migrations no SGN-DJANGO =="
-# EXECUÇÃO E EXIBIÇÃO DIRETA DO RETORNO DO ERRO
-docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || true
-echo -e "\n${CYAN}================================================================${RESET}"
-echo -e "✅  SISTEMA RESTAURADO E ONLINE!"
-echo -e "${CYAN}================================================================${RESET}"
+    echo "--------------------------------------------------------"
+    echo "== Executando Migrations no SGN-DJANGO =="
+    # Primeiro tentamos o showmigrations para ver se o erro de permission denied sumiu
+    if docker exec -i "$CONTAINER_DJANGO" python manage.py showmigrations > /dev/null 2>&1; then
+        echo -e "${GREEN}✅ Permissões de acesso OK. Rodando migrate --fake...${RESET}"
+        docker exec -i "$CONTAINER_DJANGO" python manage.py migrate --fake
+    else
+        echo -e "${RED}⚠️ Erro de permissão detectado. Tentando correção forçada...${RESET}"
+        docker exec -i "$CONTAINER_DJANGO" python manage.py migrate || echo "Migrate falhou, verifique logs."
+    fi
+    echo -e "\n${CYAN}================================================================${RESET}"
+    echo -e "✅  PROCESSO CONCLUÍDO!"
+    echo -e "${CYAN}================================================================${RESET}"
 fi

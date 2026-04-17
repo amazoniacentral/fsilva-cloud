@@ -19,7 +19,7 @@ docker run --rm \
   -v "storage_data":/data/documentos:ro \
   -v "media_data":/data/arquivos:ro \
   -v "$RCLONE_CONFIG":/config/rclone \
-  rclone/rclone copy /data gdrive:backup_sgn \
+  rclone/rclone copy /data gvendas:backup_sgn \
   --use-server-modtime \
   >> "$LOG_FILE" 2>&1
 

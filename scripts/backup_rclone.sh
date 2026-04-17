@@ -9,7 +9,9 @@ LOG_FILE="$BASE_DIR/logs/backup_rclone.log"
 
 # Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"
-
+echo "-------------------------------------------"
+echo "BACKUP DE DADOS"
+echo "-------------------------------------------"
 echo "--- Backup Iniciado: $(date) ---" >> "$LOG_FILE"
 
 # Executa o container efêmero (nasce, faz o sync e morre)
@@ -20,7 +22,6 @@ docker run --rm \
   -v "media_data":/data/arquivos:ro \
   -v "$RCLONE_CONFIG":/config/rclone \
   rclone/rclone copy /data gvendas:backup_sgn \
-  --use-server-modtime \
-  >> "$LOG_FILE" 2>&1
-
-echo "--- Backup Finalizado: $(date) ---" >> "$LOG_FILE"
+  --use-server-modtime 
+  
+echo "--- Backup Finalizado: $(date) ---" 

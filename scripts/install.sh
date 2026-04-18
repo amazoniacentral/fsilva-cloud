@@ -17,7 +17,7 @@ exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escolha o tipo de operação:" >&3
 echo -e "1) Instalação do ZERO (Recria TUDO, build sem cache)" >&3
-echo -e "2) Apenas ATUALIZAR (Somente notificações/código rápido)" >&3
+echo -e "2) Apenas ATUALIZAR (Somente código rápido + Re-sync de volumes)" >&3
 read -u 3 -rp "Opção (1 ou 2): " TIPO_OPERACOES
 exec 3>&-
 
@@ -37,14 +37,13 @@ echo "== [1/6] Limpeza e Atualização do Repositório Principal =="
 DIRETORIO_ATUAL=$(pwd)
 cd "$CD_DIR"
 
-# Força o reset do repositório principal para o estado da origin
+# Força o reset do repositório principal
 git reset --hard HEAD
 git clean -fd
 git fetch origin main
 git reset --hard origin/main
 
 echo "== [2/6] Atualização Forçada de Submódulos =="
-# Garante que os submódulos não tenham alterações locais e sigam o remoto
 git submodule foreach --recursive git reset --hard origin/main || true
 git submodule foreach --recursive git clean -fd
 git submodule update --init --recursive --remote
@@ -52,29 +51,34 @@ git submodule update --init --recursive --remote
 echo "== [3/6] Preparação de Infra (Certificados e Proxy) =="
 mkdir -p "$PROXY_DIR/dynamic"
 mkdir -p "$PROXY_DIR/certificados"
-ACME_FILE="$PROXY_DIR/certificados/acme.json"
+# GARANTE QUE OS DIRETÓRIOS DE VOLUMES EXISTAM NO HOST
+mkdir -p "$CD_DIR/volumes/html"
+mkdir -p "$CD_DIR/volumes/media"
+mkdir -p "$CD_DIR/volumes/static"
 
+ACME_FILE="$PROXY_DIR/certificados/acme.json"
 if [ ! -f "$ACME_FILE" ]; then
   touch "$ACME_FILE"
   chmod 600 "$ACME_FILE"
-  echo "Arquivo $ACME_FILE criado."
 fi
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
-    echo "== [4/6] Modo ZERO: Derrubando containers e removendo volumes órfãos =="
-    docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans
+    echo "== [4/6] Modo ZERO: Derrubando tudo =="
+    docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans --volumes
 
     echo "== [5/6] Modo ZERO: Build TOTAL SEM CACHE =="
     docker compose -f "$CD_DIR/docker-compose.yml" build --no-cache
 
-    echo "== [6/6] Modo ZERO: Subindo serviços com recriação total =="
+    echo "== [6/6] Modo ZERO: Subindo com recriação total =="
     docker compose -f "$CD_DIR/docker-compose.yml" up -d --force-recreate
 else
-    echo "== [4/6] Modo ATUALIZAR: Mantendo serviços rodando =="
-    echo "== [5/6] Modo ATUALIZAR: Build incremental (com cache) =="
+    echo "== [4/6] Modo ATUALIZAR: Build incremental =="
     docker compose -f "$CD_DIR/docker-compose.yml" build
 
-    echo "== [6/6] Modo ATUALIZAR: Reiniciando apenas containers alterados =="
+    echo "== [5/6] Modo ATUALIZAR: Recriando containers para forçar volumes =="
+    # O segredo está aqui: --always-recreate-deps e --force-recreate
+    # Isso garante que se o volume mudou no host, o container vai enxergar
+    docker compose -f "$CD_DIR/docker-compose.yml" up -d --no-deps --force-recreate sgn-django
     docker compose -f "$CD_DIR/docker-compose.yml" up -d
 fi
 
@@ -85,16 +89,19 @@ docker builder prune -f
 
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
-echo -e "Escolha o tipo de operação:" >&3
-echo -e "1) Iniciar o sistema" >&3
+echo -e "Deseja iniciar o sistema e rodar migrations?" >&3
+echo -e "1) Sim" >&3
 echo -e "2) Sair" >&3
-read -u 3 -rp "Opção (1 ou 2): " $TIPO_INICIAR
+read -u 3 -rp "Opção (1 ou 2): " TIPO_INICIAR
 exec 3>&-
 
 if [ "$TIPO_INICIAR" == "1" ]; then
-echo "--------------------------------------------------------"
-echo "== Executando Migrations no SGN-DJANGO =="
-docker exec sgn-django python manage.py migrate --noinput
-echo "== SUCESSO: Deploy concluído com código limpo! =="
+    echo "--------------------------------------------------------"
+    echo "== Executando Migrations no SGN-DJANGO =="
+    # Aguarda o DB estar pronto se necessário
+    docker exec sgn-django python manage.py migrate --noinput
+    docker logs -f --tail 50 sgn-django
 fi
+echo "== SUCESSO: Deploy concluído! =="
+
 cd "$DIRETORIO_ATUAL"

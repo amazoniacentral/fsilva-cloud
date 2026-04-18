@@ -56,7 +56,7 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
-    working_dir: /code
+    working_dir: /code/volumes
     env_file:
       - path: ../.env
         required: true
@@ -65,8 +65,9 @@ services:
     command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
     volumes:
       - ../../repos/sgn:/code
+      - ../../repos/sgn:/code/manage.py:ro
       - sgn_data:/code/volumes/staticfiles
-      - media_data:/code/volumes/public
+      - media_data:/code/volumes/media
       - gvendas_data:/code/volumes/html
       - storage_data:/code/volumes/private
       - certificados_data:/code/volumes/certificados

@@ -66,9 +66,9 @@ services:
     volumes:
       - ../../repos/sgn:/code
       - sgn_data:/code/volumes/staticfiles
-      - media_data:/code/volumes/media
+      - media_data:/code/volumes/public
       - gvendas_data:/code/volumes/html
-      - storage_data:/code/volumes/documentos
+      - storage_data:/code/volumes/private
       - certificados_data:/code/volumes/certificados
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
@@ -88,7 +88,8 @@ services:
           cpus: '0.05'
           memory: 128M
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8000))'"]
+     # test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 10s
       timeout: 5s
       retries: 5

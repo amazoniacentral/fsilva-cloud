@@ -52,9 +52,9 @@ echo "== [3/6] Preparação de Infra (Certificados e Proxy) =="
 mkdir -p "$PROXY_DIR/dynamic"
 mkdir -p "$PROXY_DIR/certificados"
 # GARANTE QUE OS DIRETÓRIOS DE VOLUMES EXISTAM NO HOST
-mkdir -p "$CD_DIR/volumes/html"
-mkdir -p "$CD_DIR/volumes/media"
-mkdir -p "$CD_DIR/volumes/static"
+# mkdir -p "$CD_DIR/volumes/html"
+# mkdir -p "$CD_DIR/volumes/media"
+# mkdir -p "$CD_DIR/volumes/static"
 
 ACME_FILE="$PROXY_DIR/certificados/acme.json"
 if [ ! -f "$ACME_FILE" ]; then
@@ -78,7 +78,7 @@ else
     echo "== [5/6] Modo ATUALIZAR: Recriando containers para forçar volumes =="
     # O segredo está aqui: --always-recreate-deps e --force-recreate
     # Isso garante que se o volume mudou no host, o container vai enxergar
-    docker compose -f "$CD_DIR/docker-compose.yml" up -d --no-deps --force-recreate sgn-django
+    docker compose -f "$CD_DIR/docker-compose.yml" up -d --no-deps --force-recreate
     docker compose -f "$CD_DIR/docker-compose.yml" up -d
 fi
 

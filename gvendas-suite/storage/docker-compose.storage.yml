@@ -1,7 +1,7 @@
 services:
   # STORAGE - Arquivos Privados
   storage:
-    image: caddy:latest
+    image: nginx:alpine
     container_name: storage
     restart: always
     hostname: storage

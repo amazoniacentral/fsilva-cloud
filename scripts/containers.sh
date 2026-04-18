@@ -3,13 +3,6 @@ set -e
 
 # INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
 exec 3<>/dev/tty
-echo -e "\n========================================================" >&3
-echo -e "Deseja gerenciar algum container?" >&3
-echo -e "1) Sim" >&3
-echo -e "2) Sair" >&3
-read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
-
-if [ "$OPCAO_MENU" == "1" ]; then
     # Obtém a lista de nomes dos containers ativos
     mapfile -t CONTAINERS < <(docker ps --format "{{.Names}}")
     
@@ -59,6 +52,5 @@ if [ "$OPCAO_MENU" == "1" ]; then
         else
             echo -e "Container inválido." >&3
         fi
-    fi
 fi
 exec 3>&-

@@ -87,7 +87,17 @@ echo "== Limpando resíduos de build =="
 docker image prune -af
 docker builder prune -f
 
-bash $SCRIPT_DIR/containers.bash
+# INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
+exec 3<>/dev/tty
+echo -e "\n========================================================" >&3
+echo -e "Deseja gerenciar algum container?" >&3
+echo -e "1) Sim" >&3
+echo -e "2) Sair" >&3
+read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
+
+if [ "$OPCAO_MENU" == "1" ]; then
+bash $SCRIPT_DIR/containers.sh
+fi
 echo -e "\n== SUCESSO: Deploy concluído! ==\n"
 
 cd "$DIRETORIO_ATUAL"

@@ -99,10 +99,10 @@ if [ "$TIPO_INICIAR" == "1" ]; then
     echo "--------------------------------------------------------"
     echo "== Executando Migrations no SGN-DJANGO =="
     # Aguarda o DB estar pronto se necessário
-    docker exec sgn-django python manage.py migrate --noinput
+    docker exec sgn-django python manage.py migrate #--noinput
     echo "== SUCESSO: Deploy concluído! =="
-    echo "== Abrindo Logs em Tempo Real (ctrl + c para sair) =="
-    docker logs -f --tail 50 sgn-django
+    #echo "== Abrindo Logs em Tempo Real (ctrl + c para sair) =="
+    #docker logs -f --tail 50 sgn-django
 fi
 echo "== SUCESSO: Deploy concluído! =="
 

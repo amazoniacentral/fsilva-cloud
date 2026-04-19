@@ -16,9 +16,19 @@ fi
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escolha o tipo de operação:" >&3
-echo -e "1) Instalação do ZERO (Recria TUDO, build sem cache)" >&3
+echo -e "1) Instalação do ZERO (Personalizada)" >&3
 echo -e "2) Apenas ATUALIZAR (Somente código rápido + Re-sync de volumes)" >&3
 read -u 3 -rp "Opção (1 ou 2): " TIPO_OPERACOES
+
+# Variáveis de limpeza para o Modo ZERO
+LIMPAR_VOLUMES="n"
+LIMPAR_IMAGENS="n"
+
+if [ "$TIPO_OPERACOES" == "1" ]; then
+    echo -e "\n--- CONFIGURAÇÃO DA LIMPEZA (Modo ZERO) ---" >&3
+    read -u 3 -rp "Deseja APAGAR OS VOLUMES? (Banco de dados e mídias serão PERDIDOS) [s/N]: " LIMPAR_VOLUMES
+    read -u 3 -rp "Deseja APAGAR TODAS AS IMAGENS DOCKER do sistema? [s/N]: " LIMPAR_IMAGENS
+fi
 exec 3>&-
 
 # Configuração de Logrotate
@@ -51,10 +61,6 @@ git submodule update --init --recursive --remote
 echo "== [3/6] Preparação de Infra (Certificados e Proxy) =="
 mkdir -p "$PROXY_DIR/dynamic"
 mkdir -p "$PROXY_DIR/certificados"
-# GARANTE QUE OS DIRETÓRIOS DE VOLUMES EXISTAM NO HOST
-# mkdir -p "$CD_DIR/volumes/html"
-# mkdir -p "$CD_DIR/volumes/media"
-# mkdir -p "$CD_DIR/volumes/static"
 
 ACME_FILE="$PROXY_DIR/certificados/acme.json"
 if [ ! -f "$ACME_FILE" ]; then
@@ -63,8 +69,21 @@ if [ ! -f "$ACME_FILE" ]; then
 fi
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
-    echo "== [4/6] Modo ZERO: Derrubando tudo =="
-    docker compose -f "$CD_DIR/docker-compose.yml" down --remove-orphans --volumes
+    echo "== [4/6] Modo ZERO: Derrubando containers =="
+    
+    # Define os argumentos do down baseado na escolha do usuário
+    DOWN_ARGS="--remove-orphans"
+    if [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]]; then
+        echo "!! AVISO: Volumes serão removidos !!"
+        DOWN_ARGS="$DOWN_ARGS --volumes"
+    fi
+    
+    docker compose -f "$CD_DIR/docker-compose.yml" down $DOWN_ARGS
+
+    if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
+        echo "!! Removendo todas as imagens docker para rebuild total !!"
+        docker image prune -af
+    fi
 
     echo "== [5/6] Modo ZERO: Build TOTAL SEM CACHE =="
     docker compose -f "$CD_DIR/docker-compose.yml" build --no-cache
@@ -76,15 +95,13 @@ else
     docker compose -f "$CD_DIR/docker-compose.yml" build
 
     echo "== [5/6] Modo ATUALIZAR: Recriando containers para forçar volumes =="
-    # O segredo está aqui: --always-recreate-deps e --force-recreate
-    # Isso garante que se o volume mudou no host, o container vai enxergar
     docker compose -f "$CD_DIR/docker-compose.yml" up -d --no-deps --force-recreate
     docker compose -f "$CD_DIR/docker-compose.yml" up -d
 fi
 
 echo "--------------------------------------------------------"
 echo "== Limpando resíduos de build =="
-docker image prune -af
+docker image prune -f
 docker builder prune -f
 
 # INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
@@ -96,7 +113,7 @@ echo -e "2) Sair" >&3
 read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
 
 if [ "$OPCAO_MENU" == "1" ]; then
-bash $SCRIPT_DIR/containers.sh
+    bash $SCRIPT_DIR/containers.sh
 fi
 echo -e "\n== SUCESSO: Deploy concluído! ==\n"
 

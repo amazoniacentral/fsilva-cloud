@@ -12,7 +12,7 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# --- NOVA LÓGICA DE SELEÇÃO DE SERVIÇOS ---
+# --- NOVA LÓGICA DE SELEÇÃO DE SERVIÇOS (CORRIGIDA) ---
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escopo da operação:" >&3
@@ -22,10 +22,11 @@ read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
 
 SERVICO_ALVO=""
 if [ "$ESCOPO_OPCAO" == "2" ]; then
-    # Extrai nomes dos serviços do docker-compose.yml (linhas que terminam em ':' dentro de 'services:')
-    SERVICOS=$(grep -E '^[[:space:]]{2}[a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | sed 's/://' | xargs)
+    # Extrator robusto: Pega apenas o primeiro nível abaixo de 'services:'
+    SERVICOS=$(awk '/^services:/ {f=1; next} /^[a-z]/ {f=0} f && /^[ ]{2}[a-zA-Z0-9_-]+:/ {gsub(/:/,"",$1); print $1}' "$CD_DIR/docker-compose.yml")
     
-    echo -e "\nServiços encontrados:" >&3
+    echo -e "\n--- Selecione o serviço desejado ---" >&3
+    PS3="Digite o número correspondente: "
     select SERVICO in $SERVICOS; do
         if [ -n "$SERVICO" ]; then
             SERVICO_ALVO=$SERVICO
@@ -70,7 +71,7 @@ echo "== [1/6] Limpeza e Atualização do Repositório Principal =="
 DIRETORIO_ATUAL=$(pwd)
 cd "$CD_DIR"
 
-# Atualização de Git (Mantido conforme original)
+# Força o reset do repositório principal
 git reset --hard HEAD
 git clean -fd
 git fetch origin main
@@ -91,25 +92,28 @@ if [ ! -f "$ACME_FILE" ]; then
   chmod 600 "$ACME_FILE"
 fi
 
-# Define os comandos Docker baseados no alvo
+# Define o comando base do Docker
 DOCKER_CMD="docker compose -f $CD_DIR/docker-compose.yml"
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
     echo "== [4/6] Modo ZERO: Derrubando containers =="
-    DOWN_ARGS="--remove-orphans"
-    [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]] && DOWN_ARGS="$DOWN_ARGS --volumes"
     
-    # Se for serviço específico, derruba apenas ele
+    DOWN_ARGS="--remove-orphans"
+    if [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]]; then
+        DOWN_ARGS="$DOWN_ARGS --volumes"
+    fi
+    
+    # Se houver serviço alvo, o down afeta apenas ele
     $DOCKER_CMD down $DOWN_ARGS $SERVICO_ALVO
 
     if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
-        echo "!! Removendo imagens docker !!"
         if [ -n "$SERVICO_ALVO" ]; then
-            # Pega a imagem específica do serviço e remove
-            IMG_NAME=$($DOCKER_CMD images -q $SERVICO_ALVO)
-            [ -n "$IMG_NAME" ] && docker rmi -f $IMG_NAME || true
+             echo "!! Removendo imagem específica de $SERVICO_ALVO !!"
+             IMG_ID=$($DOCKER_CMD images -q $SERVICO_ALVO)
+             [ -n "$IMG_ID" ] && docker rmi -f $IMG_ID || true
         else
-            docker image prune -af
+             echo "!! Removendo todas as imagens docker !!"
+             docker image prune -af
         fi
     fi
 
@@ -122,7 +126,7 @@ else
     echo "== [4/6] Modo ATUALIZAR: Build incremental =="
     $DOCKER_CMD build $SERVICO_ALVO
 
-    echo "== [5/6] Modo ATUALIZAR: Recriando containers =="
+    echo "== [5/6] Modo ATUALIZAR: Recriando container(s) =="
     $DOCKER_CMD up -d --no-deps --force-recreate $SERVICO_ALVO
     $DOCKER_CMD up -d $SERVICO_ALVO
 fi
@@ -132,7 +136,7 @@ echo "== Limpando resíduos de build =="
 docker image prune -f
 docker builder prune -f
 
-# INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
+# INTERAÇÃO FINAL
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Deseja gerenciar algum container?" >&3

@@ -13,7 +13,6 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # --- LÓGICA DE SELEÇÃO DE ESCOPO ---
-# Redireciona para o terminal para garantir interatividade mesmo em pipes
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escopo da operação:" >&3
@@ -48,7 +47,7 @@ if [ "$TIPO_OPERACOES" == "1" ]; then
 fi
 exec 3>&-
 
-# Configuração de Logrotate - Mantendo a automação de logs
+# Configuração de Logrotate
 sudo tee /etc/logrotate.d/fsilva-cloud > /dev/null <<EOF
 ${CD_DIR}/logs/*.log {
     daily
@@ -64,14 +63,12 @@ echo "== [1/6] Limpeza e Atualização do Repositório Principal =="
 DIRETORIO_ATUAL=$(pwd)
 cd "$CD_DIR"
 
-# Força o reset para garantir que nada local trave o git pull
 git reset --hard HEAD
 git clean -fd
 git fetch origin main
 git reset --hard origin/main
 
 echo "== [2/6] Atualização Forçada de Submódulos =="
-# Garante que os submódulos acompanhem a main do repositório pai
 git submodule foreach --recursive git reset --hard origin/main || true
 git submodule foreach --recursive git clean -fd
 git submodule update --init --recursive --remote
@@ -98,7 +95,6 @@ if [ "$TIPO_OPERACOES" == "1" ]; then
         DOWN_ARGS="$DOWN_ARGS --volumes"
     fi
     
-    # Se SERVICO_ALVO estiver vazio, afeta o compose inteiro.
     $DOCKER_CMD down $DOWN_ARGS $SERVICO_ALVO
 
     if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
@@ -122,9 +118,14 @@ else
     $DOCKER_CMD build $SERVICO_ALVO
 
     echo "== [5/6] Modo ATUALIZAR: Recriando container(s) =="
-    # Sobe primeiro as dependências e recria o alvo sem derrubar o resto
-    $DOCKER_CMD up -d --no-deps --force-recreate $SERVICO_ALVO
-    $DOCKER_CMD up -d $SERVICO_ALVO
+    # O segredo para evitar o erro de conflito é usar o --remove-orphans e forçar a recriação
+    # Se houver um container antigo impedindo o up, o stop/rm resolve o conflito de nome
+    if [ -n "$SERVICO_ALVO" ]; then
+        $DOCKER_CMD stop $SERVICO_ALVO || true
+        $DOCKER_CMD rm -f $SERVICO_ALVO || true
+    fi
+    
+    $DOCKER_CMD up -d --no-deps --force-recreate --remove-orphans $SERVICO_ALVO
 fi
 
 echo "--------------------------------------------------------"
@@ -143,12 +144,9 @@ read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
 if [ "$OPCAO_MENU" == "1" ]; then
     if [ -f "$SCRIPT_DIR/containers.sh" ]; then
         bash "$SCRIPT_DIR/containers.sh"
-    else
-        echo "Erro: containers.sh não encontrado em $SCRIPT_DIR" >&3
     fi
 fi
 
 echo -e "\n== SUCESSO: Operação de deploy finalizada! ==\n"
 
-# Volta para o diretório de origem
 cd "$DIRETORIO_ATUAL"

@@ -1,5 +1,5 @@
 services:
-  pwa:
+  gvendas:
     env_file:
       - path: ../.env
         required: true

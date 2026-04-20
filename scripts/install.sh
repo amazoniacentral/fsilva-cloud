@@ -12,7 +12,7 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# --- NOVA LÓGICA DE SELEÇÃO DE SERVIÇOS (CORRIGIDA) ---
+# --- LÓGICA DE SELEÇÃO DE ESCOPO ---
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escopo da operação:" >&3
@@ -22,15 +22,21 @@ read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
 
 SERVICO_ALVO=""
 if [ "$ESCOPO_OPCAO" == "2" ]; then
-    # Extrator robusto: Pega apenas o primeiro nível abaixo de 'services:'
-    SERVICOS=$(awk '/^services:/ {f=1; next} /^[a-z]/ {f=0} f && /^[ ]{2}[a-zA-Z0-9_-]+:/ {gsub(/:/,"",$1); print $1}' "$CD_DIR/docker-compose.yml")
+    # Extrai apenas os nomes dos serviços (2 espaços de recuo)
+    # Filtra para evitar pegar chaves de volumes ou redes no topo do arquivo
+    SERVICOS=$(grep -E '^  [a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | sed 's/[[:space:]]//g; s/://g')
     
-    echo -e "\n--- Selecione o serviço desejado ---" >&3
-    PS3="Digite o número correspondente: "
+    if [ -z "$SERVICOS" ]; then
+        echo -e "\n[!] ERRO: Nenhum serviço detectado. Verifique o arquivo docker-compose.yml." >&3
+        exit 1
+    fi
+
+    echo -e "\n--- Selecione o serviço para operação ---" >&3
+    PS3="Digite o número do serviço: "
     select SERVICO in $SERVICOS; do
         if [ -n "$SERVICO" ]; then
             SERVICO_ALVO=$SERVICO
-            echo -e "Selecionado: $SERVICO_ALVO" >&3
+            echo -e ">> Alvo definido: $SERVICO_ALVO" >&3
             break
         else
             echo "Opção inválida." >&3
@@ -92,28 +98,32 @@ if [ ! -f "$ACME_FILE" ]; then
   chmod 600 "$ACME_FILE"
 fi
 
-# Define o comando base do Docker
+# Define o comando base do Docker para reutilização
 DOCKER_CMD="docker compose -f $CD_DIR/docker-compose.yml"
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
     echo "== [4/6] Modo ZERO: Derrubando containers =="
     
+    # Define os argumentos do down baseado na escolha do usuário
     DOWN_ARGS="--remove-orphans"
     if [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]]; then
+        echo "!! AVISO: Volumes serão removidos !!"
         DOWN_ARGS="$DOWN_ARGS --volumes"
     fi
     
-    # Se houver serviço alvo, o down afeta apenas ele
+    # Se SERVICO_ALVO estiver vazio, afeta todos. Se preenchido, afeta apenas ele.
     $DOCKER_CMD down $DOWN_ARGS $SERVICO_ALVO
 
     if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
         if [ -n "$SERVICO_ALVO" ]; then
-             echo "!! Removendo imagem específica de $SERVICO_ALVO !!"
-             IMG_ID=$($DOCKER_CMD images -q $SERVICO_ALVO)
-             [ -n "$IMG_ID" ] && docker rmi -f $IMG_ID || true
+            echo "!! Removendo imagem específica do serviço: $SERVICO_ALVO !!"
+            IMG_ID=$($DOCKER_CMD images -q $SERVICO_ALVO)
+            if [ -n "$IMG_ID" ]; then
+                docker rmi -f $IMG_ID || true
+            fi
         else
-             echo "!! Removendo todas as imagens docker !!"
-             docker image prune -af
+            echo "!! Removendo TODAS as imagens do sistema !!"
+            docker image prune -af
         fi
     fi
 
@@ -126,7 +136,8 @@ else
     echo "== [4/6] Modo ATUALIZAR: Build incremental =="
     $DOCKER_CMD build $SERVICO_ALVO
 
-    echo "== [5/6] Modo ATUALIZAR: Recriando container(s) =="
+    echo "== [5/6] Modo ATUALIZAR: Recriando containers =="
+    # O comando up -d foca no SERVICO_ALVO se especificado, senão faz em todos
     $DOCKER_CMD up -d --no-deps --force-recreate $SERVICO_ALVO
     $DOCKER_CMD up -d $SERVICO_ALVO
 fi
@@ -136,17 +147,21 @@ echo "== Limpando resíduos de build =="
 docker image prune -f
 docker builder prune -f
 
-# INTERAÇÃO FINAL
+# INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
-echo -e "Deseja gerenciar algum container?" >&3
-echo -e "1) Sim" >&3
+echo -e "Deseja gerenciar algum container específico agora?" >&3
+echo -e "1) Sim (Abrir containers.sh)" >&3
 echo -e "2) Sair" >&3
 read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
 
 if [ "$OPCAO_MENU" == "1" ]; then
-    bash $SCRIPT_DIR/containers.sh
+    if [ -f "$SCRIPT_DIR/containers.sh" ]; then
+        bash "$SCRIPT_DIR/containers.sh"
+    else
+        echo "Erro: script containers.sh não encontrado em $SCRIPT_DIR" >&3
+    fi
 fi
-echo -e "\n== SUCESSO: Deploy concluído! ==\n"
+echo -e "\n== SUCESSO: Operação concluída com êxito! ==\n"
 
 cd "$DIRETORIO_ATUAL"

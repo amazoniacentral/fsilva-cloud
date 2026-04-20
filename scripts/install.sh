@@ -22,9 +22,15 @@ read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
 
 SERVICO_ALVO=""
 if [ "$ESCOPO_OPCAO" == "2" ]; then
-    # Extrai apenas os nomes dos serviços (2 espaços de recuo)
-    # Filtra para evitar pegar chaves de volumes ou redes no topo do arquivo
-    SERVICOS=$(grep -E '^  [a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | sed 's/[[:space:]]//g; s/://g')
+    # EXTRATOR PRECISO:
+    # 1. Pega linhas com exatamente 2 espaços de recuo
+    # 2. Ignora linhas que começam com '#' (comentários)
+    # 3. Ignora palavras reservadas como 'path', 'test', 'condition'
+    # 4. Remove espaços e dois-pontos
+    SERVICOS=$(grep -E '^  [a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | \
+               grep -vE '^[[:space:]]*#' | \
+               grep -vE 'path:|test:|condition:|image:|context:|container_name:' | \
+               sed 's/[[:space:]]//g; s/://g')
     
     if [ -z "$SERVICOS" ]; then
         echo -e "\n[!] ERRO: Nenhum serviço detectado. Verifique o arquivo docker-compose.yml." >&3
@@ -98,20 +104,18 @@ if [ ! -f "$ACME_FILE" ]; then
   chmod 600 "$ACME_FILE"
 fi
 
-# Define o comando base do Docker para reutilização
+# Define o comando base do Docker
 DOCKER_CMD="docker compose -f $CD_DIR/docker-compose.yml"
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
     echo "== [4/6] Modo ZERO: Derrubando containers =="
     
-    # Define os argumentos do down baseado na escolha do usuário
     DOWN_ARGS="--remove-orphans"
     if [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]]; then
         echo "!! AVISO: Volumes serão removidos !!"
         DOWN_ARGS="$DOWN_ARGS --volumes"
     fi
     
-    # Se SERVICO_ALVO estiver vazio, afeta todos. Se preenchido, afeta apenas ele.
     $DOCKER_CMD down $DOWN_ARGS $SERVICO_ALVO
 
     if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
@@ -137,7 +141,6 @@ else
     $DOCKER_CMD build $SERVICO_ALVO
 
     echo "== [5/6] Modo ATUALIZAR: Recriando containers =="
-    # O comando up -d foca no SERVICO_ALVO se especificado, senão faz em todos
     $DOCKER_CMD up -d --no-deps --force-recreate $SERVICO_ALVO
     $DOCKER_CMD up -d $SERVICO_ALVO
 fi
@@ -147,7 +150,7 @@ echo "== Limpando resíduos de build =="
 docker image prune -f
 docker builder prune -f
 
-# INTERAÇÃO PARA ESCOLHER CONTAINER E AÇÃO
+# INTERAÇÃO FINAL
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Deseja gerenciar algum container específico agora?" >&3

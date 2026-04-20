@@ -22,18 +22,14 @@ read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
 
 SERVICO_ALVO=""
 if [ "$ESCOPO_OPCAO" == "2" ]; then
-    # EXTRATOR PRECISO:
-    # 1. Pega linhas com exatamente 2 espaços de recuo
-    # 2. Ignora linhas que começam com '#' (comentários)
-    # 3. Ignora palavras reservadas como 'path', 'test', 'condition'
-    # 4. Remove espaços e dois-pontos
-    SERVICOS=$(grep -E '^  [a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | \
-               grep -vE '^[[:space:]]*#' | \
-               grep -vE 'path:|test:|condition:|image:|context:|container_name:' | \
-               sed 's/[[:space:]]//g; s/://g')
+    # EXTRATOR DE SERVIÇOS:
+    # 1. Procura pela linha 'services:'
+    # 2. Captura apenas as linhas com exatamente 2 espaços de recuo que terminam em ':'
+    # 3. Ignora linhas que começam com '-' ou espaços extras (sub-itens)
+    SERVICOS=$(awk '/^services:/ {f=1; next} /^[a-zA-Z]/ {f=0} f && /^[ ]{2}[a-zA-Z0-9_-]+:/ {gsub(/:/,"",$1); print $1}' "$CD_DIR/docker-compose.yml")
     
     if [ -z "$SERVICOS" ]; then
-        echo -e "\n[!] ERRO: Nenhum serviço detectado. Verifique o arquivo docker-compose.yml." >&3
+        echo -e "\n[!] ERRO: Nenhum serviço detectado no docker-compose.yml." >&3
         exit 1
     fi
 
@@ -156,7 +152,7 @@ echo -e "\n========================================================" >&3
 echo -e "Deseja gerenciar algum container específico agora?" >&3
 echo -e "1) Sim (Abrir containers.sh)" >&3
 echo -e "2) Sair" >&3
-read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
+read -u 3 -rp "Option (1 ou 2): " OPCAO_MENU
 
 if [ "$OPCAO_MENU" == "1" ]; then
     if [ -f "$SCRIPT_DIR/containers.sh" ]; then

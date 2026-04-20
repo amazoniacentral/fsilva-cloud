@@ -12,32 +12,44 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# --- LÓGICA DE SELEÇÃO DE ESCOPO ---
+# --- LÓGICA DE SELEÇÃO DE ESCOPO POR CONTAINER_NAME ---
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
 echo -e "Escopo da operação:" >&3
 echo -e "1) Aplicar em TODOS os serviços" >&3
-echo -e "2) Selecionar um SERVIÇO ESPECÍFICO" >&3
+echo -e "2) Selecionar um CONTAINER ESPECÍFICO" >&3
 read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
 
 SERVICO_ALVO=""
 if [ "$ESCOPO_OPCAO" == "2" ]; then
-    # EXTRATOR DE SERVIÇOS:
-    # 1. Procura pela linha 'services:'
-    # 2. Captura apenas as linhas com exatamente 2 espaços de recuo que terminam em ':'
-    # 3. Ignora linhas que começam com '-' ou espaços extras (sub-itens)
-    SERVICOS=$(awk '/^services:/ {f=1; next} /^[a-zA-Z]/ {f=0} f && /^[ ]{2}[a-zA-Z0-9_-]+:/ {gsub(/:/,"",$1); print $1}' "$CD_DIR/docker-compose.yml")
+    echo -e "\nMapeando nomes dos containers no docker-compose.yml..." >&3
     
-    if [ -z "$SERVICOS" ]; then
-        echo -e "\n[!] ERRO: Nenhum serviço detectado no docker-compose.yml." >&3
-        exit 1
+    # Extrai o nome do serviço e o container_name logo abaixo dele
+    # Formato: "nginx[sgn-nginx] django[sgn-django]"
+    MAPA_CONTAINERS=$(awk '
+        /^  [a-zA-Z0-9_-]+:/ { 
+            service = $1; gsub(/:/, "", service) 
+        }
+        /^[ ]+container_name:/ { 
+            cname = $2; 
+            if (service != "") {
+                print service "[" cname "]"
+            }
+            service = ""
+        }
+    ' "$CD_DIR/docker-compose.yml")
+
+    if [ -z "$MAPA_CONTAINERS" ]; then
+        echo -e "\n[!] Nenhum container_name encontrado. Listando serviços..." >&3
+        MAPA_CONTAINERS=$(grep -E '^  [a-zA-Z0-9_-]+:' "$CD_DIR/docker-compose.yml" | sed 's/[[:space:]]//g; s/://g')
     fi
 
-    echo -e "\n--- Selecione o serviço para operação ---" >&3
-    PS3="Digite o número do serviço: "
-    select SERVICO in $SERVICOS; do
-        if [ -n "$SERVICO" ]; then
-            SERVICO_ALVO=$SERVICO
+    echo -e "\n--- Selecione o container para operação ---" >&3
+    PS3="Digite o número correspondente: "
+    select SELECAO in $MAPA_CONTAINERS; do
+        if [ -n "$SELECAO" ]; then
+            # Extrai o nome do serviço (o que o docker-compose entende) que vem antes do '['
+            SERVICO_ALVO=$(echo "$SELECAO" | cut -d'[' -f1)
             echo -e ">> Alvo definido: $SERVICO_ALVO" >&3
             break
         else
@@ -112,6 +124,7 @@ if [ "$TIPO_OPERACOES" == "1" ]; then
         DOWN_ARGS="$DOWN_ARGS --volumes"
     fi
     
+    # Aplica o comando apenas ao serviço selecionado (ou todos)
     $DOCKER_CMD down $DOWN_ARGS $SERVICO_ALVO
 
     if [[ "$LIMPAR_IMAGENS" =~ ^[Ss]$ ]]; then
@@ -152,7 +165,7 @@ echo -e "\n========================================================" >&3
 echo -e "Deseja gerenciar algum container específico agora?" >&3
 echo -e "1) Sim (Abrir containers.sh)" >&3
 echo -e "2) Sair" >&3
-read -u 3 -rp "Option (1 ou 2): " OPCAO_MENU
+read -u 3 -rp "Opção (1 ou 2): " OPCAO_MENU
 
 if [ "$OPCAO_MENU" == "1" ]; then
     if [ -f "$SCRIPT_DIR/containers.sh" ]; then

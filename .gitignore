@@ -62,6 +62,6 @@ pgdata/
 /logs/
 /proxy/certificados/
 /proxy/dynamic/
-
+/config/rclone/
 
 

@@ -14,6 +14,9 @@ COPY repos/gvendas/ .
 #COPY gvendas-suite/gvendas/.env .env
 ARG REACT_APP_API_DOMAIN
 ENV REACT_APP_API_DOMAIN=$REACT_APP_API_DOMAIN
+
+# No seu Dockerfile
+#RUN npx esbuild src/service/service-worker.js --bundle --outfile=public/service-worker.js
 # 3. Build (gera em /app/build)
 RUN npm run build
 

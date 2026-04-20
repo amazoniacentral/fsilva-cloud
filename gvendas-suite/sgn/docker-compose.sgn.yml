@@ -8,7 +8,7 @@ services:
     volumes:
       # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - sgn_data:/volumes/staticfiles:ro
+      - sgn_data:/code/staticfiles:ro
     working_dir: /volumes
     env_file:
       - path: ../.env
@@ -65,7 +65,7 @@ services:
     command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
     volumes:
       - ../../repos/sgn:/code
-      - sgn_data:/code/volumes/staticfiles
+      - sgn_data:/code/staticfiles
       - media_data:/code/volumes/media
       - gvendas_data:/code/volumes/html
       - storage_data:/code/volumes/private

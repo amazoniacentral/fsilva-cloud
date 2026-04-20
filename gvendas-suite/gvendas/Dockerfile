@@ -9,29 +9,27 @@ ENV NODE_OPTIONS="--max-old-space-size=1024"
 COPY repos/gvendas/package*.json ./
 RUN npm install
 
-# 2. Código e Env
+# 2. Código
 COPY repos/gvendas/ .
-#COPY gvendas-suite/gvendas/.env .env
+
+# 3. Build com injeção automática da versão do package.json
+# O CRA vai capturar o REACT_APP_VERSION e gravar no build estático
 ARG REACT_APP_API_DOMAIN
 ENV REACT_APP_API_DOMAIN=$REACT_APP_API_DOMAIN
 
-# No seu Dockerfile
-#RUN npx esbuild src/service/service-worker.js --bundle --outfile=public/service-worker.js
-# 3. Build (gera em /app/build)
-RUN npm run build
+RUN export VERSION=$(node -p "require('./package.json').version") && \
+    echo "Construindo versão: $VERSION" && \
+    REACT_APP_VERSION=$VERSION npm run build
 
 # Estágio 2: Nginx
 FROM nginx:stable-alpine
 
-# Criamos um diretório temporário para guardar o build antes do volume ser montado
 WORKDIR /app_temp
 COPY --from=build-stage /app/build .
 
-# Copia a configuração do Nginx
 COPY gvendas-suite/auth-nginx.conf /etc/nginx/auth-nginx.conf
 COPY gvendas-suite/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Script para copiar os arquivos para o volume na hora que o container subir
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'cp -rp /app_temp/. /usr/share/nginx/html/' >> /entrypoint.sh && \
     echo 'exec nginx -g "daemon off;"' >> /entrypoint.sh && \
@@ -39,5 +37,4 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 
 EXPOSE 80
 
-# O entrypoint garante que, mesmo com volume montado, os arquivos sejam copiados para lá
 ENTRYPOINT ["/entrypoint.sh"]

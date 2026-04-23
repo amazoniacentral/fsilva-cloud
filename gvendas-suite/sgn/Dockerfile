@@ -39,6 +39,9 @@ python manage.py migrate --noinput\n\
 echo 'Coletando arquivos estáticos...'\n\
 python manage.py collectstatic --noinput\n\
 \n\
+echo 'Checando Sites...'\n\
+python manage.py gerar_sites_html\n\
+\n\
 echo 'Executando comando:' \"\$@\"\n\
 exec \"\$@\"\n" > /entrypoint.sh
 

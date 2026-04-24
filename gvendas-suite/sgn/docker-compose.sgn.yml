@@ -32,7 +32,8 @@ services:
 
       # MIDDLEWARES
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
+     # - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
+      - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header"
     deploy:
       resources:
         limits:

@@ -10,5 +10,13 @@ services:
     networks:
       - web
       - net_proxy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 128M
+        reservations:
+          cpus: '0.01'
+          memory: 64M
     depends_on:
       - django

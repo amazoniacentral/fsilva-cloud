@@ -43,6 +43,8 @@ services:
     build: 
       context: ../../
       dockerfile: ./gvendas-suite/sgn/Dockerfile
+    env_file:
+      - .env 
     # container_name: sgn-django
     restart: always
     hostname: api
@@ -97,6 +99,8 @@ services:
     restart: always
     hostname: worker-task
     working_dir: /code
+    env_file:
+      - .env 
     command: >
       celery -A sgn worker 
       -l info 
@@ -131,6 +135,8 @@ services:
     restart: always
     hostname: worker-beat
     working_dir: /code
+    env_file:
+      - .env 
     command: celery -A sgn beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler --max-interval 120
     volumes:
       - ../../repos/sgn:/code

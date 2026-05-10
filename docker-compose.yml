@@ -28,25 +28,19 @@ volumes:
     
 networks:
   web:
-    name: web
     driver: bridge
   net_proxy:
-    name: net_proxy
     driver: bridge
     internal: true
   net_boot:
-    name: net_boot
     driver: bridge
     internal: true
   net_db:
-    name: net_db
     driver: bridge
     internal: true
   net_data:
-    name: net_data
     driver: bridge
     internal: true
   net_storage:
-    name: net_storage
     driver: bridge
     internal: true

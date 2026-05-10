@@ -50,6 +50,7 @@ pgdata/
 # Ignora arquivos .env na raiz e dentro das pastas dos submódulos
 .db_conn/
 **/.env
+**/.env.dev
 **/acme.json
 **/.htpasswd
 **/.env.local

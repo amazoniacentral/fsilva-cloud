@@ -1,8 +1,10 @@
-# fsilva-cloud/docker-compose.yml
+# fsilva-cloud/docker-compose.dev.yml
 name: fsilva-cloud-dev
 
-include:
-  - ./docker-compose.yml
-
+# 1. Carrega as variáveis primeiro
 env_file:
-  - ./gvendas-suite/sgn/.env.dev
+  - ./gvendas-suite/sgn/.env.dev  # Verifique se o .env.dev está mesmo dentro da pasta /sgn/
+
+# 2. Inclui o arquivo BASE de produção (que deve ter outro nome ou estar na raiz)
+include:
+  - ./docker-compose.yml  # Aqui ele puxa o arquivo principal de produção

@@ -14,7 +14,8 @@ services:
       - path: ../.env
         required: true
       - path: .env
-        required: false
+    environment:
+      - API_DOMAIN=${API_DOMAIN}
     networks:
       - net_proxy
     labels:
@@ -115,7 +116,7 @@ services:
       - path: ../.env
         required: true
       - path: .env.dev # ONDE ESTÁ O SEU DEBUG=True E CONFIGS DE DEV
-        required: false
+        required: True
     # Rodando na 8001 para o túnel apontar direto nela e não conflitar
     command: python manage.py runserver 0.0.0.0:8001
     volumes:
@@ -131,8 +132,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.8' # Mais fôlego para IA e PDFs
-          memory: 1G
+          cpus: '0.6'
+          memory: 768M
+        reservations:
+          cpus: '0.05'
+          memory: 128M
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8001))'"]
       interval: 10s

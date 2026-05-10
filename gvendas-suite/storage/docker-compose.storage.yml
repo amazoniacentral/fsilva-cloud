@@ -13,7 +13,8 @@ services:
       - path: ../.env
         required: true
       - path: .env
-        required: false
+    environment:
+      - STORAGE_DOMAIN=${STORAGE_DOMAIN}
     networks:
       - net_storage
     labels:

@@ -1,10 +1,18 @@
-# fsilva-cloud/docker-compose.dev.yml
+# /opt/fsilva-cloud/docker-compose.dev.yml
 name: fsilva-cloud-dev
 
-# 1. Carrega as variáveis primeiro
-env_file:
-  - ./gvendas-suite/sgn/.env.dev  # Verifique se o .env.dev está mesmo dentro da pasta /sgn/
-
-# 2. Inclui o arquivo BASE de produção (que deve ter outro nome ou estar na raiz)
 include:
-  - ./docker-compose.yml  # Aqui ele puxa o arquivo principal de produção
+  - ./docker-compose.yml
+
+services:
+  # Aqui você lista os nomes dos serviços que quer "alterar" para o modo Dev
+  # O nome do serviço deve ser IDENTICO ao que está nos arquivos incluídos
+  sgn-django:
+    env_file:
+      - ./gvendas-suite/sgn/.env.dev
+
+  whatsapp-service:
+    env_file:
+      - ./gvendas-suite/sgn/.env.dev
+
+  # Se houver outros serviços que usem variáveis do .env, liste-os aqui

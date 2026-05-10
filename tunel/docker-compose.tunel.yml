@@ -1,0 +1,13 @@
+services:
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: tunnel
+    restart: unless-stopped
+    hostname: tunnel
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel run
+    networks:
+      - net_proxy
+    depends_on:
+      - django

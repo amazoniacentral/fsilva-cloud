@@ -4,7 +4,11 @@ services:
     # container_name: tunnel-prod
     restart: always # Produção não para nunca
     command: tunnel run
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     networks:
+      - web
       - net_proxy
     depends_on:
       - django

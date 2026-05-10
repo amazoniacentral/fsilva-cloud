@@ -38,15 +38,15 @@ echo "================================================================"
 echo "           SELEÇÃO DE CONTAINER POSTGRES                        "
 echo "================================================================"
 
-# Lista os containers ativos formatados em colunas com numeração
-mapfile -t CONTAINERS < <(docker ps --format "{{.Names}} ({{.Image}})")
+# Filtra apenas containers que possuem 'postgres' no nome ou na imagem
+mapfile -t CONTAINERS < <(docker ps --format "{{.Names}} ({{.Image}})" | grep -i "postgres")
 
 if [ ${#CONTAINERS[@]} -eq 0 ]; then
-    echo "ERRO: Nenhum container Docker em execução encontrado."
+    echo "ERRO: Nenhum container Postgres em execução encontrado."
     exit 1
 fi
 
-echo "Selecione o container que contém o Postgres:"
+echo "Selecione o container Postgres desejado:"
 for i in "${!CONTAINERS[@]}"; do
     echo "  $((i+1))) ${CONTAINERS[$i]}"
 done
@@ -112,13 +112,10 @@ docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT A
 
 
 # 4. Salvar Arquivo com DATABASE_URL
+mkdir -p "$SCRIPT_DIR/.db_conn"
 ENV_PATH="$SCRIPT_DIR/.db_conn/.env.$DB_NAME"
-# Tenta pegar o hostname interno do container, caso contrário usa o nome do container
 DB_HOST="$CONTAINER_NAME"
 DB_PORT="5432"
-
-# Cria o diretório de destino se não existir
-mkdir -p "$SCRIPT_DIR/.db_conn"
 
 echo "----------------------------------------------------------------"
 echo "Criando arquivo de ambiente: $ENV_PATH"

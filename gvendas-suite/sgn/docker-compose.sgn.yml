@@ -5,7 +5,7 @@ services:
     # container_name: sgn-nginx
     restart: always
     ports:
-      - "8080:80"
+      - 8080:80
     hostname: static-server
     volumes:
       # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem

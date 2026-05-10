@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-# Nome do container fixo
-CONTAINER_NAME="postgres"
-
 # Define o diretório onde o script está localizado
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
@@ -36,6 +33,38 @@ get_input() {
     done
     eval "$var_name=\"$input\""
 }
+
+echo "================================================================"
+echo "           SELEÇÃO DE CONTAINER POSTGRES                        "
+echo "================================================================"
+
+# Lista os containers ativos formatados em colunas com numeração
+mapfile -t CONTAINERS < <(docker ps --format "{{.Names}} ({{.Image}})")
+
+if [ ${#CONTAINERS[@]} -eq 0 ]; then
+    echo "ERRO: Nenhum container Docker em execução encontrado."
+    exit 1
+fi
+
+echo "Selecione o container que contém o Postgres:"
+for i in "${!CONTAINERS[@]}"; do
+    echo "  $((i+1))) ${CONTAINERS[$i]}"
+done
+
+while true; do
+    echo -n "Digite o número correspondente: "
+    read -r CHOICE < /dev/tty
+    if [[ "$CHOICE" =~ ^[0-9]+$ ]] && [ "$CHOICE" -ge 1 ] && [ "$CHOICE" -le "${#CONTAINERS[@]}" ]; then
+        # Extrai apenas o nome do container (antes do primeiro espaço)
+        CONTAINER_NAME=$(echo "${CONTAINERS[$((CHOICE-1))]}" | awk '{print $1}')
+        break
+    else
+        echo "Opção inválida."
+    fi
+done
+
+echo "Container selecionado: $CONTAINER_NAME"
+echo "----------------------------------------------------------------"
 
 echo "================================================================"
 echo "           CONFIGURAÇÃO DE BANCO DE DADOS POSTGRES              "
@@ -84,8 +113,12 @@ docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT A
 
 # 4. Salvar Arquivo com DATABASE_URL
 ENV_PATH="$SCRIPT_DIR/.db_conn/.env.$DB_NAME"
-DB_HOST="postgres"
+# Tenta pegar o hostname interno do container, caso contrário usa o nome do container
+DB_HOST="$CONTAINER_NAME"
 DB_PORT="5432"
+
+# Cria o diretório de destino se não existir
+mkdir -p "$SCRIPT_DIR/.db_conn"
 
 echo "----------------------------------------------------------------"
 echo "Criando arquivo de ambiente: $ENV_PATH"

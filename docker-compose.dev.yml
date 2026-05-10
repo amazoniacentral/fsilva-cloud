@@ -17,6 +17,8 @@ services:
   
   nginx:
     ports:
-      - 8080:80
+      - 8080:443
     networks:
       - web
+    labels:
+      - "traefik.http.routers.nginx-sgn.rule=Host(`localhost`)"

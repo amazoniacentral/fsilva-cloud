@@ -11,8 +11,8 @@ services:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
 
-  whatsapp-service:
-    env_file:
-      - ./gvendas-suite/sgn/.env.dev
+  # whatsapp-service:
+  #   env_file:
+  #     - ./gvendas-suite/sgn/.env.dev
 
   # Se houver outros serviços que usem variáveis do .env, liste-os aqui

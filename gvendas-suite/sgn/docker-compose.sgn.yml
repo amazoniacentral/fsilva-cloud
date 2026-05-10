@@ -70,8 +70,10 @@ services:
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
     networks:
-      - net_proxy
-      - net_db
+      net_proxy:
+        aliases:
+          - sgn-django  # <--- O Nginx vai encontrar o Django por este nome
+      net_db:
     deploy:
       resources:
         limits:

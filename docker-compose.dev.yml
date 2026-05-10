@@ -7,12 +7,6 @@ include:
 services:
   # Aqui você lista os nomes dos serviços que quer "alterar" para o modo Dev
   # O nome do serviço deve ser IDENTICO ao que está nos arquivos incluídos
-  sgn-django:
+  django:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
-
-  # whatsapp-service:
-  #   env_file:
-  #     - ./gvendas-suite/sgn/.env.dev
-
-  # Se houver outros serviços que usem variáveis do .env, liste-os aqui

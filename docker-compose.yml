@@ -1,6 +1,7 @@
 # fsilva-cloud/docker-compose.yml
 include:
   - ./proxy/docker-compose.traefik.yml
+  - ./tunel/docker-compose.tunel.yml
   - ./gvendas-suite/sgn/docker-compose.sgn.yml
   - ./gvendas-suite/gvendas/docker-compose.gvendas.yml
   - ./gvendas-suite/whatsapp/docker-compose.whatsapp.yml

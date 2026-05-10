@@ -1,47 +1,30 @@
 # fsilva-cloud/docker-compose.yml
+name: fsilva-cloud-prod
+
 include:
   - ./proxy/docker-compose.traefik.yml
   - ./tunel/docker-compose.tunel.yml
-  - ./gvendas-suite/sgn/docker-compose.sgn.yml
-  - ./gvendas-suite/gvendas/docker-compose.gvendas.yml
-  - ./gvendas-suite/whatsapp/docker-compose.whatsapp.yml
-  - ./gvendas-suite/media/docker-compose.media.yml
-  - ./gvendas-suite/storage/docker-compose.storage.yml
+  - ./gvendas-suite/docker-compose.gvendas.yml
   - ./database/docker-compose.redis.yml
   - ./database/docker-compose.postgres.yml
   - ./netdata/docker-compose.netdata.yml
 
 volumes:
   postgres_data:
-    name: postgres_data
   redis_data:
-    name: redis_data
   traefik_dynamics:
-    name: traefik_dynamics
   gvendas_data:
-    name: gvendas_data
   storage_data:
-    name: storage_data
   media_data:
-    name: media_data
   sgn_data:
-    name: sgn_data
   netdataconfig:
-    name: netdataconfig
   netdatalib:
-    name: netdatalib
   netdatacache:
-    name: netdatacache
   whatsapp_node_modules:
-    name: whatsapp_node_modules
   whatsapp_sessions:
-    name: whatsapp_sessions
   whatsapp_logs:
-    name: whatsapp_logs
   certificados_data:
-    name: certificados_data
   backups:
-    name: backups
     
 networks:
   web:
@@ -67,4 +50,3 @@ networks:
     name: net_storage
     driver: bridge
     internal: true
-    

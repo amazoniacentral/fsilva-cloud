@@ -1,7 +1,7 @@
 services:
   traefik:
     image: traefik:v3.0
-    container_name: traefik
+    # container_name: traefik
     restart: always
     hostname: traefik-edge
     dns:
@@ -70,7 +70,7 @@ services:
       
   error-handler:
     image: nginx:alpine
-    container_name: global-error-server
+    # container_name: global-error-server
     restart: always
     hostname: pagina-erros
     networks:

@@ -3,7 +3,7 @@ services:
     build: 
       context: ../../
       dockerfile: ./gvendas-suite/whatsapp/Dockerfile
-    container_name: whatsapp
+    # container_name: whatsapp
     restart: always
     hostname: whatsapp
     dns:
@@ -15,11 +15,6 @@ services:
       - whatsapp_node_modules:/code/node_modules
       - whatsapp_sessions:/code/src/sessions
       - whatsapp_logs:/code/src/logs
-    env_file:
-      - path: ./gvendas-suite/.env
-        required: true
-      - path: .env
-        required: false
     networks:
       - net_boot
     extra_hosts:

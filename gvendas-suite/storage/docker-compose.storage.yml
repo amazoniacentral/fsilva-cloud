@@ -2,19 +2,13 @@ services:
   # STORAGE - Arquivos Privados
   storage:
     image: nginx:alpine
-    container_name: storage
+    # container_name: storage
     restart: always
     hostname: storage
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - storage_data:/storage:ro
     working_dir: /storage
-    env_file:
-      - path: ./gvendas-suite/.env
-        required: true
-      - path: .env
-    environment:
-      - STORAGE_DOMAIN=${STORAGE_DOMAIN}
     networks:
       - net_storage
     labels:

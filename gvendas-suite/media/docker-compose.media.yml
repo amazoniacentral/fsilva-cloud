@@ -2,7 +2,7 @@ services:
   # CDN - Arquivos Públicos
   media:
     image: nginx:alpine
-    container_name: media
+    # container_name: media
     restart: always
     hostname: media-server
     volumes:
@@ -11,10 +11,6 @@ services:
       - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
       - media_data:/media_files:ro
     working_dir: /media_files
-    env_file:
-      - path: ./gvendas-suite/.env
-        required: true
-      - path: .env
     networks:
       - net_proxy
     labels:

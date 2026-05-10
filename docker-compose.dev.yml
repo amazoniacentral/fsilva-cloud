@@ -1,0 +1,8 @@
+# fsilva-cloud/docker-compose.yml
+name: fsilva-cloud-dev
+
+include:
+  - ./proxy/docker-compose.yml
+
+env_file:
+  - ./gvendas-suite/sgn/.env.dev

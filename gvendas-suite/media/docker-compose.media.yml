@@ -15,7 +15,6 @@ services:
       - path: ../.env
         required: true
       - path: .env
-        required: false
     networks:
       - net_proxy
     labels:

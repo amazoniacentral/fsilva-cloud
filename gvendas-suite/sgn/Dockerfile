@@ -31,16 +31,22 @@ RUN pip-compile requirements.in --output-file=requirements.txt && \
 # 2. COPIA o restante do código
 COPY repos/sgn/ .
 
-# Cria o script de entrypoint que executa migrações e DEPOIS o comando do Compose
+# Cria o script de entrypoint inteligente
+# Se a variável IS_DEV_CONTAINER for true, ele pula migrações e collectstatic
 RUN printf "#!/bin/bash\n\
-echo 'Aplicando migrações...'\n\
-python manage.py migrate --noinput\n\
+if [ \"\$IS_DEV_CONTAINER\" != \"true\" ]; then\n\
+    echo 'Ambiente de PRODUCAO detectado. Iniciando rotinas...'\n\
+    echo 'Aplicando migrações...'\n\
+    python manage.py migrate --noinput\n\
 \n\
-echo 'Coletando arquivos estáticos...'\n\
-python manage.py collectstatic --noinput\n\
+    echo 'Coletando arquivos estáticos...'\n\
+    python manage.py collectstatic --noinput\n\
 \n\
-echo 'Checando Sites...'\n\
-python manage.py gerar_sites_html\n\
+    echo 'Checando Sites...'\n\
+    python manage.py gerar_sites_html\n\
+else\n\
+    echo 'Ambiente de DEVELOPER detectado. Pulando rotinas de producao...'\n\
+fi\n\
 \n\
 echo 'Executando comando:' \"\$@\"\n\
 exec \"\$@\"\n" > /entrypoint.sh

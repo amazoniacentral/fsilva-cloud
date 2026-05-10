@@ -95,6 +95,50 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s # Dá 30 segundos para as migrações rodarem
+  
+  # APP DEVELOPER (Django) - Isolado
+  django-dev:
+    build: 
+      context: ../../
+      dockerfile: ./gvendas-suite/sgn/Dockerfile
+    container_name: sgn-django-dev
+    restart: unless-stopped # Permite parar manualmente sem o docker subir sozinho
+    hostname: api-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    working_dir: /code
+    env_file:
+      - path: ../.env
+        required: true
+      - path: .env.dev # ONDE ESTÁ O SEU DEBUG=True E CONFIGS DE DEV
+        required: false
+    # Rodando na 8001 para o túnel apontar direto nela e não conflitar
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - ../../repos/sgn:/code
+    environment:
+      - IS_DEV_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/code
+      - MALLOC_ARENA_MAX=2
+    networks:
+      - net_proxy
+      - net_db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.8' # Mais fôlego para IA e PDFs
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8001))'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # WORKER
   celery-worker:
@@ -126,6 +170,48 @@ services:
     networks:
       - net_db
       - net_boot
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.05'
+          memory: 128M
+
+  # WORKER CELERY - DEVELOPER
+  celery-worker-dev:
+    build: 
+      context: ../../
+      dockerfile: ./gvendas-suite/sgn/Dockerfile
+    container_name: sgn-celery-worker-dev
+    restart: unless-stopped
+    hostname: worker-dev
+    working_dir: /code
+    command: >
+      celery -A sgn worker 
+      -l info 
+      --concurrency=1 
+      --max-tasks-per-child=50 
+      --max-memory-per-child=150000
+      -Q dev_queue
+      -n dev_worker@%h
+    volumes:
+      - ../../repos/sgn:/code
+    env_file:
+      - path: ../.env
+        required: true
+      - path: .env.dev
+        required: false
+    environment:
+      - IS_DEV_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/code
+      - MALLOC_ARENA_MAX=2
+      - PYTHONHASHSEED=random
+    networks:
+      - net_db
+      - net_proxy
     deploy:
       resources:
         limits:

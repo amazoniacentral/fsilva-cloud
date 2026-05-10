@@ -12,16 +12,14 @@ services:
       - media_data:/media_files:ro
     working_dir: /media_files
     env_file:
-      - path: ../.env
+      - path: ./gvendas-suite/.env
         required: true
       - path: .env
-    environment:
-      - MEDIA_DOMAIN=${MEDIA_DOMAIN}
     networks:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?media.seudo-minio.com.br}`)"
+      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
       - "traefik.http.routers.media-nginx.entrypoints=websecure"
       - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.media-nginx.loadbalancer.server.port=80"

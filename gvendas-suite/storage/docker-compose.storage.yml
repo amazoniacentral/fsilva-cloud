@@ -10,7 +10,7 @@ services:
       - storage_data:/storage:ro
     working_dir: /storage
     env_file:
-      - path: ../.env
+      - path: ./gvendas-suite/.env
         required: true
       - path: .env
     environment:

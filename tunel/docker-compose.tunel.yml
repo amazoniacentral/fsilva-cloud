@@ -1,24 +1,8 @@
 services:
-  # TÚNEL DE PRODUÇÃO (Sempre ligado)
   tunnel:
     image: cloudflare/cloudflared:latest
     # container_name: tunnel-prod
     restart: always # Produção não para nunca
-    environment:
-      - TUNNEL_TOKEN=${PROD_TUNNEL_TOKEN:?seu_token_do_tunel_prod} # Token A
-    command: tunnel run
-    networks:
-      - net_proxy
-    depends_on:
-      - django
-  
-  # TÚNEL DE DEVELOPER (Controle manual)
-  tunnel-dev:
-    image: cloudflare/cloudflared:latest
-    # container_name: tunnel-dev
-    restart: unless-stopped # Se você der stop, ele fica parado
-    environment:
-      - TUNNEL_TOKEN=${DEV_TUNNEL_TOKEN:?seu_token_do_tunel_dev} # Token B
     command: tunnel run
     networks:
       - net_proxy

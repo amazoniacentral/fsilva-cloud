@@ -10,3 +10,7 @@ services:
   django:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
+  
+  tunnel:
+    env_file:
+      - ./tunel/.env.dev

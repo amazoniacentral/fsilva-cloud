@@ -49,8 +49,6 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
-
-
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_dynamics:/etc/traefik/dynamic
@@ -93,16 +91,16 @@ services:
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.rule=HostRegexp(`^.+$`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.entrypoints=web"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.priority=1"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.middlewares=error-pages-middleware"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.service=error-service"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.middlewares=${COMPOSE_PROJECT_NAME}-error-pages-middleware"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.service=${COMPOSE_PROJECT_NAME}-error-service"
 
       # ROTEADOR HTTPS CATCH-ALL
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.rule=HostRegexp(`^.+$`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.tls=true"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.priority=1"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.middlewares=error-pages-middleware"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.service=error-service"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.middlewares=${COMPOSE_PROJECT_NAME}-error-pages-middleware"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.service=${COMPOSE_PROJECT_NAME}-error-service"
     deploy:
       resources:
         limits:

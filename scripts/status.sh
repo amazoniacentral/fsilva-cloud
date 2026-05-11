@@ -259,23 +259,29 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CONEXÕES DO BANCO DE DADOS (POSTGRES)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-DB_CONTAINER="postgres"
-if [ "$(docker ps -q -f name=$DB_CONTAINER)" ]; then
-    DB_USER=$(docker exec $DB_CONTAINER env | grep POSTGRES_USER | cut -d'=' -f2)
-    DB_USER=${DB_USER:-postgres}
-    DB_NAME=$(docker exec $DB_CONTAINER env | grep POSTGRES_DB | cut -d'=' -f2)
-    DB_NAME=${DB_NAME:-$DB_USER}
-    DB_STATS=$(docker exec --user postgres $DB_CONTAINER psql -U "$DB_USER" -d "$DB_NAME" -t -c "SELECT state, count(*) FROM pg_stat_activity GROUP BY state;" 2>/dev/null | grep .)
-    if [ $? -eq 0 ] && [ ! -z "$DB_STATS" ]; then
-        printf "%-25s %-15s\n" "STATUS" "QUANTIDADE"
-        echo "$DB_STATS" | awk -F'|' '{status=($1==" " || $1=="" ? "Interno/System" : $1); gsub(/^[ \t]+|[ \t]+$/, "", status); printf "%-25s %-15s\n", status, $2}'
-        TOTAL_CONNS=$(echo "$DB_STATS" | awk -F'|' '{sum+=$2} END {print sum}')
-        echo -e "${CYAN}----------------------------------------------------------------${RESET}"
-        printf "%-25s ${YELLOW}%-15s${RESET}\n" "TOTAL OCUPADO:" "$TOTAL_CONNS / 200"
-    else
-        echo -e "${RED}ERRO: Dados do Postgres inacessíveis.${RESET}"
+DB_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "postgres")
+
+for DB_CONTAINER in $DB_CONTAINERS; do
+    echo -e "${CYAN}Container: $DB_CONTAINER${RESET}"
+    if [ "$(docker ps -q -f name=^/${DB_CONTAINER}$)" ]; then
+        DB_USER=$(docker exec $DB_CONTAINER env | grep POSTGRES_USER | cut -d'=' -f2)
+        DB_USER=${DB_USER:-postgres}
+        DB_NAME=$(docker exec $DB_CONTAINER env | grep POSTGRES_DB | cut -d'=' -f2)
+        DB_NAME=${DB_NAME:-$DB_USER}
+        DB_STATS=$(docker exec --user postgres $DB_CONTAINER psql -U "$DB_USER" -d "$DB_NAME" -t -c "SELECT state, count(*) FROM pg_stat_activity GROUP BY state;" 2>/dev/null | grep .)
+        if [ $? -eq 0 ] && [ ! -z "$DB_STATS" ]; then
+            printf "%-25s %-15s\n" "STATUS" "QUANTIDADE"
+            echo "$DB_STATS" | awk -F'|' '{status=($1==" " || $1=="" ? "Interno/System" : $1); gsub(/^[ \t]+|[ \t]+$/, "", status); printf "%-25s %-15s\n", status, $2}'
+            TOTAL_CONNS=$(echo "$DB_STATS" | awk -F'|' '{sum+=$2} END {print sum}')
+            echo -e "${CYAN}----------------------------------------------------------------${RESET}"
+            printf "%-25s ${YELLOW}%-15s${RESET}\n" "TOTAL OCUPADO:" "$TOTAL_CONNS / 200"
+        else
+            echo -e "${RED}ERRO: Dados do Postgres inacessíveis em $DB_CONTAINER.${RESET}"
+        fi
     fi
-fi
+    echo ""
+done
+
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}       ITENS REALMENTE ÓRFÃOS (LIXO)${RESET}"

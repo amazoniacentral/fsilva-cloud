@@ -14,6 +14,8 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      
       - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
@@ -70,6 +72,9 @@ services:
           - sgn-django  # <--- O Nginx vai encontrar o Django por este nome
       net_db:
     labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      
       - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"

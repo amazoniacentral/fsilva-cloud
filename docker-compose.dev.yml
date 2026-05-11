@@ -6,9 +6,8 @@ include:
 
 services:
   traefik:
-    ports:
-      - 8080:80
-      - 8443:443
+    env_file:
+      - ./proxy/.env.dev
   
   django:
     env_file:

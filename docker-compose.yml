@@ -29,7 +29,6 @@ volumes:
 networks:
   web:
     driver: bridge
-    internal: false
   net_proxy:
     driver: bridge
     internal: true

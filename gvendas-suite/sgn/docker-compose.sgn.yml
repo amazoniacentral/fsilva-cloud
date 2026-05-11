@@ -75,9 +75,13 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
-      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
+      # MIDDLEWARE AUTH
+      - "traefik.http.middlewares.auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
+      
+      - "traefik.http.services.django.loadbalancer.server.port=8000"
+
     deploy:
       resources:
         limits:

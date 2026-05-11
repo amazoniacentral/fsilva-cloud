@@ -12,10 +12,41 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# --- LÓGICA DE SELEÇÃO DE ESCOPO ---
+# --- LÓGICA DE SELEÇÃO DE PROJETO (YAML) ---
 exec 3<>/dev/tty
 echo -e "\n========================================================" >&3
-echo -e "Escopo da operação:" >&3
+echo -e "Selecione o arquivo de composição do projeto:" >&3
+
+# Lista arquivos yml/yaml e extrai o 'name:'
+mapfile -t YAML_FILES < <(ls "$CD_DIR"/*.yml "$CD_DIR"/*.yaml 2>/dev/null)
+
+if [ ${#YAML_FILES[@]} -eq 0 ]; then
+    echo "Erro: Nenhum arquivo .yml ou .yaml encontrado em $CD_DIR" >&3
+    exit 1
+fi
+
+for i in "${!YAML_FILES[@]}"; do
+    FILE_NAME=$(basename "${YAML_FILES[$i]}")
+    # Busca a linha 'name:', remove o prefixo 'name:' e espaços
+    PROJ_NAME=$(grep "^name:" "${YAML_FILES[$i]}" | sed 's/name://;s/[[:space:]]//g')
+    [ -z "$PROJ_NAME" ] && PROJ_NAME="Sem nome definido"
+    echo -e "$((i+1))) $FILE_NAME [Projeto: $PROJ_NAME]" >&3
+done
+
+read -u 3 -rp "Opção: " YAML_OPCAO
+SELECTED_YAML="${YAML_FILES[$((YAML_OPCAO-1))]}"
+
+if [ -z "$SELECTED_YAML" ]; then
+    echo "Erro: Opção inválida." >&3
+    exit 1
+fi
+
+# Define o nome do projeto para logs e comandos
+PROJ_FINAL_NAME=$(grep "^name:" "$SELECTED_YAML" | sed 's/name://;s/[[:space:]]//g')
+
+# --- LÓGICA DE SELEÇÃO DE ESCOPO ---
+echo -e "\n========================================================" >&3
+echo -e "Escopo da operação no projeto: $PROJ_FINAL_NAME" >&3
 echo -e "1) Aplicar em TODOS os serviços" >&3
 echo -e "2) Digitar NOME DO SERVIÇO específico" >&3
 read -u 3 -rp "Opção (1 ou 2): " ESCOPO_OPCAO
@@ -36,28 +67,20 @@ echo -e "1) Instalação do ZERO (Personalizada)" >&3
 echo -e "2) Apenas ATUALIZAR (Somente código rápido + Re-sync de volumes)" >&3
 read -u 3 -rp "Opção (1 ou 2): " TIPO_OPERACOES
 
-# Variáveis de limpeza para o Modo ZERO
 LIMPAR_VOLUMES="n"
 LIMPAR_IMAGENS="n"
 
 if [ "$TIPO_OPERACOES" == "1" ]; then
     echo -e "\n--- CONFIGURAÇÃO DA LIMPEZA (Modo ZERO) ---" >&3
     read -u 3 -rp "Deseja APAGAR OS VOLUMES? (Dados de DB e mídias serão PERDIDOS) [s/N]: " LIMPAR_VOLUMES
-    read -u 3 -rp "Deseja APAGAR TODAS AS IMAGENS DOCKER do sistema? [s/N]: " LIMPAR_IMAGENS
+    read -u 3 -rp "Deseja APAGAR TODAS AS IMAGENS DOCKER do projeto? [s/N]: " LIMPAR_IMAGENS
 fi
 exec 3>&-
 
-# Configuração de Logrotate
-sudo tee /etc/logrotate.d/fsilva-cloud > /dev/null <<EOF
-${CD_DIR}/logs/*.log {
-    daily
-    missingok
-    rotate 7
-    compress
-    notifempty
-    copytruncate
-}
-EOF
+# --- EXECUÇÃO ---
+
+# Define o comando base do Docker Compose usando o arquivo selecionado
+DOCKER_CMD="docker compose -f $SELECTED_YAML"
 
 echo "== [1/6] Limpeza e Atualização do Repositório Principal =="
 DIRETORIO_ATUAL=$(pwd)
@@ -83,11 +106,8 @@ if [ ! -f "$ACME_FILE" ]; then
   chmod 600 "$ACME_FILE"
 fi
 
-# Define o comando base do Docker Compose
-DOCKER_CMD="docker compose -f $CD_DIR/docker-compose.yml"
-
 if [ "$TIPO_OPERACOES" == "1" ]; then
-    echo "== [4/6] Modo ZERO: Derrubando containers =="
+    echo "== [4/6] Modo ZERO: Derrubando containers do projeto $PROJ_FINAL_NAME =="
     
     DOWN_ARGS="--remove-orphans"
     if [[ "$LIMPAR_VOLUMES" =~ ^[Ss]$ ]]; then
@@ -101,10 +121,11 @@ if [ "$TIPO_OPERACOES" == "1" ]; then
         if [ -n "$SERVICO_ALVO" ]; then
             echo "!! Removendo imagem específica de $SERVICO_ALVO !!"
             IMG_ID=$($DOCKER_CMD images -q $SERVICO_ALVO)
-            [ -n "$IMG_ID" ] && docker rmi -f $IMG_ID || true
+            [ -n "$IMG_ID" ] && docker rmi -f "$IMG_ID" || true
         else
-            echo "!! Removendo TODAS as imagens docker do sistema !!"
-            docker image prune -af
+            echo "!! Removendo imagens do projeto $PROJ_FINAL_NAME !!"
+            # Remove imagens associadas ao arquivo compose atual
+            $DOCKER_CMD images -q | xargs -r docker rmi -f || true
         fi
     fi
 
@@ -118,8 +139,6 @@ else
     $DOCKER_CMD build $SERVICO_ALVO
 
     echo "== [5/6] Modo ATUALIZAR: Recriando container(s) =="
-    # O segredo para evitar o erro de conflito é usar o --remove-orphans e forçar a recriação
-    # Se houver um container antigo impedindo o up, o stop/rm resolve o conflito de nome
     if [ -n "$SERVICO_ALVO" ]; then
         $DOCKER_CMD stop $SERVICO_ALVO || true
         $DOCKER_CMD rm -f $SERVICO_ALVO || true
@@ -147,6 +166,5 @@ if [ "$OPCAO_MENU" == "1" ]; then
     fi
 fi
 
-echo -e "\n== SUCESSO: Operação de deploy finalizada! ==\n"
-
+echo -e "\n== SUCESSO: Deploy de [$PROJ_FINAL_NAME] finalizado! ==\n"
 cd "$DIRETORIO_ATUAL"

@@ -21,14 +21,14 @@ services:
       - "traefik.http.services.${COMPOSE_PROJECT_NAME}-nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
       
       # Nas labels do seu container DJANGO (SGN) ou onde o middleware foi criado:
-      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
+      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-django.forwardauth.address=http://${COMPOSE_PROJECT_NAME}-django-1:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-django.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
 
       # MIDDLEWARES
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-block-internal-header.headers.customrequestheaders.X-Internal-Secret="
      # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.middlewares=block-internal-header"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.middlewares=${COMPOSE_PROJECT_NAME}-block-internal-header"
     deploy:
       resources:
         limits:

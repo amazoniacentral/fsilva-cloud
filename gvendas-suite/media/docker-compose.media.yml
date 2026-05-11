@@ -22,7 +22,7 @@ services:
       - "traefik.http.services.${COMPOSE_PROJECT_NAME}-media-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
       # MIDDLEWARES
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-media-nginx.middlewares=block-internal-header,error-pages-middleware"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-media-nginx.middlewares=${COMPOSE_PROJECT_NAME}-block-internal-header,${COMPOSE_PROJECT_NAME}-error-pages-middleware"
     deploy:
       resources:
         limits:

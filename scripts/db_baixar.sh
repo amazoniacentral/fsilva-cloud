@@ -7,15 +7,17 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 RESET='\033[0m'
 
-# Função para selecionar container por padrão de nome
+# Função para selecionar container por padrão de nome e prefixo de projeto
 selecionar_container() {
     local pattern=$1
-    local prompt=$2
-    # Lista containers que batem com o padrão (case-insensitive)
-    mapfile -t containers < <(docker ps --format "{{.Names}}" | grep -i "$pattern")
+    local prefixo=$2
+    local prompt=$3
+    
+    # Filtra containers que começam com o prefixo e batem com o padrão
+    mapfile -t containers < <(docker ps --format "{{.Names}}" | grep "^${prefixo}" | grep -i "$pattern")
     
     if [ ${#containers[@]} -eq 0 ]; then
-        echo -e "${RED}❌ Nenhum container encontrado com o padrão: $pattern${RESET}"
+        echo -e "${RED}❌ Nenhum container encontrado para $prompt com prefixo $prefixo e padrão $pattern${RESET}"
         exit 1
     elif [ ${#containers[@]} -eq 1 ]; then
         echo "${containers[0]}"
@@ -32,33 +34,46 @@ echo -e "${CYAN}================================================================
 echo -e "${YELLOW}           RESTAURAÇÃO DINÂMICA - SGN CLOUD${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-# 1. SELEÇÃO DINÂMICA DE CONTAINERS
-CONTAINER_DJANGO=$(selecionar_container "django" "Django/App")
-CONTAINER_PG=$(selecionar_container "postgres" "PostgreSQL")
+# 1. IDENTIFICAÇÃO DOS PROJETOS DISPONÍVEIS
+# Pega a primeira parte do nome (antes do primeiro hífen) de todos os containers rodando
+mapfile -t PROJETOS < <(docker ps --format "{{.Names}}" | cut -d'-' -f1 | sort -u)
 
-# Tenta encontrar Celery e Beat baseados no prefixo do nome do Django (ex: sgn-)
-PROJETO_PREFIX=$(echo "$CONTAINER_DJANGO" | cut -d'-' -f1)
-CONTAINER_CELERY=$(selecionar_container "${PROJETO_PREFIX}.*worker" "Celery Worker")
-CONTAINER_BEAT=$(selecionar_container "${PROJETO_PREFIX}.*beat" "Celery Beat")
-
-# 2. SELEÇÃO DINÂMICA DE VOLUME (Correção da Lista)
-echo -e "\n${YELLOW}Selecione o volume de Backup associado ao $CONTAINER_DJANGO:${RESET}"
-# O comando abaixo extrai cada volume em uma nova linha
-mapfile -t VOLUMES < <(docker inspect "$CONTAINER_DJANGO" --format='{{range .Mounts}}{{if eq .Type "volume"}}{{println .Name}}{{end}}{{end}}' | grep -v '^$')
-
-if [ ${#VOLUMES[@]} -eq 0 ]; then
-    echo -e "${RED}❌ Nenhum volume do tipo 'volume' encontrado no container Django.${RESET}"
+if [ ${#PROJETOS[@]} -eq 0 ]; then
+    echo -e "${RED}❌ Nenhum projeto Docker identificado.${RESET}"
     exit 1
 fi
 
-for i in "${!VOLUMES[@]}"; do 
-    echo "$((i+1))) ${VOLUMES[$i]}"
+echo -e "${YELLOW}Selecione o Projeto:${RESET}"
+for i in "${!PROJETOS[@]}"; do
+    echo "$((i+1))) ${PROJETOS[$i]}"
 done
+read -rp "Projeto: " p_idx
+PROJETO_PREFIX="${PROJETOS[$((p_idx-1))]}"
 
-read -rp "Escolha o número do volume: " v_idx
-VOLUME_NAME="${VOLUMES[$((v_idx-1))]}"
+# 2. SELEÇÃO DINÂMICA DE CONTAINERS DO PROJETO
+CONTAINER_DJANGO=$(selecionar_container "django" "$PROJETO_PREFIX" "Django/App")
+CONTAINER_PG=$(selecionar_container "postgres" "$PROJETO_PREFIX" "PostgreSQL")
+CONTAINER_CELERY=$(selecionar_container "worker" "$PROJETO_PREFIX" "Celery Worker")
+CONTAINER_BEAT=$(selecionar_container "beat" "$PROJETO_PREFIX" "Celery Beat")
+
+# 3. SELEÇÃO AUTOMÁTICA DO VOLUME DE BACKUP
+# Busca volumes montados no Django que contenham a palavra "backup" no nome
+mapfile -t VOLUMES < <(docker inspect "$CONTAINER_DJANGO" --format='{{range .Mounts}}{{if eq .Type "volume"}}{{println .Name}}{{end}}{{end}}' | grep -i "backup")
+
+if [ ${#VOLUMES[@]} -eq 0 ]; then
+    echo -e "${RED}❌ Nenhum volume contendo 'backup' no nome foi encontrado no container $CONTAINER_DJANGO.${RESET}"
+    exit 1
+elif [ ${#VOLUMES[@]} -eq 1 ]; then
+    VOLUME_NAME="${VOLUMES[0]}"
+    echo -e "\n✅ Volume de backup identificado: ${GREEN}$VOLUME_NAME${RESET}"
+else
+    echo -e "\n${YELLOW}Múltiplos volumes de backup encontrados, selecione um:${RESET}"
+    for i in "${!VOLUMES[@]}"; do echo "$((i+1))) ${VOLUMES[$i]}"; done
+    read -rp "Opção: " v_idx
+    VOLUME_NAME="${VOLUMES[$((v_idx-1))]}"
+fi
+
 BACKUP_DIR="/var/lib/docker/volumes/${VOLUME_NAME}/_data"
-
 DOT_ENV_PATH="./.env"
 
 # --- FLUXO DE RESTAURAÇÃO ---
@@ -85,9 +100,9 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}" "$ARQUIVO_PARA_RESTAURAR"
 else
     echo -e "\n📂 Arquivos disponíveis em $BACKUP_DIR:"
-    mapfile -t BACKUPS < <(ls -1 "$BACKUP_DIR"/*.backup 2>/dev/null || ls -1 "$BACKUP_DIR"/*.sql 2>/dev/null)
+    mapfile -t BACKUPS < <(ls -1 "$BACKUP_DIR"/*.backup "$BACKUP_DIR"/*.sql 2>/dev/null || true)
     if [ ${#BACKUPS[@]} -eq 0 ]; then
-        echo -e "${RED}❌ Nenhum arquivo encontrado em $BACKUP_DIR${RESET}"
+        echo -e "${RED}❌ Nenhum arquivo .backup ou .sql encontrado em $BACKUP_DIR${RESET}"
         exit 1
     fi
     for i in "${!BACKUPS[@]}"; do echo "$((i+1))) $(basename "${BACKUPS[$i]}")"; done
@@ -95,7 +110,6 @@ else
     ARQUIVO_PARA_RESTAURAR="${BACKUPS[$((SELECAO-1))]}"
 fi
 
-# ... Resto do processo de extração de credenciais e restore (PSQL/PG_RESTORE) ...
 echo -e "\n🔍 Extraindo credenciais de $CONTAINER_DJANGO..."
 DB_URL=$(docker exec "$CONTAINER_DJANGO" env | grep DATABASE_URL | cut -d'=' -f2 || echo "")
 PG_USER_APP=$(echo "$DB_URL" | sed -e 's|.*//\(.*\):.*@.*|\1|')

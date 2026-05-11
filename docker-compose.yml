@@ -32,6 +32,9 @@ networks:
   net_proxy:
     driver: bridge
     internal: true
+  net_tunnel:
+    driver: bridge
+    internal: true
   net_boot:
     driver: bridge
     internal: true

@@ -11,9 +11,10 @@ services:
       - 8.8.8.8
     networks:
       web:
-      net_proxy:
+      net_tunnel:
         aliases:
           - traefik-internal
+      net_proxy:
       net_data:
     ports:
       - 80:80

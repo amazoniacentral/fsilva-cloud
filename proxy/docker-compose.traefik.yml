@@ -62,7 +62,7 @@ services:
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.service=api@internal"
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-painel.basicauth.usersfile=/etc/traefik/dynamic/.htpasswd"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.middlewares=auth-painel"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.middlewares=${COMPOSE_PROJECT_NAME}-auth-painel"
       
   error-handler:
     image: nginx:alpine

@@ -14,6 +14,7 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-nginx-sgn.tls.certresolver=letsencrypt"

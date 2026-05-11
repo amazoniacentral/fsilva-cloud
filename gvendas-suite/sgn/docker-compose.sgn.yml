@@ -14,16 +14,16 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx-sgn.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
-      - "traefik.http.routers.nginx-sgn.entrypoints=websecure"
-      - "traefik.http.routers.nginx-sgn.tls.certresolver=letsencrypt"
-      - "traefik.http.services.nginx-sgn.loadbalancer.server.port=80"
-      - "traefik.http.services.nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.nginx.loadbalancer.responseForwarding.flushInterval=100ms"
       
       # MIDDLEWARES
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-     # - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
-      - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header"
+     # - "traefik.http.routers.nginx.middlewares=block-internal-header,error-pages-middleware"
+      - "traefik.http.routers.nginx.middlewares=block-internal-header"
     deploy:
       resources:
         limits:

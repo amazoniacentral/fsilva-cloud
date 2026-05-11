@@ -1,8 +1,9 @@
 services:
   tunnel:
     image: cloudflare/cloudflared:latest
-    # container_name: tunnel-prod
-    restart: always # Produção não para nunca
+    restart: unless-stopped
+    env_file: 
+      - .env
     command: tunnel run
     dns:
       - 1.1.1.1
@@ -19,4 +20,4 @@ services:
           cpus: '0.01'
           memory: 64M
     depends_on:
-      - django
+      - traefik

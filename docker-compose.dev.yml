@@ -6,7 +6,7 @@ include:
 
 services:
   traefik:
-    ports:
+    ports: !override
       - 8080:80
       - 8443:443
   

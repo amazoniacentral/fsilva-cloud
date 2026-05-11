@@ -8,6 +8,9 @@ services:
   traefik:
     env_file:
       - ./proxy/.env.dev
+    environment:
+      - HTTP_PORT=8080
+      - HTTPS_PORT=8443
   
   django:
     env_file:

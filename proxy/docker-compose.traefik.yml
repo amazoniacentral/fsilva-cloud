@@ -4,7 +4,7 @@ services:
     # container_name: traefik
     restart: always
     env_file: 
-      .env
+      - .env
     hostname: ${COMPOSE_PROJECT_NAME}-traefik-edge
     dns:
       - 1.1.1.1

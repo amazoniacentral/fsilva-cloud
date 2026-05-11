@@ -5,8 +5,11 @@ include:
   - ./docker-compose.yml
 
 services:
-  # Aqui você lista os nomes dos serviços que quer "alterar" para o modo Dev
-  # O nome do serviço deve ser IDENTICO ao que está nos arquivos incluídos
+  traefik:
+    ports:
+      - 8080:80
+      - 8443:443
+  
   django:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
@@ -14,7 +17,7 @@ services:
   tunnel:
     env_file:
       - ./tunel/.env.dev
-  
+
   nginx:
     ports:
       - 8080:80

@@ -14,8 +14,8 @@ services:
       - net_proxy
       - net_data
     ports:
-      - ${HTTP_PORT:-80}:80
-      - ${HTTPS_PORT:-443}:443
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
     deploy:
       resources:
         limits:

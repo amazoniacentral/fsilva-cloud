@@ -13,9 +13,6 @@ services:
       - net_storage
     labels:
       - "traefik.enable=true"
-      # FIX 1: Diz ao Traefik exatamente em qual rede procurar este container
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_storage"
-      
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-storage.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-storage.tls.certresolver=letsencrypt"

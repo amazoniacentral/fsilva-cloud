@@ -15,7 +15,6 @@ services:
       - net_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-media-nginx.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-media-nginx.tls.certresolver=letsencrypt"

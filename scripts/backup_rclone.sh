@@ -23,7 +23,7 @@ echo "--- Backup Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 # O Docker Compose nomeia volumes como: [PROJECT_NAME]_[VOLUME_NAME]
 docker run --rm \
   --name rclone_backup_worker \
-  -v "${PROJECT_NAME}_backups":/data/backups:ro \
+  -v "${PROJECT_NAME}_backups":/data/database:ro \
   -v "${PROJECT_NAME}_storage_data":/data/documentos:ro \
   -v "${PROJECT_NAME}_media_data":/data/arquivos:ro \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \

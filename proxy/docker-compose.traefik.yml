@@ -5,7 +5,7 @@ services:
     restart: always
     env_file: 
       - .env
-    hostname: ${COMPOSE_PROJECT_NAME}-traefik-edge
+    hostname: traefik-edge
     dns:
       - 1.1.1.1
       - 8.8.8.8
@@ -57,18 +57,18 @@ services:
     working_dir: /etc/traefik/dynamic
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.rule=Host(`${DOMAIN:?proxy.seu-dominio.com}`)"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.service=api@internal"
-      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-auth-painel.basicauth.usersfile=/etc/traefik/dynamic/.htpasswd"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-traefik-dashboard.middlewares=${COMPOSE_PROJECT_NAME}-auth-painel"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN:?proxy.seu-dominio.com}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/dynamic/.htpasswd"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       
   error-handler:
     image: nginx:alpine
     # container_name: global-error-server
     restart: always
-    hostname: ${COMPOSE_PROJECT_NAME}-pagina-erros
+    hostname: pagina-erros
     networks:
       - net_proxy
     volumes:
@@ -79,28 +79,28 @@ services:
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       # SERVIÇO
-      - "traefik.http.services.${COMPOSE_PROJECT_NAME}-error-service.loadbalancer.server.port=80"
+      - "traefik.http.services.error-service.loadbalancer.server.port=80"
       
       # MIDDLEWARE
-      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-error-pages-middleware.errors.status=400-599"
-      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-error-pages-middleware.errors.service=${COMPOSE_PROJECT_NAME}-error-service"
-      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-error-pages-middleware.errors.query=/{status}.html"
+      - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
+      - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
+      - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
 
       # ROTEADOR HTTP CATCH-ALL
       # A sintaxe `{host:.+}` às vezes falha no V3. Use `HostRegexp(`^.+$`)`
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.rule=HostRegexp(`^.+$`)"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.entrypoints=web"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.priority=1"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.middlewares=${COMPOSE_PROJECT_NAME}-error-pages-middleware"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-http.service=${COMPOSE_PROJECT_NAME}-error-service"
+      - "traefik.http.routers.catch-all-http.rule=HostRegexp(`^.+$`)"
+      - "traefik.http.routers.catch-all-http.entrypoints=web"
+      - "traefik.http.routers.catch-all-http.priority=1"
+      - "traefik.http.routers.catch-all-http.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all-http.service=error-service"
 
       # ROTEADOR HTTPS CATCH-ALL
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.rule=HostRegexp(`^.+$`)"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.entrypoints=websecure"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.tls=true"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.priority=1"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.middlewares=${COMPOSE_PROJECT_NAME}-error-pages-middleware"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-catch-all-https.service=${COMPOSE_PROJECT_NAME}-error-service"
+      - "traefik.http.routers.catch-all-https.rule=HostRegexp(`^.+$`)"
+      - "traefik.http.routers.catch-all-https.entrypoints=websecure"
+      - "traefik.http.routers.catch-all-https.tls=true"
+      - "traefik.http.routers.catch-all-https.priority=1"
+      - "traefik.http.routers.catch-all-https.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all-https.service=error-service"
     deploy:
       resources:
         limits:

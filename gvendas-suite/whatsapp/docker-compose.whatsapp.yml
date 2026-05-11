@@ -5,7 +5,7 @@ services:
       dockerfile: ./gvendas-suite/whatsapp/Dockerfile
     # container_name: whatsapp
     restart: always
-    hostname: ${COMPOSE_PROJECT_NAME}-whatsapp
+    hostname: whatsapp
     dns:
       - 1.1.1.1
       - 8.8.8.8

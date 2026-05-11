@@ -3,7 +3,7 @@ services:
     image: postgres:15-alpine
     # container_name: postgres
     restart: always
-    hostname: ${COMPOSE_PROJECT_NAME}-postgres
+    hostname: postgres
     deploy:
       resources:
         limits:

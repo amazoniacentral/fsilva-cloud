@@ -6,9 +6,9 @@ include:
 
 services:
   traefik:
-    ports: []
-      # - 8080:80
-      # - 8443:443
+    ports: !override
+      - 8080:80
+      - 8443:443
   
   django:
     env_file:

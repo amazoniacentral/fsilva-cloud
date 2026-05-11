@@ -11,6 +11,7 @@ services:
     working_dir: /storage
     networks:
       - net_storage
+      - net_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"

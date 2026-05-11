@@ -13,7 +13,7 @@ selecionar_container() {
     local prefixo=$2
     local prompt=$3
     
-    # Filtra containers que começam com o prefixo e batem com o padrão
+    # Filtra containers que contenham o prefixo e batem com o padrão do serviço
     mapfile -t containers < <(docker ps --format "{{.Names}}" | grep "^${prefixo}" | grep -i "$pattern")
     
     if [ ${#containers[@]} -eq 0 ]; then
@@ -35,8 +35,14 @@ echo -e "${YELLOW}           RESTAURAÇÃO DINÂMICA - SGN CLOUD${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
 # 1. IDENTIFICAÇÃO DOS PROJETOS DISPONÍVEIS
-# Pega a primeira parte do nome (antes do primeiro hífen) de todos os containers rodando
-mapfile -t PROJETOS < <(docker ps --format "{{.Names}}" | cut -d'-' -f1 | sort -u)
+# Lista todos os containers e tenta extrair o prefixo (tudo antes do sufixo do serviço comum)
+# Aqui usamos o Django como referência de nome de projeto
+mapfile -t PROJETOS < <(docker ps --format "{{.Names}}" | grep "django" | sed 's/-django.*//' | sort -u)
+
+if [ ${#PROJETOS[@]} -eq 0 ]; then
+    # Fallback caso não encontre pelo padrão django: lista o primeiro termo antes do hífen
+    mapfile -t PROJETOS < <(docker ps --format "{{.Names}}" | cut -d'-' -f1 | sort -u)
+fi
 
 if [ ${#PROJETOS[@]} -eq 0 ]; then
     echo -e "${RED}❌ Nenhum projeto Docker identificado.${RESET}"
@@ -56,21 +62,29 @@ CONTAINER_PG=$(selecionar_container "postgres" "$PROJETO_PREFIX" "PostgreSQL")
 CONTAINER_CELERY=$(selecionar_container "worker" "$PROJETO_PREFIX" "Celery Worker")
 CONTAINER_BEAT=$(selecionar_container "beat" "$PROJETO_PREFIX" "Celery Beat")
 
-# 3. SELEÇÃO AUTOMÁTICA DO VOLUME DE BACKUP
-# Busca volumes montados no Django que contenham a palavra "backup" no nome
-mapfile -t VOLUMES < <(docker inspect "$CONTAINER_DJANGO" --format='{{range .Mounts}}{{if eq .Type "volume"}}{{println .Name}}{{end}}{{end}}' | grep -i "backup")
+# 3. SELEÇÃO DINÂMICA DE VOLUME (Busca volume de backup no projeto selecionado)
+echo -e "\n${YELLOW}Buscando volumes de Backup associados ao projeto...${RESET}"
+# Lista volumes que pertencem ao container Django selecionado
+mapfile -t VOLUMES < <(docker inspect "$CONTAINER_DJANGO" --format='{{range .Mounts}}{{if eq .Type "volume"}}{{println .Name}}{{end}}{{end}}' | grep -v '^$')
 
 if [ ${#VOLUMES[@]} -eq 0 ]; then
-    echo -e "${RED}❌ Nenhum volume contendo 'backup' no nome foi encontrado no container $CONTAINER_DJANGO.${RESET}"
+    echo -e "${RED}❌ Nenhum volume do tipo 'volume' encontrado no container $CONTAINER_DJANGO.${RESET}"
     exit 1
-elif [ ${#VOLUMES[@]} -eq 1 ]; then
-    VOLUME_NAME="${VOLUMES[0]}"
-    echo -e "\n✅ Volume de backup identificado: ${GREEN}$VOLUME_NAME${RESET}"
+fi
+
+# Filtra automaticamente se houver algum com "backup" no nome, senão lista todos
+mapfile -t VOLUMES_BACKUP < <(printf '%s\n' "${VOLUMES[@]}" | grep -i "backup" || printf '%s\n' "${VOLUMES[@]}")
+
+if [ ${#VOLUMES_BACKUP[@]} -eq 1 ]; then
+    VOLUME_NAME="${VOLUMES_BACKUP[0]}"
+    echo -e "✅ Volume selecionado: ${GREEN}$VOLUME_NAME${RESET}"
 else
-    echo -e "\n${YELLOW}Múltiplos volumes de backup encontrados, selecione um:${RESET}"
-    for i in "${!VOLUMES[@]}"; do echo "$((i+1))) ${VOLUMES[$i]}"; done
-    read -rp "Opção: " v_idx
-    VOLUME_NAME="${VOLUMES[$((v_idx-1))]}"
+    echo -e "\n${YELLOW}Selecione o volume de backup:${RESET}"
+    for i in "${!VOLUMES_BACKUP[@]}"; do 
+        echo "$((i+1))) ${VOLUMES_BACKUP[$i]}"
+    done
+    read -rp "Escolha o número: " v_idx
+    VOLUME_NAME="${VOLUMES_BACKUP[$((v_idx-1))]}"
 fi
 
 BACKUP_DIR="/var/lib/docker/volumes/${VOLUME_NAME}/_data"
@@ -100,9 +114,9 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     rsync -avz --progress "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}" "$ARQUIVO_PARA_RESTAURAR"
 else
     echo -e "\n📂 Arquivos disponíveis em $BACKUP_DIR:"
-    mapfile -t BACKUPS < <(ls -1 "$BACKUP_DIR"/*.backup "$BACKUP_DIR"/*.sql 2>/dev/null || true)
+    mapfile -t BACKUPS < <(ls -1 "$BACKUP_DIR"/*.backup 2>/dev/null || ls -1 "$BACKUP_DIR"/*.sql 2>/dev/null)
     if [ ${#BACKUPS[@]} -eq 0 ]; then
-        echo -e "${RED}❌ Nenhum arquivo .backup ou .sql encontrado em $BACKUP_DIR${RESET}"
+        echo -e "${RED}❌ Nenhum arquivo encontrado em $BACKUP_DIR${RESET}"
         exit 1
     fi
     for i in "${!BACKUPS[@]}"; do echo "$((i+1))) $(basename "${BACKUPS[$i]}")"; done

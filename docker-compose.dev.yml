@@ -20,6 +20,6 @@ services:
 
   nginx:
     ports:
-      - 80801:80
+      - 8081:80
     networks:
       - web

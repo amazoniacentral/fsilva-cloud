@@ -20,11 +20,6 @@ services:
       - "traefik.http.services.nginx-sgn.loadbalancer.server.port=80"
       - "traefik.http.services.nginx-sgn.loadbalancer.responseForwarding.flushInterval=100ms"
       
-      # Nas labels do seu container DJANGO (SGN) ou onde o middleware foi criado:
-      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django-1:8000/api/user/validar-traefik/"
-      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
-
       # MIDDLEWARES
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
      # - "traefik.http.routers.nginx-sgn.middlewares=block-internal-header,error-pages-middleware"
@@ -74,6 +69,10 @@ services:
         aliases:
           - sgn-django  # <--- O Nginx vai encontrar o Django por este nome
       net_db:
+    labels:
+      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
+      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
     deploy:
       resources:
         limits:

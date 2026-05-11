@@ -47,7 +47,7 @@ services:
       - .env 
     # container_name: sgn-django
     restart: always
-    hostname: api
+    hostname: ${COMPOSE_PROJECT_NAME}-api
     depends_on:
       postgres:
         condition: service_healthy
@@ -97,7 +97,7 @@ services:
       dockerfile: ./gvendas-suite/sgn/Dockerfile
     # container_name: sgn-celery-worker
     restart: always
-    hostname: worker-task
+    hostname: ${COMPOSE_PROJECT_NAME}-worker-task
     working_dir: /code
     env_file:
       - .env 
@@ -133,7 +133,7 @@ services:
       dockerfile: ./gvendas-suite/sgn/Dockerfile
     # container_name: sgn-celery-beat
     restart: always
-    hostname: worker-beat
+    hostname: ${COMPOSE_PROJECT_NAME}-worker-beat
     working_dir: /code
     env_file:
       - .env 

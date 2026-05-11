@@ -3,7 +3,7 @@ services:
     image: redis:7-alpine
     # container_name: redis
     restart: always
-    hostname: db-redis 
+    hostname: ${COMPOSE_PROJECT_NAME}-redis 
     command: >
       redis-server
       --maxmemory 100mb

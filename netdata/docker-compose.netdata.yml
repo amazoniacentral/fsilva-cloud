@@ -3,7 +3,7 @@ services:
     image: netdata/netdata:latest
     # container_name: netdata
     restart: always
-    hostname: monitoramento
+    hostname: ${COMPOSE_PROJECT_NAME}-monitoramento
     deploy:
       resources:
         limits:
@@ -36,13 +36,13 @@ services:
     labels:
       - "traefik.enable=true"
       # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
-      - "traefik.http.routers.netdata.entrypoints=websecure"
-      - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-netdata.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-netdata.tls.certresolver=letsencrypt"
       
       # Vinculação ao Serviço
-      - "traefik.http.routers.netdata.service=netdata-service"
-      - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-netdata.service=netdata-service"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}-netdata-service.loadbalancer.server.port=19999"
       
       # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
-      - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-netdata.middlewares=auth-painel@docker"

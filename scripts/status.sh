@@ -16,6 +16,9 @@ echo -e "${CYAN}================================================================
 echo -e "${YELLOW}           STATUS GERAL E HARDWARE DA VPS${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/..")
+
 # Coleta Informações do Sistema e Hardware
 UPTIME_ALIVE=$(uptime -p | sed 's/up //')
 OS_VERSION=$(grep "PRETTY_NAME" /etc/os-release | cut -d'"' -f2)
@@ -225,7 +228,7 @@ echo -e "\n${CYAN}==============================================================
 echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-ACME_FILE="/opt/fsilva-cloud/proxy/acme.json"
+ACME_FILE="${BASE_DIR}/proxy/certificados/acme.json"
 
 if [ -f "$ACME_FILE" ]; then
     CERT_COUNT=$(grep -o '"certificate":' "$ACME_FILE" | wc -l)

@@ -30,9 +30,8 @@ services:
           memory: 64M
     labels:
       - "traefik.enable=true"
-      #- "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
-
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      
       # Definição ÚNICA do Serviço
       - "traefik.http.services.gvendas-service.loadbalancer.server.port=80"
       - "traefik.http.services.gvendas-service.loadbalancer.responseForwarding.flushInterval=100ms"

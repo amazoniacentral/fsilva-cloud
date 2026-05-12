@@ -7,17 +7,21 @@ include:
 services:
   traefik:
     ports: !override
-      - "127.0.0.1:9090:80"
-      - "127.0.0.1:9443:443"
+      # - "127.0.0.1:9090:80"
+      # - "127.0.0.1:9443:443"
 
     env_file:
       - ./proxy/.env.dev
 
-  django:
+  gvendas:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
     ports: !override
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8081:80"
+
+  django:
+    env_file:
+      - ./gvendas-suite/sgn/.env.dev
   celery-worker:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
@@ -32,5 +36,3 @@ services:
   nginx:
     ports: !override
       - "127.0.0.1:8081:80"
-    networks:
-      - web

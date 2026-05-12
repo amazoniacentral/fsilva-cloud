@@ -7,10 +7,13 @@ include:
 services:
   traefik:
     ports: !override
-      - 8080:80
-      - 8443:443
+      - 9090:80
+      - 9443:443
     env_file:
       - ./proxy/.env.dev
+    command:
+      - "--entrypoints.web.address=:9090"
+      - "--entrypoints.websecure.address=:9443"
   
   django:
     env_file:

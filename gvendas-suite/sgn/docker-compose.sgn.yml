@@ -64,16 +64,14 @@ services:
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
     networks:
-      net_proxy:
-        aliases:
-          - sgn-django  # <--- O Nginx vai encontrar o Django por este nome
-      net_db:
+      - net_proxy
+      - net_db
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       # MIDDLEWARE AUTH
-      - "traefik.http.middlewares.auth-django.forwardauth.address=http://sgn-django:8000/api/user/validar-traefik/"
+      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
       

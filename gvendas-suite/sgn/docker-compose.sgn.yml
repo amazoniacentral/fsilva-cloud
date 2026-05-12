@@ -13,6 +13,7 @@ services:
     networks:
       - net_proxy
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
@@ -67,7 +68,6 @@ services:
       - net_proxy
       - net_db
     labels:
-      - "traefik.enable=true"
       # MIDDLEWARE AUTH
       - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
       - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"

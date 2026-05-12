@@ -78,7 +78,6 @@ services:
       - ../proxy/errors:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       # SERVIÇO
       - "traefik.http.services.error-service.loadbalancer.server.port=80"

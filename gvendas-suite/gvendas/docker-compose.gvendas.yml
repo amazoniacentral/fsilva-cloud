@@ -5,7 +5,6 @@ services:
       args:
         - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
       dockerfile: ./gvendas-suite/gvendas/Dockerfile
-    # container_name: gvendas
     restart: always
     hostname: gvendas
     working_dir: /usr/share/nginx/html
@@ -48,3 +47,5 @@ services:
       # Middlewares (Corrigido: Aplicando ao roteador interno)
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.gvendas-internal.middlewares=block-internal-header,error-pages-middleware"
+    depends_on:
+      - django

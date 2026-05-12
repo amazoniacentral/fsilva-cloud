@@ -20,9 +20,3 @@ services:
           cpus: '0.01'
           memory: 64M
           
-networks:
-  web:
-    external: true
-      
-
-

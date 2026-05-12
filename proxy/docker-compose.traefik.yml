@@ -11,8 +11,6 @@ services:
       - 8.8.8.8
     networks:
       - net_proxy
-      - net_data
-      - net_tunnel
       - web
     ports:
       - 80:80

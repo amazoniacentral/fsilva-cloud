@@ -11,6 +11,7 @@ services:
     networks:
       - web
       - net_tunnel
+      - net_proxy
     deploy:
       resources:
         limits:

@@ -29,6 +29,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
     networks:
+      - net_proxy
       - net_data
     env_file:
       - .env

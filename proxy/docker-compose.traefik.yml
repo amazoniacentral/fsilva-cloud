@@ -1,7 +1,6 @@
 services:
   traefik:
     image: traefik:v3.0
-    # container_name: traefik
     restart: always
     env_file: 
       - .env
@@ -10,12 +9,10 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      net_proxy:
-      net_tunnel:
-        aliases:
-          - traefik-internal
-      net_data:
-      web:
+      - net_proxy
+      - net_data
+      - net_tunnel
+      - web
     ports:
       - 80:80
       - 443:443
@@ -78,6 +75,7 @@ services:
       - ../proxy/errors:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       # SERVIÇO
       - "traefik.http.services.error-service.loadbalancer.server.port=80"

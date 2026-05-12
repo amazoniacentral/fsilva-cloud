@@ -20,9 +20,5 @@ services:
           cpus: '0.01'
           memory: 64M
           
-networks:
-  web_tunnel:
-    driver: bridge
-
       
           

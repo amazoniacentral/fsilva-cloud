@@ -44,9 +44,5 @@ services:
     env_file:
       - .env
       
-networks:
-  web_ssh:
-    driver: bridge
-
       
       

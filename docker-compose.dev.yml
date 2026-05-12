@@ -9,31 +9,11 @@ services:
     ports: !override
       - 9090:9090
       - 9443:9443
-    env_file: !override
-      - ./proxy/.env
+    env_file:
       - ./proxy/.env.dev
-    command: !override
-      - "--api.dashboard=true"
-      - "--log.level=INFO"
-      # LIGA OS LOGS DE ACESSO (Necessário para os gráficos de requisições)
-      - "--accesslog=true"
-      # HABILITA O SISTEMA DE MÉTRICAS INTERNAS
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      # CONFIGURAÇÕES DE PROVIDERS
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
+    command:
       - "--entrypoints.web.address=:9090"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:9443"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
   
   django:
     env_file:

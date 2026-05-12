@@ -3,12 +3,12 @@
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 # Caminho do seu diretório de deploy
 CD_DIR="$SCRIPT_DIR/.."
-ACME_FILE="$CD_DIR/proxy/certificados/acme.json"
+ACME_FILE="$CD_DIR/proxy/traefik/certificados/acme.json"
 
 echo "Iniciando limpeza de certificados órfãos..."
 
 # 1. Backup de segurança
-BACKUP_DIR="$CD_DIR/proxy/certificados/backups"
+BACKUP_DIR="$CD_DIR/proxy/traefik/certificados/backups"
 
 mkdir -p $BACKUP_DIR
 

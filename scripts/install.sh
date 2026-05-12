@@ -4,7 +4,7 @@ set -e
 # Define o diretório onde o script está localizado
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 CD_DIR=$(readlink -f "$SCRIPT_DIR/..")
-PROXY_DIR=$(readlink -f "$SCRIPT_DIR/../proxy")
+PROXY_DIR=$(readlink -f "$SCRIPT_DIR/../proxy/traefik")
 
 # Verifica se o usuário é root
 if [ "$EUID" -ne 0 ]; then 

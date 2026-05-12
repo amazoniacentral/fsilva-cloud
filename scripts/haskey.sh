@@ -2,7 +2,7 @@
 
 # Caminho absoluto para o arquivo de credenciais do Traefik
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-CAMINHO_HTPASSWD="$SCRIPT_DIR/../proxy/.htpasswd"
+CAMINHO_HTPASSWD="$SCRIPT_DIR/../proxy/traefik/.htpasswd"
 
 # Verifica se o utilitário htpasswd está instalado
 if ! command -v htpasswd &> /dev/null; then

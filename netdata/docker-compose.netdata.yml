@@ -37,6 +37,8 @@ services:
       - NETDATA_CHECK_FOR_UPDATES=yes
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
       # Roteador e Domínio
       - "traefik.http.routers.netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"

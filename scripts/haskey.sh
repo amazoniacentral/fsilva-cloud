@@ -43,7 +43,7 @@ if [ $? -eq 0 ]; then
     echo "------------------------------------------------"
     echo "Aplicando docker compose up -d"
     cd $SCRIPT_DIR
-    docker compose up -d
+    docker compose -f "$SCRIPT_DIR/../docker-compose.prod.yml" up -d traefik
     echo "Finalizado"
 else
     echo "Erro ao gerar o arquivo de credenciais."

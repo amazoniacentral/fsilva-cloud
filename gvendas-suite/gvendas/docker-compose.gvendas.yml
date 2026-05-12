@@ -31,8 +31,6 @@ services:
           memory: 64M
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      
       - "traefik.http.services.gvendas-service.loadbalancer.server.port=80"
       - "traefik.http.routers.gvendas-internal.service=gvendas-service"
       - "traefik.http.routers.gvendas-internal.rule=Host(`internal.pwa`)"

@@ -12,7 +12,7 @@ services:
     working_dir: /volumes
     networks:
       - net_proxy
-   labels:
+    labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       

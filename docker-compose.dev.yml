@@ -5,17 +5,26 @@ include:
   - ./docker-compose.yml
 
 services:
-  traefik:
-    ports: !override
-      - "127.0.0.1:9090:80"
-      - "127.0.0.1:9443:443"
-
-    env_file:
-      - ./proxy/.env.dev
-
   gvendas:
     env_file:
-      - ./gvendas-suite/sgn/.env.dev
+      # - ./gvendas-suite/gvendas/.env.dev
+      - ./gvendas-suite/.env.dev
+    ports: !override
+      - "127.0.0.1:3001:80"
+    networks:
+      - web
+  media:
+    env_file:
+      # - ./gvendas-suite/media/.env.dev
+      - ./gvendas-suite/.env.dev
+    ports:
+      - "127.0.0.1:3001:80"
+    networks:
+      - web
+  media:
+    env_file:
+      # - ./gvendas-suite/media/.env.dev
+      - ./gvendas-suite/.env.dev
     ports: !override
       - "127.0.0.1:3001:80"
     networks:

@@ -9,9 +9,8 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - web
       - net_tunnel
-      - net_proxy
+      - web
     deploy:
       resources:
         limits:

@@ -2,20 +2,13 @@ include:
   - ../prod/docker-compose.prod.yml
 
 services:
-  traefik:
-    caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-
-      
   nginx:
     ports:
       - "127.0.0.1:8001:80"
     env_file:
       - .env
-    labels:
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
     networks:
       - web
-      - net_tunnel
   gvendas:
     env_file:
       - .env
@@ -23,7 +16,6 @@ services:
       - "127.0.0.1:3001:80"
     networks:
       - web
-      - net_tunnel
   media:
     env_file:
       - .env
@@ -31,7 +23,6 @@ services:
       - "127.0.0.1:3002:80"
     networks:
       - web
-      - net_tunnel
   storage:
     env_file:
       - .env
@@ -39,7 +30,6 @@ services:
       - "127.0.0.1:3003:80"
     networks:
       - web
-      - net_tunnel
   django:
     env_file:
       - .env

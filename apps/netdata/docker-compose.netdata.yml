@@ -30,6 +30,7 @@ services:
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
     networks:
       - net_proxy
+      - net_tunnel
       - net_data
     env_file:
       - .env

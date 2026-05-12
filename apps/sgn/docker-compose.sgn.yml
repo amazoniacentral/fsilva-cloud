@@ -12,6 +12,7 @@ services:
     working_dir: /volumes
     networks:
       - net_proxy
+      - net_tunnel
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
@@ -65,6 +66,7 @@ services:
       - MALLOC_ARENA_MAX=2
     networks:
       - net_proxy
+      - net_tunnel
       - net_db
     labels:
       - "traefik.enable=true"

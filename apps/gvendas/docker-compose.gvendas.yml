@@ -20,6 +20,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - net_proxy
+      - net_tunnel
     deploy:
       resources:
         limits:

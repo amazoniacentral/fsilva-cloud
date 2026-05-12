@@ -10,8 +10,9 @@ services:
       - storage_data:/storage:ro
     working_dir: /storage
     networks:
-      - net_storage
       - net_proxy
+      - net_tunnel
+      - net_storage
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"

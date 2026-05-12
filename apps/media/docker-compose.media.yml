@@ -13,6 +13,7 @@ services:
     working_dir: /media_files
     networks:
       - net_proxy
+      - net_tunnel
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"

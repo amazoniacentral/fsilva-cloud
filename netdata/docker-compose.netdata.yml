@@ -30,11 +30,6 @@ services:
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
     networks:
       - net_data
-    cap_add:
-      - SYS_PTRACE
-      - DAC_READ_SEARCH
-    security_opt:
-      - apparmor:unconfined
     env_file:
       - .env
     environment:

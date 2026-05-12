@@ -8,28 +8,28 @@ services:
     env_file:
       - .env
     networks:
-      - web
+      - web_ssh
   gvendas:
     env_file:
       - .env
     ports:
       - "127.0.0.1:3001:80"
     networks:
-      - web
+      - web_ssh
   media:
     env_file:
       - .env
     ports:
       - "127.0.0.1:3002:80"
     networks:
-      - web
+      - web_ssh
   storage:
     env_file:
       - .env
     ports:
       - "127.0.0.1:3003:80"
     networks:
-      - web
+      - web_ssh
   django:
     env_file:
       - .env
@@ -43,4 +43,10 @@ services:
   tunnel:
     env_file:
       - .env
+      
+networks:
+  web_ssh:
+    driver: bridge
+
+      
       

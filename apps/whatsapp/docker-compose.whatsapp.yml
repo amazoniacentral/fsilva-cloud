@@ -1,9 +1,9 @@
 services:
   node:
-    # build: 
-    #   context: ../../
-    #   dockerfile: ./gvendas-suite/whatsapp/Dockerfile
-    # container_name: whatsapp
+    build: 
+      context: ./
+      # context: ../../
+      # dockerfile: ./apps/whatsapp/Dockerfile
     restart: always
     hostname: whatsapp
     dns:

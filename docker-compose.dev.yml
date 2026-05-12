@@ -13,6 +13,12 @@ services:
   django:
     env_file:
       - ./gvendas-suite/sgn/.env.dev
+  celery-worker:
+    env_file:
+      - ./gvendas-suite/sgn/.env.dev
+  celery-beat:
+    env_file:
+      - ./gvendas-suite/sgn/.env.dev
   
   tunnel:
     env_file:

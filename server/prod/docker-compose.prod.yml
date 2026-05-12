@@ -25,9 +25,6 @@ volumes:
   backups:
     
 networks:
-  web:
-    driver: bridge
-    name: web
   net_proxy:
     driver: bridge
     name: net_proxy

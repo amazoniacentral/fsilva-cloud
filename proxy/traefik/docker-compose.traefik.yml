@@ -11,7 +11,7 @@ services:
       - 8.8.8.8
     networks:
       - net_proxy
-      - web
+      - web_traefik
     ports:
       - 80:80
       - 443:443
@@ -61,4 +61,9 @@ services:
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/dynamic/.htpasswd"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
+      
+networks:
+  web_traefik:
+    driver: bridge
+
       

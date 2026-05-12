@@ -8,6 +8,11 @@ services:
   nginx:
     ports:
       - "127.0.0.1:8001:80"
+    env_file:
+      - ./gvendas-suite/.env.dev
+      - ./gvendas-suite/sgn/.env.dev
+    labels:
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
     networks:
       - web
   gvendas:

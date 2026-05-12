@@ -33,12 +33,17 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
+      # Definição ÚNICA do Serviço
       - "traefik.http.services.gvendas-service.loadbalancer.server.port=80"
-      - "traefik.http.routers.gvendas-internal.service=gvendas-service"
-      - "traefik.http.routers.gvendas-internal.rule=Host(`internal.pwa`)"
-      - "traefik.http.routers.gvendas-internal.priority=1"
       - "traefik.http.services.gvendas-service.loadbalancer.responseForwarding.flushInterval=100ms"
-      # MIDDLEWARES
+
+      # Roteador Interno (O que já estava lá)
+      - "traefik.http.routers.gvendas-internal.rule=Host(`internal.pwa`)"
+      - "traefik.http.routers.gvendas-internal.service=gvendas-service"
+      - "traefik.http.routers.gvendas-internal.priority=1"
+      - "traefik.http.routers.gvendas-internal.entrypoints=websecure"
+      - "traefik.http.routers.gvendas-internal.tls=true"
+
+      # Middlewares (Corrigido: Aplicando ao roteador interno)
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.gvendas-service.middlewares=block-internal-header,error-pages-middleware"
-      
+      - "traefik.http.routers.gvendas-internal.middlewares=block-internal-header,error-pages-middleware"

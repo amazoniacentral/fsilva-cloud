@@ -3,56 +3,6 @@ name: fsilva-cloud-dev
 
 include:
   - ./docker-compose.yml
+  - ./dev/docker-compose.dev.yml
 
-services:
-  nginx:
-    ports:
-      - "127.0.0.1:8001:80"
-    env_file:
-      - ./gvendas-suite/.env.dev
-      - ./gvendas-suite/sgn/.env.dev
-    labels:
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
-    networks:
-      - web
-  gvendas:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      # - ./gvendas-suite/gvendas/.env.dev
-    ports:
-      - "127.0.0.1:3001:80"
-    networks:
-      - web
-  media:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      # - ./gvendas-suite/media/.env.dev
-    ports:
-      - "127.0.0.1:3002:80"
-    networks:
-      - web
-  storage:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      # - ./gvendas-suite/storage/.env.dev
-    ports:
-      - "127.0.0.1:3003:80"
-    networks:
-      - web
-  django:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      - ./gvendas-suite/sgn/.env.dev
-  celery-worker:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      - ./gvendas-suite/sgn/.env.dev
-  celery-beat:
-    env_file:
-      - ./gvendas-suite/.env.dev
-      - ./gvendas-suite/sgn/.env.dev
-  
-  tunnel:
-    env_file:
-      - ./tunel/.env.dev
 

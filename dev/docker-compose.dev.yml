@@ -1,0 +1,44 @@
+services:
+  nginx:
+    ports:
+      - "127.0.0.1:8001:80"
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+    networks:
+      - web
+  gvendas:
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:3001:80"
+    networks:
+      - web
+  media:
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:3002:80"
+    networks:
+      - web
+  storage:
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:3003:80"
+    networks:
+      - web
+  django:
+    env_file:
+      - .env
+  celery-worker:
+    env_file:
+      - .env
+  celery-beat:
+    env_file:
+      - .env
+  
+  tunnel:
+    env_file:
+      - .env

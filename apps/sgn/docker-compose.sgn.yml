@@ -34,9 +34,9 @@ services:
 
   # APP PRINCIPAL (Django)
   django:
-    build: 
-      context: ../../
-      dockerfile: ./gvendas-suite/sgn/Dockerfile
+    # build: 
+    #   context: ../../
+    #   dockerfile: ./gvendas-suite/sgn/Dockerfile
     env_file:
       - .env 
     # container_name: sgn-django
@@ -100,9 +100,9 @@ services:
   
   # WORKER
   celery-worker:
-    build: 
-      context: ../../
-      dockerfile: ./gvendas-suite/sgn/Dockerfile
+    # build: 
+    #   context: ../../
+    #   dockerfile: ./gvendas-suite/sgn/Dockerfile
     # container_name: sgn-celery-worker
     restart: always
     hostname: worker-task
@@ -136,9 +136,9 @@ services:
 
   # BEAT
   celery-beat:
-    build: 
-      context: ../../
-      dockerfile: ./gvendas-suite/sgn/Dockerfile
+    # build: 
+    #   context: ../../
+    #   dockerfile: ./gvendas-suite/sgn/Dockerfile
     # container_name: sgn-celery-beat
     restart: always
     hostname: worker-beat

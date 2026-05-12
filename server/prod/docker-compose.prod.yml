@@ -2,12 +2,10 @@
 name: fsilva-cloud-prod
 
 include:
-  - ./proxy/docker-compose.traefik.yml
-  - ./tunel/docker-compose.tunel.yml
-  - ./gvendas-suite/docker-compose.gvendas.yml
-  - ./database/docker-compose.redis.yml
-  - ./database/docker-compose.postgres.yml
-  - ./netdata/docker-compose.netdata.yml
+  - ../../proxy/docker-compose.proxy.yml
+  - ../../apps/docker-compose.apps.yml
+  - ../../database/docker-compose.database.yml
+  - ../../middleware/docker-compose.middleware.yml
 
 volumes:
   postgres_data:

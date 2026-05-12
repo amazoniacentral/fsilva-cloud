@@ -25,12 +25,13 @@ volumes:
   backups:
     
 networks:
-  web_traefik:
-    driver: bridge
   web_tunnel:
     driver: bridge
   web_ssh:
     driver: bridge
+  web_traefik:
+    driver: bridge
+    name: web_traefik
   net_proxy:
     driver: bridge
     name: net_proxy

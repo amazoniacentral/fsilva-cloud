@@ -17,17 +17,18 @@ SRC="gvendas:${PROJECT_NAME}"
 mkdir -p "$BASE_DIR/logs"
 
 echo "-------------------------------------------"
-echo "DOWNLOAD DE DADOS (RESTORE) - PROJETO: $PROJECT_NAME"
+echo "SINCRONIZAÇÃO (SYNC) - PROJETO: $PROJECT_NAME"
 echo "-------------------------------------------"
-echo "--- Download Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
+echo "--- Sync Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
 # 2. Executa o container rclone para BAIXAR os dados
-# Note que os volumes NÃO possuem :ro para permitir escrita
 docker run --rm \
-  --name rclone_restore_worker \
+  --name rclone_sync_worker \
   -v "${PROJECT_NAME}_catalogos_pdf_data":/data \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
-  rclone/rclone --config /config/rclone/rclone.conf copy $SRC/catalogos /data \
+  rclone/rclone --config /config/rclone/rclone.conf sync $SRC/catalogos /data \
+  --size-only \
+  --delete-during \
   --use-server-modtime \
   --buffer-size 32M \
   --transfers 4 \
@@ -36,4 +37,4 @@ docker run --rm \
   --low-level-retries 10 \
   -v
 
-echo "--- Download Finalizado: $(date '+%Y-%m-%d %H:%M:%S') ---"
+echo "--- Sync Finalizado: $(date '+%Y-%m-%d %H:%M:%S') ---"

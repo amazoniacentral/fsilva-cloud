@@ -21,6 +21,7 @@ volumes:
 networks:
   net_web_only:
     driver: bridge
+    name: net_web_only
     driver_opts:
       com.docker.network.bridge.name: "br-web-only"
       com.docker.network.bridge.enable_icc: "false"

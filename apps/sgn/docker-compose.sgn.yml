@@ -120,6 +120,7 @@ services:
         condition: service_healthy
       django:
         condition: service_healthy
+  #docker exec -it fsilva-cloud-dev-celery-worker-1 celery -A sgn purge
 
   # BEAT
   celery-beat:

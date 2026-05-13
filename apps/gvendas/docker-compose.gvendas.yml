@@ -1,10 +1,10 @@
 services:
   gvendas:
-    # build: 
-    #   context: .
-    #   dockerfile: Dockerfile
-    #   args:
-    #     - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
     restart: always
     hostname: gvendas
     working_dir: /usr/share/nginx/html

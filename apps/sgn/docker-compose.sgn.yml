@@ -40,6 +40,7 @@ services:
       - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles
       - media_data:/code/volumes/media
+      - catalogos_pdf_data:/code/volumes/catalogo/pdf
       - gvendas_data:/code/volumes/html
       - storage_data:/code/volumes/private
       - certificados_data:/code/volumes/certificados

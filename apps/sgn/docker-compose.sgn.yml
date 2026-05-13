@@ -38,6 +38,7 @@ services:
       context: ./
       # context: ../../
       # dockerfile: ./gvendas-suite/sgn/Dockerfile
+      dockerfile: ./Dockerfile
     env_file:
       - .env 
     # container_name: sgn-django
@@ -106,6 +107,7 @@ services:
       context: ./
       # context: ../../
       # dockerfile: ./gvendas-suite/sgn/Dockerfile
+      dockerfile: ./Dockerfile
     restart: always
     hostname: worker-task
     working_dir: /code
@@ -142,6 +144,7 @@ services:
       context: ./
       # context: ../../
       # dockerfile: ./gvendas-suite/sgn/Dockerfile
+      dockerfile: ./Dockerfile
     restart: always
     hostname: worker-beat
     working_dir: /code

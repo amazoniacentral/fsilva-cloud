@@ -110,6 +110,9 @@ services:
         reservations:
           cpus: '0.05'
           memory: 128M
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     depends_on:
       postgres:
         condition: service_healthy

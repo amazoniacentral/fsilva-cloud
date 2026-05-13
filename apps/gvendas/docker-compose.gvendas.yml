@@ -26,7 +26,5 @@ services:
         reservations:
           cpus: '0.02'
           memory: 64M
-    networks:
-      - net_apps
     depends_on:
       - django

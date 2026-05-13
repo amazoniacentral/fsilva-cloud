@@ -1,0 +1,45 @@
+
+volumes:
+  postgres_data:
+  redis_data:
+  traefik_dynamics:
+  gvendas_data:
+  storage_data:
+  media_data:
+  sgn_data:
+  netdataconfig:
+  netdatalib:
+  netdatacache:
+  whatsapp_node_modules:
+  whatsapp_sessions:
+  whatsapp_logs:
+  certificados_data:
+  backups:
+    
+networks:
+  web_tunnel:
+    driver: bridge
+  web_ssh:
+    driver: bridge
+  web_traefik:
+    driver: bridge
+    name: web_traefik
+  net_proxy:
+    driver: bridge
+    name: net_proxy
+    internal: true
+  net_tunnel:
+    driver: bridge
+    internal: true
+  net_boot:
+    driver: bridge
+    internal: true
+  net_db:
+    driver: bridge
+    internal: true
+  net_data:
+    driver: bridge
+    internal: true
+  net_storage:
+    driver: bridge
+    internal: true

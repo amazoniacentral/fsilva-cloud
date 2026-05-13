@@ -6,48 +6,35 @@ include:
   - ../../apps/docker-compose.apps.yml
   - ../../database/docker-compose.database.yml
   - ../../middleware/docker-compose.middleware.yml
+  - ../docker-compose.server.yml
+  
+services:
+  nginx:
+    env_file:
+      - .env
+  gvendas:
+    build: 
+      args:
+        - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
 
-volumes:
-  postgres_data:
-  redis_data:
-  traefik_dynamics:
-  gvendas_data:
-  storage_data:
-  media_data:
-  sgn_data:
-  netdataconfig:
-  netdatalib:
-  netdatacache:
-  whatsapp_node_modules:
-  whatsapp_sessions:
-  whatsapp_logs:
-  certificados_data:
-  backups:
-    
-networks:
-  web_tunnel:
-    driver: bridge
-  web_ssh:
-    driver: bridge
-  web_traefik:
-    driver: bridge
-    name: web_traefik
-  net_proxy:
-    driver: bridge
-    name: net_proxy
-    internal: true
-  net_tunnel:
-    driver: bridge
-    internal: true
-  net_boot:
-    driver: bridge
-    internal: true
-  net_db:
-    driver: bridge
-    internal: true
-  net_data:
-    driver: bridge
-    internal: true
-  net_storage:
-    driver: bridge
-    internal: true
+  media:
+    env_file:
+      - .env
+  storage:
+    env_file:
+      - .env
+  django:
+    env_file:
+      - .env
+  celery-worker:
+    env_file:
+      - .env
+  celery-beat:
+    env_file:
+      - .env
+  
+  tunnel:
+    env_file:
+      - .env
+      
+      

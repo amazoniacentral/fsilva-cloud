@@ -27,4 +27,5 @@ services:
           cpus: '0.02'
           memory: 64M
     depends_on:
-      - django
+      django:
+        condition: service_healthy

@@ -8,6 +8,7 @@ volumes:
   media_data:
   sgn_data:
   catalogos_pdf_data:
+  catalogos_json_data:
   netdataconfig:
   netdatalib:
   netdatacache:

@@ -56,7 +56,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
             -v "$VOLUME_BACKUP_COMPETE":/backup \
             -e PGPASSWORD="$DB_PASS" \
             postgres:15-alpine \
-            sh -c "mkdir -p /backup/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/$DATA_PASTA/${DB}_$(date +%Y-%m-%d)_$(date +%H%M).sql.gz"
+            sh -c "mkdir -p /backup/${DB}/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/${DB}/$DATA_PASTA/${DB}_$(date +%Y-%m-%d)_$(date +%H%M).sql.gz"
     done
 
     # 7. Limpeza: Remove arquivos antigos e depois diretórios que ficaram vazios

@@ -27,7 +27,7 @@ docker run --rm \
   -v "${PROJECT_NAME}_catalogos_pdf_data":/data \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf sync $SRC/catalogos /data \
-  --size-only \
+  --use-server-modtime \
   --delete-during \
   --use-server-modtime \
   --buffer-size 32M \

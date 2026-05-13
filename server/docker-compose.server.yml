@@ -37,9 +37,3 @@ networks:
   net_db:
     driver: bridge
     internal: true
-  net_data:
-    driver: bridge
-    internal: true
-  net_storage:
-    driver: bridge
-    internal: true

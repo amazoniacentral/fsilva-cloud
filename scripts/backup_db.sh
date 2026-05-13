@@ -30,7 +30,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
     # 4. Nome do Volume baseado no Projeto (Padrão: nomeprojeto_backups)
     VOLUME_BACKUP_COMPETE="${PROJECT_NAME}_backups"
     
-    DATA_PASTA=$(date +%Y-%m-%d)
+    DATA_PASTA=$(date +%Y/%m)
 
     # 5. Extração de Credenciais do Ambiente do Container
     DB_USER=$(docker inspect "$CONTAINER_DB_ALVO" --format='{{range .Config.Env}}{{println .}}{{end}}' | grep "^POSTGRES_USER=" | cut -d'=' -f2)
@@ -55,8 +55,8 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
             -v "$VOLUME_BACKUP_COMPETE":/backup \
             -e PGPASSWORD="$DB_PASS" \
             postgres:15-alpine \
-            sh -c "mkdir -p /backup/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/$DATA_PASTA/${DB}_$(date +%H%M).sql.gz"
-    done
+            sh -c "mkdir -p /backup/$DATA_PASTA && pg_dump -h $CONTAINER_DB_ALVO -U $DB_USER $DB | gzip > /backup/$DATA_PASTA/${DB}_$(date +%Y-%m-%d)_$(date +%H%M).sql.gz"
+    done,
 
     # 7. Limpeza: Remove backups com mais de 7 dias específicos deste projeto
     docker run --rm -v "$VOLUME_BACKUP_COMPETE":/backup alpine find /backup/database -type d -mtime +7 -exec rm -rf {} +

@@ -25,7 +25,7 @@ echo "--- Download Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 # Note que os volumes NÃO possuem :ro para permitir escrita
 docker run --rm \
   --name rclone_restore_worker \
-  -v "${PROJECT_NAME}_catalogos_pdf_data":/data/catalogos \
+  -v "${PROJECT_NAME}_catalogos_pdf_data":/data \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf copy $SRC/catalogos /data \
   --use-server-modtime \

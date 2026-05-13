@@ -19,6 +19,12 @@ volumes:
   backups:
     
 networks:
+  net_web_only:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "br-web-only"
+      com.docker.network.bridge.enable_icc: "false"
+
   web_tunnel:
     driver: bridge
   web_ssh:

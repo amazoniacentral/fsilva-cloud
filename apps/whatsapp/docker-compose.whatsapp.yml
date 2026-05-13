@@ -16,8 +16,9 @@ services:
       - whatsapp_logs:/code/src/logs
     networks:
       - net_boot
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - net_web_only
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits:

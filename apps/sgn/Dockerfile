@@ -22,14 +22,14 @@ RUN pip install --no-cache-dir "pip<25.0" && \
     pip install --no-cache-dir pip-tools
 
 # 1. COPIA o arquivo de entrada das dependências
-COPY repos/sgn/requirements.in .
+COPY ../../repos/sgn/requirements.in .
 
 # Compila e instala as dependências
 RUN pip-compile requirements.in --output-file=requirements.txt && \
     pip install --no-cache-dir -r requirements.txt
 
 # 2. COPIA o restante do código
-COPY repos/sgn/ .
+COPY ../../repos/sgn/ .
 
 # Cria o script de entrypoint inteligente
 # Se a variável IS_DEV_CONTAINER for true, ele pula migrações e collectstatic

@@ -6,11 +6,11 @@ WORKDIR /app
 ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 # 1. Dependências
-COPY repos/gvendas/package*.json ./
+COPY ../../repos/gvendas/package*.json ./
 RUN npm install
 
 # 2. Código
-COPY repos/gvendas/ .
+COPY ../../repos/gvendas/ .
 
 # 3. Build com injeção automática da versão do package.json
 # O CRA vai capturar o REACT_APP_VERSION e gravar no build estático
@@ -27,8 +27,8 @@ FROM nginx:stable-alpine
 WORKDIR /app_temp
 COPY --from=build-stage /app/build .
 
-COPY apps/auth-nginx.conf /etc/nginx/auth-nginx.conf
-COPY apps/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ../auth-nginx.conf /etc/nginx/auth-nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'cp -rp /app_temp/. /usr/share/nginx/html/' >> /entrypoint.sh && \

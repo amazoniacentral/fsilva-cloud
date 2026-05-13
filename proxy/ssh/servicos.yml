@@ -1,0 +1,34 @@
+include:
+  - ./docker-compose.tunnel.yml
+  
+services:
+  gvendas:
+    ports:
+      - "127.0.0.1:3000:80"
+    networks:
+      - web_ssh
+  django:
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - web_ssh
+  nginx:
+    ports:
+      - "127.0.0.1:8001:80"
+    networks:
+      - web_ssh
+  media:
+    ports:
+      - "127.0.0.1:8002:80"
+    networks:
+      - web_ssh
+  storage:
+    ports:
+      - "127.0.0.1:8003:80"
+    networks:
+      - web_ssh
+  netdata:
+    ports:
+      - "127.0.0.1:19999:19999"
+    networks:
+      - web_ssh

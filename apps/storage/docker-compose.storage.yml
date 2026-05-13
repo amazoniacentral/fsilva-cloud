@@ -8,25 +8,6 @@ services:
       - ./nginx2.conf:/etc/nginx/conf.d/default.conf:ro
       - storage_data:/storage:ro
     working_dir: /storage
-    networks:
-      - net_proxy
-      - net_tunnel
-      - net_storage
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
-      
-      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
-      - "traefik.http.routers.storage.entrypoints=websecure"
-      - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
-      # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
-      - "traefik.http.routers.storage.middlewares=auth-django@docker,error-pages-middleware@docker"
-      
-      # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
-      # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente
-      - "traefik.http.services.storage.loadbalancer.server.port=80"
-    depends_on:
-      - django
     deploy:
       resources:
         limits:
@@ -35,5 +16,7 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
+    depends_on:
+      - django
           
           

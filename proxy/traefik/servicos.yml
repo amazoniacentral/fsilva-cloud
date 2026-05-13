@@ -1,0 +1,88 @@
+include:
+  - ./docker-compose.traefik.yml
+  
+services:
+  gvendas:
+    networks:
+      - net_proxy
+  nginx:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.nginx.loadbalancer.responseForwarding.flushInterval=100ms"
+      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
+      - "traefik.http.routers.nginx.middlewares=block-internal-header"
+    networks:
+      - net_proxy
+  django:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      # A SOLUÇÃO: Criar um router para o Django existir para o Traefik
+      # Sem isso, o middleware 'auth-django' abaixo é ignorado pelo Traefik
+      - "traefik.http.routers.django-api.rule=Host(`django-internal.local`)"
+      - "traefik.http.routers.django-api.entrypoints=websecure"
+      
+      # MIDDLEWARE AUTH (Definição)
+      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
+      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
+      
+      - "traefik.http.services.django.loadbalancer.server.port=8000"
+    networks:
+      - net_proxy
+  media:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
+      - "traefik.http.routers.media-nginx.entrypoints=websecure"
+      - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.services.media-nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.media-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
+      # MIDDLEWARES
+      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
+      - "traefik.http.routers.media-nginx.middlewares=block-internal-header,error-pages-middleware"
+    networks:
+      - net_proxy
+  netdata:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      # Roteador e Domínio
+      - "traefik.http.routers.netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
+      - "traefik.http.routers.netdata.entrypoints=websecure"
+      - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
+      
+      # Vinculação ao Serviço
+      - "traefik.http.routers.netdata.service=netdata-service"
+      - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
+      
+      # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
+      - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
+    networks:
+      - net_proxy
+  storage:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+      - "traefik.http.routers.storage.entrypoints=websecure"
+      - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
+      # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
+      - "traefik.http.routers.storage.middlewares=auth-django@docker,error-pages-middleware@docker"
+      
+      # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
+      # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente
+      - "traefik.http.services.storage.loadbalancer.server.port=80"
+    networks:
+      - net_proxy

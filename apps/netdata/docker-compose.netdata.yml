@@ -1,7 +1,6 @@
 services:
   netdata:
     image: netdata/netdata:latest
-    # container_name: netdata
     restart: always
     hostname: monitoramento
     deploy:
@@ -28,26 +27,7 @@ services:
       - /etc/os-release:/host/etc/os-release:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
-    networks:
-      - net_proxy
-      - net_tunnel
-      - net_data
     env_file:
       - .env
     environment:
       - NETDATA_CHECK_FOR_UPDATES=yes
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
-      
-      # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
-      - "traefik.http.routers.netdata.entrypoints=websecure"
-      - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
-      
-      # Vinculação ao Serviço
-      - "traefik.http.routers.netdata.service=netdata-service"
-      - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
-      
-      # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
-      - "traefik.http.routers.netdata.middlewares=auth-painel@docker"

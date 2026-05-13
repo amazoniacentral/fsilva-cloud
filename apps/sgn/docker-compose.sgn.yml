@@ -35,7 +35,7 @@ services:
   # APP PRINCIPAL (Django)
   django:
     build: 
-      # context: ./apps/sgn
+      context: .
       dockerfile: Dockerfile
     env_file:
       - .env 
@@ -102,7 +102,7 @@ services:
   # WORKER
   celery-worker:
     build: 
-      # context: ./apps/sgn
+      context: .
       dockerfile: Dockerfile
     restart: always
     hostname: worker-task
@@ -137,7 +137,7 @@ services:
   # BEAT
   celery-beat:
     build: 
-      # context: ./apps/sgn
+      context: .
       dockerfile: Dockerfile
     restart: always
     hostname: worker-beat

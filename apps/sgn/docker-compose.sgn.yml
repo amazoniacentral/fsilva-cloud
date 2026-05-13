@@ -37,7 +37,11 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     working_dir: /code
-    command: gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2
+    command: >
+      sh -c "python manage.py migrate --noinput && 
+             python manage.py collectstatic --noinput && 
+             python manage.py gerar_sites_html && 
+             gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2"
     volumes:
       - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles

@@ -30,32 +30,3 @@ RUN pip-compile requirements.in --output-file=requirements.txt && \
 
 # 2. COPIA o restante do código
 COPY repos/sgn/ .
-
-# Cria o script de entrypoint inteligente
-# Se a variável IS_DEV_CONTAINER for true, ele pula migrações e collectstatic
-RUN printf "#!/bin/bash\n\
-if [ \"\$IS_DEV_CONTAINER\" != \"true\" ]; then\n\
-    echo 'Ambiente de PRODUCAO detectado. Iniciando rotinas...'\n\
-    echo 'Aplicando migrações...'\n\
-    python manage.py migrate --noinput\n\
-\n\
-    echo 'Coletando arquivos estáticos...'\n\
-    python manage.py collectstatic --noinput\n\
-\n\
-    echo 'Checando Sites...'\n\
-    python manage.py gerar_sites_html\n\
-else\n\
-    echo 'Ambiente de DEVELOPER detectado. Pulando rotinas de producao...'\n\
-fi\n\
-\n\
-echo 'Executando comando:' \"\$@\"\n\
-exec \"\$@\"\n" > /entrypoint.sh
-
-# Dá permissão de execução
-RUN chmod +x /entrypoint.sh
-
-# Expõe a porta
-EXPOSE 8000
-
-# Define o entrypoint
-ENTRYPOINT ["/entrypoint.sh"]

@@ -37,6 +37,9 @@ services:
       - "traefik.http.services.django.loadbalancer.server.port=8000"
     networks:
       - net_proxy
+  celery-worker:
+    networks:
+      - net_proxy
   media:
     labels:
       - "traefik.enable=true"

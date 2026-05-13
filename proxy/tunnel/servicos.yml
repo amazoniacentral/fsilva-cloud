@@ -11,6 +11,9 @@ services:
   django:
     networks:
       - net_tunnel
+  celery-worker:
+    networks:
+      - net_tunnel
   media:
     networks:
       - net_tunnel

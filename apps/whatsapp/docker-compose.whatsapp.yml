@@ -1,9 +1,8 @@
 services:
-  node:
+  whatsapp:
     build: 
-      context: ./
-      # context: ../../
-      # dockerfile: ./apps/whatsapp/Dockerfile
+      context: ../../
+      dockerfile: ./apps/whatsapp/Dockerfile
     restart: always
     hostname: whatsapp
     dns:

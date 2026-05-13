@@ -2,7 +2,6 @@ services:
   # STORAGE - Arquivos Privados
   storage:
     image: nginx:alpine
-    # container_name: storage
     restart: always
     hostname: storage
     volumes:
@@ -26,7 +25,8 @@ services:
       # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
       # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente
       - "traefik.http.services.storage.loadbalancer.server.port=80"
-
+    depends_on:
+      - django
     deploy:
       resources:
         limits:

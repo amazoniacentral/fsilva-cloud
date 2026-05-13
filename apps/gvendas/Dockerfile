@@ -27,8 +27,8 @@ FROM nginx:stable-alpine
 WORKDIR /app_temp
 COPY --from=build-stage /app/build .
 
-COPY gvendas-suite/auth-nginx.conf /etc/nginx/auth-nginx.conf
-COPY gvendas-suite/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/auth-nginx.conf /etc/nginx/auth-nginx.conf
+COPY apps/gvendas/nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'cp -rp /app_temp/. /usr/share/nginx/html/' >> /entrypoint.sh && \

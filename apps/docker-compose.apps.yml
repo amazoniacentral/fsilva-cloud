@@ -1,6 +1,6 @@
 include:
   - ./sgn/docker-compose.sgn.yml
-  - ./gvendas/docker-compose.gvendas.yml
+  # - ./gvendas/docker-compose.gvendas.yml
   - ./whatsapp/docker-compose.whatsapp.yml
   - ./media/docker-compose.media.yml
   - ./storage/docker-compose.storage.yml

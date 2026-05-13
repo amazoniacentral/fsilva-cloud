@@ -27,7 +27,7 @@ docker run --rm \
   --name rclone_restore_worker \
   -v "${PROJECT_NAME}_catalogos_pdf_data":/data/catalogos \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
-  rclone/rclone --config /config/rclone/rclone.conf copy $SRC /data \
+  rclone/rclone --config /config/rclone/rclone.conf copy $SRC/catalogos /data \
   --use-server-modtime \
   --buffer-size 32M \
   --transfers 4 \

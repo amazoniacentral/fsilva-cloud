@@ -30,12 +30,7 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ```estrutura
 ..
-├── database
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.postgres.yml
-│   └── docker-compose.redis.yml
-├── gvendas-suite
+├── apps
 │   ├── gvendas
 │   │   ├── .env.example
 │   │   ├── Dockerfile
@@ -45,6 +40,10 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── .env.example
 │   │   ├── docker-compose.media.yml
 │   │   └── nginx.conf
+│   ├── netdata
+│   │   ├── .env.example
+│   │   ├── README.md
+│   │   └── docker-compose.netdata.yml
 │   ├── sgn
 │   │   ├── .env.example
 │   │   ├── Dockerfile
@@ -53,25 +52,38 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── storage
 │   │   ├── .env.example
 │   │   ├── docker-compose.storage.yml
-│   │   └── nginx.conf
+│   │   ├── nginx.conf
+│   │   └── nginx2.conf
 │   ├── whatsapp
 │   │   ├── .env.example
 │   │   ├── Dockerfile
 │   │   └── docker-compose.whatsapp.yml
-│   ├── README.md
-│   └── auth-nginx.conf
-├── netdata
 │   ├── .env.example
 │   ├── README.md
-│   └── docker-compose.netdata.yml
-├── proxy
+│   ├── auth-nginx.conf
+│   └── docker-compose.apps.yml
+├── database
+│   ├── .env.example
+│   ├── README.md
+│   ├── docker-compose.database.yml
+│   ├── docker-compose.postgres.yml
+│   └── docker-compose.redis.yml
+├── middleware
 │   ├── errors
-│   │   ├── 404.html
-│   │   └── 500.html
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.traefik.yml
-│   └── nginx.conf
+│   │   ├── html
+│   │   ├── docker-compose.errors.yml
+│   │   └── nginx.conf
+│   └── docker-compose.middleware.yml
+├── proxy
+│   ├── traefik
+│   │   ├── .env.example
+│   │   ├── docker-compose.traefik.yml
+│   │   └── servicos.yml
+│   ├── tunnel
+│   │   ├── .env.example
+│   │   ├── docker-compose.tunnel.yml
+│   │   └── servicos.yml
+│   └── README.md
 ├── repos
 │   ├── docker-vps
 │   ├── gvendas
@@ -80,26 +92,50 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   └── README.md
 ├── scripts
 │   ├── .env.exemplo
+│   ├── README.md
 │   ├── alias.sh
+│   ├── backup_db.sh
+│   ├── backup_rclone.sh
+│   ├── containers.sh
 │   ├── crontab.sh
 │   ├── database.sh
 │   ├── db_baixar.sh
-│   ├── db_restart.sh
-│   ├── entrypoint.sh
 │   ├── estrutura.sh
 │   ├── gitmodules.sh
 │   ├── haskey.sh
 │   ├── install.sh
+│   ├── limpar_traefik.sh
+│   ├── otimizar_rede.sh
 │   ├── reset.sh
-│   └── status.sh
+│   ├── setup_reclone.sh
+│   ├── status.sh
+│   └── sync_rclone.sh
+├── server
+│   ├── dev
+│   │   ├── .env.example
+│   │   ├── docker-compose.dev.yml
+│   │   ├── host.dev.yml
+│   │   └── tunnel.dev.yml
+│   ├── prod
+│   │   ├── .env.example
+│   │   ├── docker-compose.prod.yml
+│   │   ├── host.prod.yml
+│   │   └── tunnel.prod.yml
+│   └── docker-compose.server.yml
 ├── .gitignore
 ├── .gitmodules
 ├── README.md
-├── colocarnosfilhos.yml
+├── colocarnosfilhos.yml.info
 ├── docker-compose.yml
-└── dump.rdb
+├── dump.rdb
+├── host.dev.yml
+├── host.prod.yml
+├── traefik.dev.yml
+├── traefik.prod.yml
+├── tunnel.dev.yml
+└── tunnel.prod.yml
 
-17 directories, 52 files
+24 directories, 81 files
 ```
 
 

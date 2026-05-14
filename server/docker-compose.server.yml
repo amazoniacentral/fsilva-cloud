@@ -1,3 +1,7 @@
+include:
+  - ../apps/docker-compose.apps.yml
+  - ../database/docker-compose.database.yml
+  - ../middleware/docker-compose.middleware.yml
 
 volumes:
   postgres_data:

@@ -1,9 +1,6 @@
 name: fsilva-cloud-prod
 
 include:
-  - ../../apps/docker-compose.apps.yml
-  - ../../database/docker-compose.database.yml
-  - ../../middleware/docker-compose.middleware.yml
   - ../docker-compose.server.yml
   
 services:
@@ -14,7 +11,6 @@ services:
     build: 
       args:
         - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
-
   media:
     env_file:
       - .env

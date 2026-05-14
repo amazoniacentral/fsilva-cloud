@@ -1,6 +1,7 @@
 name: fsilva-cloud-dev
+
 include:
+  - ./server/dev/host.dev.yml
   - ./server/dev/docker-compose.dev.yml
-  - ./proxy/ssh/servicos.yml
 
 

@@ -5,8 +5,8 @@ name: fsilva-cloud-dev
 
 # Descomente o proxy principal 
 include:
-  # - ./ssh.dev.yml
-  # - ./ssh.prod.yml
+  # - ./host.dev.yml
+  # - ./host.prod.yml
   - ./tunnel.dev.yml
   # - ./tunnel.prod.yml
   # - ./traefik.dev.yml

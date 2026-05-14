@@ -1,0 +1,32 @@
+
+services:
+  gvendas:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_GVENDAS:-3010}:80"
+    networks:
+      - web_host
+  django:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_DJANGO:-8010}:8000"
+    networks:
+      - web_host
+  nginx:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_NGINX:-8011}:80"
+    networks:
+      - web_host
+  media:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_MEDIA:-8012}:80"
+    networks:
+      - web_host
+  storage:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_STORAGE:-8013}:80"
+    networks:
+      - web_host
+  netdata:
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_NETDATA:-2010}:19999"
+    networks:
+      - web_host

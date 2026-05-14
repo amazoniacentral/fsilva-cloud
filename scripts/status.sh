@@ -267,6 +267,7 @@ for TRAEFIK_CONTAINER in $TRAEFIK_CONTAINERS; do
     fi
 done
 
+
 TUNNEL_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "tunnel")
 
 for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
@@ -274,12 +275,14 @@ for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
     IS_RUNNING_TUNNEL=$(docker inspect -f '{{.State.Running}}' "$TUNNEL_CONTAINER" 2>/dev/null)
 
     if [ "$IS_RUNNING_TUNNEL" == "true" ]; then
-        # 1. Verifica Status de Conexão
-        TUNNEL_LOGS=$(docker logs --tail 100 "$TUNNEL_CONTAINER" 2>&1)
-        TUNNEL_STATUS=$(echo "$TUNNEL_LOGS" | grep "Registered tunnel connection" | tail -n 1)
-
         echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
         
+        # Captura logs recentes para o status
+        TUNNEL_LOGS_RECENT=$(docker logs --tail 100 "$TUNNEL_CONTAINER" 2>&1)
+        
+        # 1. Verifica Status de Conexão
+        TUNNEL_STATUS=$(echo "$TUNNEL_LOGS_RECENT" | grep "Registered tunnel connection" | tail -n 1)
+
         if [[ -z "$TUNNEL_STATUS" ]]; then
             echo -e "Status do Túnel: ${RED}Desconectado ou Iniciando...${RESET}"
         else
@@ -288,18 +291,28 @@ for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
         fi
 
         # 2. Extrai a lista de Sites (Hostnames)
-        # Filtra a linha de configuração, remove o escape das aspas e extrai os hostnames
         echo -e "${YELLOW}Sites configurados:${RESET}"
-        echo "$TUNNEL_LOGS" | grep "Updated to new configuration" | tail -n 1 | \
-        grep -oP '"hostname":"\K[^"]+' | while read -r site; do
-            echo -e "  - $site"
-        done
+        
+        # Buscamos a linha de configuração, removemos as barras invertidas '\' e depois extraímos os hostnames
+        SITES=$(docker logs "$TUNNEL_CONTAINER" 2>&1 | \
+                grep "Updated to new configuration" | tail -n 1 | \
+                sed 's/\\//g' | \
+                grep -oP '"hostname":"\K[^"]+')
+
+        if [[ -n "$SITES" ]]; then
+            echo "$SITES" | while read -r site; do
+                echo -e "  - $site"
+            done
+        else
+            echo -e "  ${RED}(Não foi possível recuperar a lista de sites dos logs)${RESET}"
+        fi
 
     else
         echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
         echo -e "Status: ${RED}Container Parado${RESET}"
     fi
 done
+
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}           CONEXÕES DO BANCO DE DADOS (POSTGRES)${RESET}"

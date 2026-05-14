@@ -1,4 +1,9 @@
-# Descomente somente o proxy principal que deseja usar
+#ATENÇÃO ao usar esse arquivo de configuração padrão
+#Descomente o servidor padrao
+name: fsilva-cloud-dev
+#name: fsilva-cloud-prod
+
+# Descomente o proxy principal 
 include:
   # - ./ssh.dev.yml
   # - ./ssh.prod.yml

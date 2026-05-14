@@ -1,3 +1,5 @@
+name: fsilva-cloud-dev
+
 include:
   - ../prod/docker-compose.prod.yml
 

@@ -1,0 +1,10 @@
+# Descomente somente o proxy principal que deseja usar
+include:
+  # - ./docker-ssh.dev.yml
+  # - ./docker-ssh.prod.yml
+  # - ./docker-tunnel.dev.yml
+  # - ./docker-tunnel.prod.yml
+  # - ./docker-traefik.dev.yml
+  - ./docker-traefik.prod.yml
+
+

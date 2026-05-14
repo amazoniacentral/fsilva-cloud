@@ -1,4 +1,0 @@
-include:
-  # - ./ssh/servicos.yml
-  # - ./traefik/servicos.yml
-  - ./tunnel/servicos.yml

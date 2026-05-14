@@ -1,8 +1,6 @@
-# fsilva-cloud/docker-compose.yml
 name: fsilva-cloud-prod
 
 include:
-  - ../../proxy/docker-compose.proxy.yml
   - ../../apps/docker-compose.apps.yml
   - ../../database/docker-compose.database.yml
   - ../../middleware/docker-compose.middleware.yml

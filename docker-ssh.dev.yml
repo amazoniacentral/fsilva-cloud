@@ -1,0 +1,6 @@
+
+include:
+  - ./proxy/ssh/servicos.yml
+  - ./server/dev/docker-compose.dev.yml
+
+

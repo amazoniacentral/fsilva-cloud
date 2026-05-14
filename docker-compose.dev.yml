@@ -1,7 +1,0 @@
-# /opt/fsilva-cloud/docker-compose.dev.yml
-name: fsilva-cloud-dev
-
-include:
-  - ./server/dev/docker-compose.dev.yml
-
-

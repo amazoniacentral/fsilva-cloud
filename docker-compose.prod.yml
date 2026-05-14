@@ -1,6 +1,0 @@
-# fsilva-cloud/docker-compose.yml
-name: fsilva-cloud-prod
-
-include:
-  - ./server/prod/docker-compose.prod.yml
-

@@ -1,0 +1,4 @@
+
+include:
+  - ./proxy/traefik/servicos.yml
+  - ./server/prod/docker-compose.dev.yml

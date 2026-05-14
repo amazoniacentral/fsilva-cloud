@@ -31,8 +31,3 @@ services:
     env_file:
       - .env
   
-  tunnel:
-    env_file:
-      - .env
-      
-      

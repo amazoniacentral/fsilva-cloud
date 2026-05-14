@@ -266,7 +266,7 @@ for TRAEFIK_CONTAINER in $TRAEFIK_CONTAINERS; do
         echo -e "Status: ${RED}Container Parado${RESET}"
     fi
 done
-# Lista containers que possuem "tunnel" no nome
+
 TUNNEL_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "tunnel")
 
 for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
@@ -274,22 +274,31 @@ for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
     IS_RUNNING_TUNNEL=$(docker inspect -f '{{.State.Running}}' "$TUNNEL_CONTAINER" 2>/dev/null)
 
     if [ "$IS_RUNNING_TUNNEL" == "true" ]; then
-        # Verifica se o túnel está conectado lendo os logs do cloudflared
-        # Procuramos pela palavra "Connected" nos últimos logs
-        TUNNEL_STATUS=$(docker logs --tail 20 "$TUNNEL_CONTAINER" 2>&1 | grep -i "Registered tunnel connection" | tail -n 1)
+        # 1. Verifica Status de Conexão
+        TUNNEL_LOGS=$(docker logs --tail 100 "$TUNNEL_CONTAINER" 2>&1)
+        TUNNEL_STATUS=$(echo "$TUNNEL_LOGS" | grep "Registered tunnel connection" | tail -n 1)
 
         echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
         
         if [[ -z "$TUNNEL_STATUS" ]]; then
             echo -e "Status do Túnel: ${RED}Desconectado ou Iniciando...${RESET}"
         else
-            echo -e "Status do Túnel: ${GREEN}Online (Connected)${RESET}"
+            LOCATION=$(echo "$TUNNEL_STATUS" | grep -oP 'location=\K[^ ]+')
+            echo -e "Status do Túnel: ${GREEN}Online (Registrado em $LOCATION)${RESET}"
         fi
+
+        # 2. Extrai a lista de Sites (Hostnames)
+        # Filtra a linha de configuração, remove o escape das aspas e extrai os hostnames
+        echo -e "${YELLOW}Sites configurados:${RESET}"
+        echo "$TUNNEL_LOGS" | grep "Updated to new configuration" | tail -n 1 | \
+        grep -oP '"hostname":"\K[^"]+' | while read -r site; do
+            echo -e "  - $site"
+        done
+
     else
         echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
         echo -e "Status: ${RED}Container Parado${RESET}"
     fi
-    echo "------------------------------------------"
 done
 
 echo -e "\n${CYAN}================================================================${RESET}"

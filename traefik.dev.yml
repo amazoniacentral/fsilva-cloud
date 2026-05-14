@@ -1,6 +1,6 @@
 name: fsilva-cloud-dev
 include:
-  - ./proxy/traefik/servicos.yml
   - ./server/dev/docker-compose.dev.yml
+  - ./proxy/traefik/servicos.yml
 
 

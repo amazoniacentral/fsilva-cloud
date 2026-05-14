@@ -1,6 +1,6 @@
 name: fsilva-cloud-prod
 include:
-  - ./proxy/ssh/servicos.yml
   - ./server/prod/docker-compose.prod.yml
+  - ./proxy/ssh/servicos.yml
 
 

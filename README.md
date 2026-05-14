@@ -141,10 +141,11 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 
 ## Outras configurações
 * [**Banco de Dados:**](database/README.md)
-* [**GVendas Suite:**](gvendas-suite/README.md)
+* [**Apps:**](apps/README.md)
 * [**Proxy:**](proxy/README.md)
-* [**Monitoramento:**](netdata/README.md)
 * [**Módulos:**](repos/README.md)
-* [**Scripts geral:**](scripts/)
+* [**Scripts Geral:**](scripts/README.md)
+* [**Produção:**](server/prod/README.md)
+* [**Developer:**](server/dev/README.md)
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

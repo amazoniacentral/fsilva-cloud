@@ -1,8 +1,14 @@
 # Sistema de Monitoramento
 
-[netdata/.env](.env.example)
+Variaveis de configurações .env
 ```.env
+# Configurações de Domínio
 DOMAIN=netdata.seu-dominio.com
+```
+
+### Configuração da Base de Dados
+```json <!-- ID: .env.example -->
+(conteúdo será injetado aqui)
 ```
 
 ---

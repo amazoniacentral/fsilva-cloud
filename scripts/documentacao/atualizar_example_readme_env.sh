@@ -41,7 +41,7 @@ find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o -name ".env.example" -typ
         
         # 3. Inserir no README.md usando Perl
         # Substitui o bloco ```env.example ... ``` pelo novo conteúdo
-        perl -i -0777 -pe 's/```env.example.*?```/```env.example\n$ENV{CONTEUDO_TREE}\n```/gs' "$ARQUIVO_MD"
+        perl -i -0777 -pe 's/```.env.example.*?```/```.env.example\n$ENV{CONTEUDO_TREE}\n```/gs' "$ARQUIVO_MD"
         
         # Limpeza do arquivo temporário
         rm -f "$ARQUIVO_TEMP"
@@ -51,3 +51,6 @@ find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o -name ".env.example" -typ
 done
 
 echo "Concluído!"
+
+
+ 

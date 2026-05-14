@@ -1,15 +1,12 @@
 # Sistema de Monitoramento
 
-Variaveis de configurações .env
-```.env
+
+### Configuração do NetData
+```.env <!-- ID: .env.example -->
 # Configurações de Domínio
 DOMAIN=netdata.seu-dominio.com
 ```
 
-### Configuração da Base de Dados
-```json <!-- ID: .env.example -->
-(conteúdo será injetado aqui)
-```
-
----
+---  <!-- ID: assinatura -->
 **Desenvolvido por Francisco Silva (FSilva) — 2026**
+---

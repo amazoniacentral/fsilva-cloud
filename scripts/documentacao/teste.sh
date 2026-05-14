@@ -3,7 +3,7 @@
 # ==============================================================================
 # SCRIPT: atualizar_readme_com_id.sh
 # DESCRIÇÃO: Atualiza blocos de código no README.md usando IDs baseados no nome
-#            dos arquivos de origem para permitir múltiplos blocos da mesma língua.
+#            dos arquivos de origem. Suporta arquivos ocultos como .env.example.
 # ==============================================================================
 
 # Definição das bases de diretório
@@ -16,21 +16,25 @@ if [ ! -d "$TEMP_DIR" ]; then TEMP_DIR="."; fi
 
 echo "Iniciando atualização inteligente em: $BASE_DIR"
 
-# 1. Localiza os arquivos de origem (expanda a lista de extensões conforme necessário)
-find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o \( -name ".env.example" -o -name "*.json" -o -name "*.txt" -o -name "*.cs" -o -name "*.py" \) -type f -print | while read -r CAMINHO_ORIGEM; do
+# 1. Localiza os arquivos de origem
+find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o \( -name ".env.example" -o -name "*.json" -o -name "*.txt" -o -name "*.cs" -o -name "*.py" -o -name "*.sh" -o -name "*.js" -o -name "*.ts" -o -name "*.tsx" -o -name "*.yml" -o -name "*.yaml" \) -type f -print | while read -r CAMINHO_ORIGEM; do
     
     DIR_ATUAL=$(dirname "$CAMINHO_ORIGEM")
     ARQUIVO_MD="$DIR_ATUAL/README.md"
     NOME_ARQUIVO=$(basename "$CAMINHO_ORIGEM")
 
-    # 2. Define o ID ÚNICO (Nome do arquivo sem extensão)
-    # Exemplo: 'setup_api.json' vira ID 'setup_api'
-    ID_UNICO="${NOME_ARQUIVO%.*}"
+    # 2. Lógica de ID ÚNICO corrigida
+    if [[ "$NOME_ARQUIVO" == .* ]]; then
+        # Para arquivos ocultos (ex: .env.example), o ID será o nome completo
+        ID_UNICO="$NOME_ARQUIVO"
+    else
+        # Para arquivos normais, remove a extensão (ex: script.sh -> script)
+        ID_UNICO="${NOME_ARQUIVO%.*}"
+    fi
 
     # 3. Define a LINGUAGEM para o Syntax Highlighting
-    # Define a LINGUAGEM para o Syntax Highlighting no Markdown
     case "$NOME_ARQUIVO" in
-        ".env"*) LANG=".env" ;;
+        ".env"*)         LANG=".env" ;;
         *.json)          LANG="json" ;;
         *.sh)            LANG="bash" ;;
         *.txt)           LANG="text" ;;
@@ -49,13 +53,10 @@ find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o \( -name ".env.example" -
         *)               LANG="text" ;;
     esac
 
-
-
     # 4. Verifica se o README.md existe no diretório
     if [ -f "$ARQUIVO_MD" ]; then
         
-        # Cria identificador de busca (Ex: json <!-- ID: setup_api -->)
-        # O comentário <!-- ID: ... --> é ignorado por renderizadores de Markdown
+        # Define a tag de busca exata
         BUSCA_TAG="$LANG <!-- ID: $ID_UNICO -->"
         
         # Prepara o conteúdo para injeção
@@ -66,9 +67,9 @@ find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o \( -name ".env.example" -
         export CONTEUDO_ID=$(cat "$ARQUIVO_TEMP")
         export TAG_COMPLETA="$BUSCA_TAG"
         
-        # 5. Executa a substituição cirúrgica no README.md
-        # Procura exatamente pelo bloco que contém o ID único
-        perl -i -0777 -pe 's/```$ENV{TAG_COMPLETA}.*?```/```$ENV{TAG_COMPLETA}\n$ENV{CONTEUDO_ID}\n```/gs' "$ARQUIVO_MD"
+        # 5. Executa a substituição
+        # O uso de \Q...\E no Perl garante que pontos (.) sejam tratados como texto literal e não como regex
+        perl -i -0777 -pe 's/```\Q$ENV{TAG_COMPLETA}\E.*?```/```$ENV{TAG_COMPLETA}\n$ENV{CONTEUDO_ID}\n```/gs' "$ARQUIVO_MD"
         
         rm -f "$ARQUIVO_TEMP"
         

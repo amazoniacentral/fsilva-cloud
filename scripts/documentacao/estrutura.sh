@@ -6,7 +6,7 @@
 # ==============================================================================
 
 # Caminhos relativos
-ARQUIVO_MD="../README.md"
+ARQUIVO_MD="../../README.md"
 DIRETORIO_RAIZ=".."
 
 # Definição do diretório temporário (Usa $TMPDIR se existir, senão usa /tmp, senão pasta atual)

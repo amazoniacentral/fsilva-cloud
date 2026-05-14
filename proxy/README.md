@@ -14,12 +14,5 @@ DOMAIN=traefik.seu-dominio.com
 TUNNEL_TOKEN=seu_token_aqui_sem_aspas
 ```
 
-[proxy/ssh/.env](ssh/.env.example)
-```.env
-# Configurações de Tunel
-TUNNEL_TOKEN=seu_token_aqui_sem_aspas
-```
-
-
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

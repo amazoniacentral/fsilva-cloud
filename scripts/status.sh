@@ -225,35 +225,72 @@ echo -e "${CYAN}================================================================
 docker stats --no-stream --format "table {{.Name}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.CPUPerc}}\t{{.PIDs}}"
 
 echo -e "\n${CYAN}================================================================${RESET}"
-echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
+echo -e "${YELLOW}           PROXY (ACESSO A WEB)${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
-ACME_FILE="${BASE_DIR}/proxy/certificados/acme.json"
-
-if [ -f "$ACME_FILE" ]; then
-    CERT_COUNT=$(grep -o '"certificate":' "$ACME_FILE" | wc -l)
-    PERM=$(stat -c "%a" "$ACME_FILE")
-    printf "%-25s %-15s\n" "CERTIFICADOS ATIVOS:" "$CERT_COUNT"
-    printf "%-25s %-15s\n" "PERMISSÃO ACME.JSON:" "$PERM (Ideal 600)"
-    
-    echo -e "\n${CYAN}Domínios com SSL Ativo:${RESET}"
-    if command -v jq >/dev/null 2>&1; then
-        jq -r '..|.main? // empty' "$ACME_FILE" 2>/dev/null | sort -u | sed 's/^/ - /'
+TRAEFIK_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "traefik")
+for TRAEFIK_CONTAINER in $TRAEFIK_CONTAINERS; do
+    IS_RUNNING=$(docker inspect -f '{{.State.Running}}' "$TRAEFIK_CONTAINER" 2>/dev/null)
+    if [ "$IS_RUNNING" == "true" ]; then
+        echo -e "${CYAN}Container: $TRAEFIK_CONTAINER{RESET}"
+        echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
+        
+        ACME_FILE="${BASE_DIR}/proxy/traefik/certificados/acme.json"
+        
+        if [ -f "$ACME_FILE" ]; then
+            CERT_COUNT=$(grep -o '"certificate":' "$ACME_FILE" | wc -l)
+            PERM=$(stat -c "%a" "$ACME_FILE")
+            printf "%-25s %-15s\n" "CERTIFICADOS ATIVOS:" "$CERT_COUNT"
+            printf "%-25s %-15s\n" "PERMISSÃO ACME.JSON:" "$PERM (Ideal 600)"
+            
+            echo -e "\n${CYAN}Domínios com SSL Ativo:${RESET}"
+            if command -v jq >/dev/null 2>&1; then
+                jq -r '..|.main? // empty' "$ACME_FILE" 2>/dev/null | sort -u | sed 's/^/ - /'
+            else
+                grep -Po '(?<="main": ")[^"]*' "$ACME_FILE" | sort -u | sed 's/^/ - /'
+            fi
+        else
+            printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado"
+        fi
+        
+        echo -e ""
+        INODES=$(df -i / | awk 'NR==2 {print $5}')
+        CONNS=$(ss -ant | grep -E ':80|:443' | wc -l)
+        CRASHING=$(docker ps -a | grep -c "restarting")
+        
+        printf "%-25s %-15s\n" "INODES EM USO (/):" "$INODES"
+        printf "%-25s %-15s\n" "CONEXÕES WEB (80/443):" "$CONNS"
+        printf "%-25s %-15s\n" "CONTAINERS EM ERRO:" "$CRASHING"
     else
-        grep -Po '(?<="main": ")[^"]*' "$ACME_FILE" | sort -u | sed 's/^/ - /'
+        echo -e "${CYAN}Container: $TRAEFIK_CONTAINER{RESET}"
+        echo -e "Status: ${RED}Container Parado${RESET}"
     fi
-else
-    printf "%-25s ${RED}%-15s${RESET}\n" "ACME.JSON:" "Não encontrado"
-fi
+done
+# Lista containers que possuem "tunnel" no nome
+TUNNEL_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "tunnel")
 
-echo -e ""
-INODES=$(df -i / | awk 'NR==2 {print $5}')
-CONNS=$(ss -ant | grep -E ':80|:443' | wc -l)
-CRASHING=$(docker ps -a | grep -c "restarting")
+for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
+    # Verifica se o container está de fato rodando
+    IS_RUNNING_TUNNEL=$(docker inspect -f '{{.State.Running}}' "$TUNNEL_CONTAINER" 2>/dev/null)
 
-printf "%-25s %-15s\n" "INODES EM USO (/):" "$INODES"
-printf "%-25s %-15s\n" "CONEXÕES WEB (80/443):" "$CONNS"
-printf "%-25s %-15s\n" "CONTAINERS EM ERRO:" "$CRASHING"
+    if [ "$IS_RUNNING_TUNNEL" == "true" ]; then
+        # Verifica se o túnel está conectado lendo os logs do cloudflared
+        # Procuramos pela palavra "Connected" nos últimos logs
+        TUNNEL_STATUS=$(docker logs --tail 20 "$TUNNEL_CONTAINER" 2>&1 | grep -i "Connected" | tail -n 1)
+
+        echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
+        
+        if [[ -z "$TUNNEL_STATUS" ]]; then
+            echo -e "Status do Túnel: ${RED}Desconectado ou Iniciando...${RESET}"
+        else
+            echo -e "Status do Túnel: ${GREEN}Online (Connected)${RESET}"
+        fi
+    else
+        echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
+        echo -e "Status: ${RED}Container Parado${RESET}"
+    fi
+    echo "------------------------------------------"
+done
 
 echo -e "\n${CYAN}================================================================${RESET}"
 echo -e "${YELLOW}           CONEXÕES DO BANCO DE DADOS (POSTGRES)${RESET}"

@@ -14,14 +14,12 @@ DOMAIN=traefik.seu-dominio.com
 TUNNEL_TOKEN=seu_token_aqui_sem_aspas
 ```
 
-Deixe somente o proxy que for usar
-[proxy/docker-compose.proxy.yml](docker-compose.proxy.yml)
-``` yml
-include:
-  - ./traefik/docker-compose.traefik.yml
-  # - ./tunnel/docker-compose.tunnel.yml
-
+[proxy/ssh/.env](ssh/.env.example)
+```.env
+# Configurações de Tunel
+TUNNEL_TOKEN=seu_token_aqui_sem_aspas
 ```
+
 
 ---
 **Desenvolvido por Francisco Silva (FSilva) — 2026**

@@ -276,7 +276,7 @@ for TUNNEL_CONTAINER in $TUNNEL_CONTAINERS; do
     if [ "$IS_RUNNING_TUNNEL" == "true" ]; then
         # Verifica se o túnel está conectado lendo os logs do cloudflared
         # Procuramos pela palavra "Connected" nos últimos logs
-        TUNNEL_STATUS=$(docker logs --tail 20 "$TUNNEL_CONTAINER" 2>&1 | grep -i "Connected" | tail -n 1)
+        TUNNEL_STATUS=$(docker logs --tail 20 "$TUNNEL_CONTAINER" 2>&1 | grep -i "Registered tunnel connection" | tail -n 1)
 
         echo -e "${CYAN}Container: $TUNNEL_CONTAINER${RESET}"
         

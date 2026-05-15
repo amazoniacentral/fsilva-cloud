@@ -5,7 +5,22 @@
 _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
 <!-- END_ID:cabecalho -->
 
+## Configurar as variaveis de ambiente ``.env``
+Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.env.example``. de acordo com o que deseja. 
 
+<!-- START_ID:bloco_variaveis -->
+```bash
+./proxy
+├── traefik
+│   └── .env.example
+└── tunnel
+    └── .env.example
+
+3 directories, 2 files
+```
+<!-- END_ID:bloco_variaveis -->
+
+## Estrurura de pastas
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./proxy

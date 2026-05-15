@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Cores para o terminal
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
@@ -67,25 +66,11 @@ DEXEC_FUNCTION="dexec() {
 # ==========================================================
 declare -a ALIASES=(
     "ll='ls -lah'"
-    "dprune='docker system prune -af'"
-    "update='sudo apt update && sudo apt upgrade -y'"
     "cls='clear'"
-    "dhome='cd $SCRIPT_DIR/../'"
-    "drepos='cd $SCRIPT_DIR/../repos'"
-    "dgvendas='cd $SCRIPT_DIR/../gvendas-suite'"
-    "dgapp='cd $SCRIPT_DIR/../gvendas-suite/app-react'"
-    "dgmsg='cd $SCRIPT_DIR/../gvendas-suite/msg-node'"
-    "dgsgn='cd $SCRIPT_DIR/../gvendas-suite/sgn-django'"
-    "dscripts='cd $SCRIPT_DIR/../scripts'"
     "volumes='cd /var/lib/docker/volumes'"
-    "dnetdata='cd $SCRIPT_DIR/../netdata'"
-    "ddatabase='cd $SCRIPT_DIR/../netdata'"
     "status='bash $SCRIPT_DIR/status.sh'"
-    "instalar='bash $SCRIPT_DIR/install.sh'"
+    "start='bash $SCRIPT_DIR/deploy/setup.sh'"
     "atalhos='bash $SCRIPT_DIR/alias.sh'"
-    "estrutura='bash $SCRIPT_DIR/estrutura.sh'"
-    "gitmodules='bash $SCRIPT_DIR/gitmodules.sh'"
-    "resetar='bash $SCRIPT_DIR/reset.sh'"
     "refresh='source $HOME/.bashrc'"
 )
 

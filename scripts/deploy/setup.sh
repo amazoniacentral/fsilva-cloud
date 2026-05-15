@@ -17,8 +17,8 @@ echo -e "${AZUL}       GERENCIADOR DE DEPLOY FSILVA      ${NC}"
 echo -e "${AZUL}=========================================${NC}"
 
 echo -e "\n${AMARELO}O que deseja fazer?${NC}"
-echo -e "1) Atualizar Produção (Tags/Versões)"
-echo -e "2) Atualizar Desenvolvimento (Branches)"
+echo -e "1) Produção (Tags/Versões)"
+echo -e "2) Desenvolvimento (Branches)"
 echo -n "Escolha uma opção: "
 read -u 3 OPCAO
 

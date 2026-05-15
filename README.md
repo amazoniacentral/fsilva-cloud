@@ -144,6 +144,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── docker-compose.prod.yml
 │   │   ├── host.prod.yml
 │   │   └── tunnel.prod.yml
+│   ├── README.md
 │   └── docker-compose.server.yml
 ├── .gitignore
 ├── .gitmodules
@@ -158,7 +159,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── tunnel.dev.yml
 └── tunnel.prod.yml
 
-25 directories, 98 files
+25 directories, 99 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -178,5 +179,5 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/05/2026_
+_Atualizado em: 15/05/2026_
 <!-- END_ID:bloco_final -->

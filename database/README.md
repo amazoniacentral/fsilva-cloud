@@ -49,5 +49,5 @@ Se você não criar um usuário novo, usará o usuário padrão (POSTGRES_USER) 
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/05/2026_
+_Atualizado em: 15/05/2026_
 <!-- END_ID:bloco_final -->

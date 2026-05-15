@@ -105,6 +105,11 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── sgn
 │   └── README.md
 ├── scripts
+│   ├── deploy
+│   │   ├── README.md
+│   │   ├── dev_update.sh
+│   │   ├── prod_update.sh
+│   │   └── setup.sh
 │   ├── documentacao
 │   │   ├── README.md
 │   │   ├── atualizar_example_readme_env.sh
@@ -159,7 +164,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── tunnel.dev.yml
 └── tunnel.prod.yml
 
-25 directories, 99 files
+26 directories, 103 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

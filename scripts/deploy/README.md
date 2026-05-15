@@ -7,35 +7,13 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./scripts
-├── documentacao
-│   ├── README.md
-│   ├── atualizar_example_readme_env.sh
-│   ├── blocos.sh
-│   ├── cabecalho.sh
-│   ├── estrutura.sh
-│   ├── rodape.sh
-│   └── setup.sh
-├── .env.example
+./scripts/deploy
 ├── README.md
-├── alias.sh
-├── backup_db.sh
-├── backup_rclone.sh
-├── containers.sh
-├── crontab.sh
-├── database.sh
-├── db_baixar.sh
-├── gitmodules.sh
-├── haskey.sh
-├── install.sh
-├── limpar_traefik.sh
-├── otimizar_rede.sh
-├── reset.sh
-├── setup_reclone.sh
-├── status.sh
-└── sync_rclone.sh
+├── dev_update.sh
+├── prod_update.sh
+└── setup.sh
 
-2 directories, 25 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

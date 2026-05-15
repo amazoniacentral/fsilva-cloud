@@ -8,6 +8,11 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./scripts
+├── deploy
+│   ├── README.md
+│   ├── dev_update.sh
+│   ├── prod_update.sh
+│   └── setup.sh
 ├── documentacao
 │   ├── README.md
 │   ├── atualizar_example_readme_env.sh
@@ -35,7 +40,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── status.sh
 └── sync_rclone.sh
 
-2 directories, 25 files
+3 directories, 29 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

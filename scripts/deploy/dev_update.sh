@@ -77,12 +77,12 @@ if [[ "$OPCAO" -gt 0 && "$INDEX" -lt "${#YAML_FILES[@]}" ]]; then
                 if [ ${#SERVICES[@]} -eq 0 ]; then
                     echo -e "${VERMELHO}Erro: Não foi possível ler os serviços via docker compose config.${NC}"
                     echo -e "${AZUL}Tentando subir tudo de uma vez...${NC}"
-                   # docker compose -f "$FILE" up -d --build
+                    docker compose -f "$FILE" up -d --build
                 else
                     # Adiciona a opção "Todos" no início do array
                     OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
                     
-                    echo -e "${AZUL}Selecione o serviço para realizar o UP:${NC}"
+                    echo -e "${AZUL}Selecione o serviço para realizar docker compose up -d --build:${NC}"
                     
                     # PS3 é o prompt exibido pelo comando select
                     PS3="Escolha o número do serviço: "
@@ -105,17 +105,85 @@ if [[ "$OPCAO" -gt 0 && "$INDEX" -lt "${#YAML_FILES[@]}" ]]; then
                 fi
                 break
                 ;;
-
+                
             2)
-                echo -e "${VERMELHO}Executando: docker compose -f $FILENAME down --remove-orphans${NC}"
-                docker compose -f "$FILE" down --remove-orphans
+                echo -e "\n${AMARELO}Buscando serviços no arquivo...${NC}"
+                
+                # A VERDADE ABSOLUTA: O docker compose config --services lista 
+                # apenas os nomes dos serviços, ignorando todo o resto do YAML.
+                mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
+
+                if [ ${#SERVICES[@]} -eq 0 ]; then
+                    echo -e "${VERMELHO}Erro: Não foi possível ler os serviços via docker compose config.${NC}"
+                    echo -e "${AZUL}Tentando baixar tudo de uma vez...${NC}"
+                    docker compose -f "$FILE" down --remove-orphans
+                else
+                    # Adiciona a opção "Todos" no início do array
+                    OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
+                    
+                    echo -e "${AZUL}Selecione o serviço para realizar docker compose down --remove-orphans:${NC}"
+                    
+                    # PS3 é o prompt exibido pelo comando select
+                    PS3="Escolha o número do serviço: "
+                    
+                    # Forçamos a leitura de /dev/tty para garantir interatividade
+                    select SERV in "${OPCOES_SERV[@]}"; do
+                        if [ -n "$SERV" ]; then
+                            if [ "$SERV" == "TODOS OS SERVIÇOS" ]; then
+                                echo -e "${VERDE}Executando: docker compose -f $FILE down --remove-orphans${NC}"
+                                docker compose -f "$FILE" down --remove-orphans
+                            else
+                                echo -e "${VERDE}Executando: docker compose -f $FILE down --remove-orphans $SERV${NC}"
+                                docker compose -f "$FILE" down --remove-orphans "$SERV"
+                            fi
+                            break
+                        else
+                            echo -e "${VERMELHO}Opção inválida.${NC}"
+                        fi
+                    done </dev/tty
+                fi
                 break
                 ;;
+                
             3)
-                echo -e "${AMARELO}Executando Rebuild Completo (No Cache)...${NC}"
-                docker compose -f "$FILE" build --no-cache
+                echo -e "\n${AMARELO}Buscando serviços no arquivo...${NC}"
+                
+                # A VERDADE ABSOLUTA: O docker compose config --services lista 
+                # apenas os nomes dos serviços, ignorando todo o resto do YAML.
+                mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
+
+                if [ ${#SERVICES[@]} -eq 0 ]; then
+                    echo -e "${VERMELHO}Erro: Não foi possível ler os serviços via docker compose config.${NC}"
+                    echo -e "${AZUL}Tentando subir tudo de uma vez...${NC}"
+                    docker compose -f "$FILE" --build --no-cache
+                else
+                    # Adiciona a opção "Todos" no início do array
+                    OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
+                    
+                    echo -e "${AZUL}Selecione o serviço para realizar docker compo--build --no-cache:${NC}"
+                    
+                    # PS3 é o prompt exibido pelo comando select
+                    PS3="Escolha o número do serviço: "
+                    
+                    # Forçamos a leitura de /dev/tty para garantir interatividade
+                    select SERV in "${OPCOES_SERV[@]}"; do
+                        if [ -n "$SERV" ]; then
+                            if [ "$SERV" == "TODOS OS SERVIÇOS" ]; then
+                                echo -e "${VERDE}Executando: docker compose -f $FILE--build --no-cache${NC}"
+                                docker compose -f "$FILE" --build --no-cache
+                            else
+                                echo -e "${VERDE}Executando: docker compose -f $FILE--build --no-cache $SERV${NC}"
+                                docker compose -f "$FILE" --build --no-cache "$SERV"
+                            fi
+                            break
+                        else
+                            echo -e "${VERMELHO}Opção inválida.${NC}"
+                        fi
+                    done </dev/tty
+                fi
                 break
                 ;;
+
             4)
                 echo -e "${AZUL}Imagens associadas ao arquivo:${NC}"
                 docker compose -f "$FILE" images
@@ -133,9 +201,43 @@ if [[ "$OPCAO" -gt 0 && "$INDEX" -lt "${#YAML_FILES[@]}" ]]; then
                 ;;
             7)
                 echo -e "${AZUL}Logs (Ctrl+C para sair):${NC}"
-                docker compose -f "$FILE" logs -f --tail=50
+                echo -e "\n${AMARELO}Buscando serviços no arquivo...${NC}"
+                # A VERDADE ABSOLUTA: O docker compose config --services lista 
+                # apenas os nomes dos serviços, ignorando todo o resto do YAML.
+                mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
+
+                if [ ${#SERVICES[@]} -eq 0 ]; then
+                    echo -e "${VERMELHO}Erro: Não foi possível ler os serviços via docker compose config.${NC}"
+                    echo -e "${AZUL}Tentando buscar tudo de uma vez...${NC}"
+                    docker compose -f "$FILE" logs -f --tail=50
+                else
+                    # Adiciona a opção "Todos" no início do array
+                    OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
+                    
+                    echo -e "${AZUL}Selecione o serviço para realizar docker compose logs -f --tail=50:${NC}"
+                    
+                    # PS3 é o prompt exibido pelo comando select
+                    PS3="Escolha o número do serviço: "
+                    
+                    # Forçamos a leitura de /dev/tty para garantir interatividade
+                    select SERV in "${OPCOES_SERV[@]}"; do
+                        if [ -n "$SERV" ]; then
+                            if [ "$SERV" == "TODOS OS SERVIÇOS" ]; then
+                                echo -e "${VERDE}Executando: docker compose -f $FILE logs -f --tail=50${NC}"
+                                docker compose -f "$FILE" logs -f --tail=50
+                            else
+                                echo -e "${VERDE}Executando: docker compose -f $FILE logs -f --tail=50 $SERV${NC}"
+                                docker compose -f "$FILE" logs -f --tail=50 "$SERV"
+                            fi
+                            break
+                        else
+                            echo -e "${VERMELHO}Opção inválida.${NC}"
+                        fi
+                    done </dev/tty
+                fi
                 break
                 ;;
+
             8)
                 docker compose -f "$FILE" ps
                 break
@@ -154,6 +256,3 @@ else
     exit 1
 fi
 
-echo -e "\n${VERDE}=========================================${NC}"
-echo -e "${VERDE}           PROCESSO FINALIZADO           ${NC}"
-echo -e "${VERDE}=========================================${NC}"

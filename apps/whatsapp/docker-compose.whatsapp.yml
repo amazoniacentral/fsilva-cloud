@@ -17,8 +17,10 @@ services:
     networks:
       - net_boot
       - net_web_only
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    expose:
+      - ${PORT:-3000}
     deploy:
       resources:
         limits:

@@ -25,6 +25,10 @@ read -u 3 OPCAO
 case $OPCAO in
     1)
         echo -e "\n${AZUL}[PRODUÇÃO]${NC} Buscando novas versões no GitHub..."
+        
+        # Silencia o aviso de Detached HEAD para não poluir o log de deploy
+        git config advice.detachedHead false
+
         git fetch --all --tags --quiet
         
         TAGS=$(git tag -l | sort -V)

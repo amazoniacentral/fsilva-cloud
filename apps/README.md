@@ -1,27 +1,71 @@
-# GVendas Suite
+<!-- START_ID:cabecalho -->
+# FSilva Cloud
+*Infraestrutura de Alta Disponibilidade e Orquestração de Containers*
 
-Configuração
-Acompanhe os exemplos de `.env.example` para ceiar as variáveis de ambiente
+_Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
+<!-- END_ID:cabecalho -->
 
-## Variáveia .env
-- [gvendas/.env](sgn/.env.example) Aplicativo multi plataforma tecnologoa WebApp 
-- [sgn/.env](sgn/.env.example) Api do sistema
-- [media/.env](media/.env.example) Arquivos de midia geral
-- [storage/.env](storage/.env.example) Arquivos privados
-- [whatsapp/.env](whatsapp/.env.example) Serviço de integração com o WhatsApp
+<!-- START_ID:bloco_estrutura -->
+```bash
+./apps
+├── gvendas
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── docker-compose.gvendas.yml
+│   └── nginx.conf
+├── media
+│   ├── .env.example
+│   ├── README.md
+│   ├── docker-compose.media.yml
+│   └── nginx.conf
+├── netdata
+│   ├── .env.example
+│   ├── README.md
+│   └── docker-compose.netdata.yml
+├── sgn
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── docker-compose.sgn.yml
+│   └── nginx.conf
+├── storage
+│   ├── .env.example
+│   ├── README.md
+│   ├── docker-compose.storage.yml
+│   ├── nginx.conf
+│   └── nginx2.conf
+├── whatsapp
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── README.md
+│   └── docker-compose.whatsapp.yml
+├── .env.example
+├── README.md
+├── auth-nginx.conf
+└── docker-compose.apps.yml
+
+7 directories, 30 files
+```
+<!-- END_ID:bloco_estrutura -->
 
 
-# Links obrigatórios para funcionar
-```.env
+### Configurações de variáveis .env
+```.env <!-- ID: .env.example -->
 # --- INFRAESTRUTURA ---
-API_DOMAIN=api.seusite.com
-MEDIA_DOMAIN=cdn-media.seusite.com
-STORAGE_DOMAIN=storage-private.seusite.com
+#API_DOMAIN=dominio_da_api
+#MEDIA_DOMAIN=dominio_de_medias
+#STORAGE_DOMAIN=dominio_do_storage
 
-# --- SERVIÇO WHATSAPP ---
-WHATSAPP_CONTAINER=whatsapp
-WHATSAPP_CONTAINER_PORT=3000
+
+# --- CONTAINER WHATSAPP ---
+#WHATSAPP_CONTAINER=whatsapp
+#WHATSAPP_CONTAINER_PORT=3000
 ```
 
+<!-- START_ID:bloco_final -->
 ---
-**Desenvolvido por Francisco Silva (FSilva) — 2026**
+**Desenvolvido por Francisco Silva (FSilva)**
+
+_Atualizado em: 14/05/2026_
+<!-- END_ID:bloco_final -->

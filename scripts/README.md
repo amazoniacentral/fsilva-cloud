@@ -1,36 +1,59 @@
-#!/bin/bash
+<!-- START_ID:cabecalho -->
+# FSilva Cloud
+*Infraestrutura de Alta Disponibilidade e Orquestração de Containers*
 
-# 1. Definir caminhos (Padronizado para sua estrutura)
-RCLONE_CONFIG_DIR="/opt/fsilva-cloud/config/rclone"
-SCRIPTS_DIR="/opt/fsilva-cloud/scripts"
+_Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
+<!-- END_ID:cabecalho -->
 
-echo "--- Iniciando Instalação do Ambiente de Backup ---"
+<!-- START_ID:bloco_estrutura -->
+```bash
+./scripts
+├── documentacao
+│   ├── README.md
+│   ├── atualizar_example_readme_env.sh
+│   ├── blocos.sh
+│   ├── cabecalho.sh
+│   ├── estrutura.sh
+│   ├── rodape.sh
+│   └── setup.sh
+├── .env.example
+├── README.md
+├── alias.sh
+├── backup_db.sh
+├── backup_rclone.sh
+├── containers.sh
+├── crontab.sh
+├── database.sh
+├── db_baixar.sh
+├── gitmodules.sh
+├── haskey.sh
+├── install.sh
+├── limpar_traefik.sh
+├── otimizar_rede.sh
+├── reset.sh
+├── setup_reclone.sh
+├── status.sh
+└── sync_rclone.sh
 
-# 2. Criar diretórios necessários
-mkdir -p "$RCLONE_CONFIG_DIR"
-mkdir -p "$SCRIPTS_DIR"
-mkdir -p "/opt/fsilva-cloud/logs"
+2 directories, 25 files
+```
+<!-- END_ID:bloco_estrutura -->
 
-# 3. Baixar a imagem do Rclone (Garante que já está na VPS)
-echo "Baixando imagem Docker do Rclone..."
-docker pull rclone/rclone:latest
 
-# 4. Iniciar o assistente de configuração
-echo "--------------------------------------------------------"
-echo "ATENÇÃO: Agora vamos configurar o acesso ao Google Drive."
-echo "1. Escolha 'n' para New Remote"
-echo "2. Nomeie como 'gdrive'"
-echo "3. Escolha o número do 'Google Drive'"
-echo "4. Deixe Client ID e Secret em BRANCO"
-echo "5. Scope escolha '1' (Full Access)"
-echo "6. Use auto config? Escolha 'n' (Pois você está na VPS)"
-echo "7. Copie o link gerado, autorize no seu PC e cole o código aqui."
-echo "--------------------------------------------------------"
-read -p "Pressione [Enter] para começar a configuração..."
+### Configurações de variáveis .env
+```.env <!-- ID: .env.example -->
+# Configurações para o Rsync (Transferência Remota)
+# RSYNC_ORIGEM_USER=seu_usuario_remoto
+# RSYNC_ORIGEM_IP=123.123.123.123
+# RSYNC_ORIGEM_PATH=/caminho/no/servidor/remoto/backup.backup
 
-docker run --rm -it \
-  -v "$RCLONE_CONFIG_DIR":/config/rclone \
-  rclone/rclone config
+# Configurações de Paths Locais (Opcional, conforme scripts anteriores)
+# DESTINO_PATH_BANCO=/caminho/local/do/backup.backup
+```
 
-echo "--- Instalação Concluída ---"
-echo "Teste a conexão com: docker run --rm -v $RCLONE_CONFIG_DIR:/config/rclone rclone/rclone lsd gdrive:"
+<!-- START_ID:bloco_final -->
+---
+**Desenvolvido por Francisco Silva (FSilva)**
+
+_Atualizado em: 14/05/2026_
+<!-- END_ID:bloco_final -->

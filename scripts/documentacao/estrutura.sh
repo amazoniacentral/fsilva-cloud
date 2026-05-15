@@ -1,46 +1,66 @@
 #!/bin/bash
 
 # ==============================================================================
-# SCRIPT: atualizar_readme.sh (Localizado em /scripts)
-# DESCRIÇÃO: Gera a estrutura e injeta no bloco ```estrutura (Portátil)
+# SCRIPT: substituidor_final_readme.sh
+# DESCRIÇÃO: Atualiza blocos por ID inserindo a estrutura tree no NOVO_CONTEUDO.
 # ==============================================================================
 
-# Caminhos relativos
-ARQUIVO_MD="../../README.md"
-DIRETORIO_RAIZ=".."
-
-# Definição do diretório temporário (Usa $TMPDIR se existir, senão usa /tmp, senão pasta atual)
-TEMP_DIR="${TMPDIR:-/tmp}"
-if [ ! -d "$TEMP_DIR" ]; then TEMP_DIR="."; fi
-
-# mktemp cria um arquivo seguro. O '.' garante que funcione mesmo sem /tmp
-ARQUIVO_TEMP=$(mktemp "$TEMP_DIR/estrutura_XXXXXX.txt")
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 
 # 1. Verificar se o tree está instalado
 if ! command -v tree &> /dev/null; then
     sudo apt update && sudo apt install tree -y
 fi
 
-# 2. Verificar se o arquivo README.md existe
-if [ ! -f "$ARQUIVO_MD" ]; then
-    echo "Erro: Arquivo $ARQUIVO_MD não encontrado."
+echo "Iniciando processamento em: $BASE_DIR"
+
+# Localiza todos os README.md (ignorando repos/*/*)
+find "$BASE_DIR" -path "$BASE_DIR/repos/*/*" -prune -o -name "README.md" -type f -print | while read -r ARQUIVO_MD; do
+
+    # Marcadores invisíveis (Comentários HTML)
+    ID_START="<!-- START_ID:bloco_estrutura -->"
+    ID_END="<!-- END_ID:bloco_estrutura -->"
+
+    # Definição do diretório temporário para capturar o tree
+    TEMP_DIR="${TMPDIR:-/tmp}"
+    [ ! -d "$TEMP_DIR" ] && TEMP_DIR="."
+    ARQUIVO_TEMP=$(mktemp "$TEMP_DIR/estrutura_XXXXXX.txt")
+
+    # Define o diretório alvo para o tree (pasta onde o README atual está)
+    DIRETORIO_ALVO=$(dirname "$ARQUIVO_MD")
+
+    # Gera a estrutura de pastas
+    cd $BASE_DIR
+    tree -a -I '.git|.github|node_modules|repos/*/*' -L 3 --dirsfirst ".${DIRETORIO_ALVO#$BASE_DIR}" > "$ARQUIVO_TEMP"
+    cd $SCRIPT_DIR
+    # Captura o resultado do tree
+    ESTRUTURA_TREE=$(cat "$ARQUIVO_TEMP")
+
+    # --- CONFIGURAÇÃO DO CONTEÚDO ---
+    # O NOVO_CONTEUDO agora recebe a estrutura gerada pelo tree
+    read -r -d '' NOVO_CONTEUDO << EOM
+\`\`\`bash
+$ESTRUTURA_TREE
+\`\`\`
+EOM
+    # --------------------------------------------
+
+    # Monta o bloco completo com os IDs e o conteúdo do tree
+    export BLOCO_COMPLETO="$ID_START
+$NOVO_CONTEUDO
+$ID_END"
+
+    # 1. Verifica se o marcador de início já existe no arquivo
+    if grep -q "$ID_START" "$ARQUIVO_MD"; then
+        # O Perl substitui tudo o que estiver entre os IDs
+        perl -i -0777 -pe "s/$ID_START.*?$ID_END/\$ENV{BLOCO_COMPLETO}/gs" "$ARQUIVO_MD"
+        echo "Atualizado (Substituído): $ARQUIVO_MD"
+    fi
+
+    # Limpeza do arquivo temporário
     rm -f "$ARQUIVO_TEMP"
-    exit 1
-fi
 
-# 3. Gerar a estrutura de pastas a partir da RAIZ
-# -a: ocultos | -I: ignora lixo e subpastas de repos | -L 3: profundidade
-tree -a -I '.git|.github|node_modules|repos/*/*' -L 3 --dirsfirst "$DIRETORIO_RAIZ" > "$ARQUIVO_TEMP"
+done
 
-# 4. Preparar o conteúdo para injeção
-ESTRUTURA_GERADA=$(cat "$ARQUIVO_TEMP")
-export CONTEUDO_TREE="$ESTRUTURA_GERADA"
-
-# 5. Inserir no README.md usando Perl
-# Regex busca o bloco e adiciona \n após o fechamento para quebrar linha
-perl -i -0777 -pe 's/```estrutura.*?```/```estrutura\n$ENV{CONTEUDO_TREE}\n```/gs' "$ARQUIVO_MD"
-
-# 6. Limpeza do arquivo temporário
-rm -f "$ARQUIVO_TEMP"
-
-echo "Sucesso: Estrutura atualizada no README.md!"
+echo "Processo concluído!"

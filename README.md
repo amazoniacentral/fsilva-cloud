@@ -1,5 +1,9 @@
+<!-- START_ID:cabecalho -->
 # FSilva Cloud
-Stack central de orquestração e infraestrutura para o ecossistema FSilva. Gerencia o projeto GVendas e serviços de terceiros via Docker Compose e Git Submodules.
+*Infraestrutura de Alta Disponibilidade e Orquestração de Containers*
+
+_Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
+<!-- END_ID:cabecalho -->
 
 ## 🚀 Instalação Rápida na VPS
 * **Repositório:** [amazoniacentral/docker-vps](https://github.com/amazoniacentral/docker-vps)
@@ -28,16 +32,19 @@ mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@
 
 ## Estrutura do projeto 
 Aqui está a estrutura de arquivos do projeto fsilva-cloud
-```estrutura
-..
+<!-- START_ID:bloco_estrutura -->
+```bash
+.
 ├── apps
 │   ├── gvendas
 │   │   ├── .env.example
 │   │   ├── Dockerfile
+│   │   ├── README.md
 │   │   ├── docker-compose.gvendas.yml
 │   │   └── nginx.conf
 │   ├── media
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.media.yml
 │   │   └── nginx.conf
 │   ├── netdata
@@ -47,16 +54,19 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── sgn
 │   │   ├── .env.example
 │   │   ├── Dockerfile
+│   │   ├── README.md
 │   │   ├── docker-compose.sgn.yml
 │   │   └── nginx.conf
 │   ├── storage
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.storage.yml
 │   │   ├── nginx.conf
 │   │   └── nginx2.conf
 │   ├── whatsapp
 │   │   ├── .env.example
 │   │   ├── Dockerfile
+│   │   ├── README.md
 │   │   └── docker-compose.whatsapp.yml
 │   ├── .env.example
 │   ├── README.md
@@ -71,16 +81,20 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── middleware
 │   ├── errors
 │   │   ├── html
+│   │   ├── README.md
 │   │   ├── docker-compose.errors.yml
 │   │   └── nginx.conf
+│   ├── README.md
 │   └── docker-compose.middleware.yml
 ├── proxy
 │   ├── traefik
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.traefik.yml
 │   │   └── servicos.yml
 │   ├── tunnel
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.tunnel.yml
 │   │   └── servicos.yml
 │   └── README.md
@@ -91,7 +105,15 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── sgn
 │   └── README.md
 ├── scripts
-│   ├── .env.exemplo
+│   ├── documentacao
+│   │   ├── README.md
+│   │   ├── atualizar_example_readme_env.sh
+│   │   ├── blocos.sh
+│   │   ├── cabecalho.sh
+│   │   ├── estrutura.sh
+│   │   ├── rodape.sh
+│   │   └── setup.sh
+│   ├── .env.example
 │   ├── README.md
 │   ├── alias.sh
 │   ├── backup_db.sh
@@ -100,7 +122,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── crontab.sh
 │   ├── database.sh
 │   ├── db_baixar.sh
-│   ├── estrutura.sh
 │   ├── gitmodules.sh
 │   ├── haskey.sh
 │   ├── install.sh
@@ -113,11 +134,13 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── server
 │   ├── dev
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.dev.yml
 │   │   ├── host.dev.yml
 │   │   └── tunnel.dev.yml
 │   ├── prod
 │   │   ├── .env.example
+│   │   ├── README.md
 │   │   ├── docker-compose.prod.yml
 │   │   ├── host.prod.yml
 │   │   └── tunnel.prod.yml
@@ -135,8 +158,10 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── tunnel.dev.yml
 └── tunnel.prod.yml
 
-24 directories, 81 files
+25 directories, 98 files
 ```
+<!-- END_ID:bloco_estrutura -->
+
 
 
 ## Outras configurações
@@ -147,5 +172,11 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 * [**Scripts Geral:**](scripts/README.md)
 * [**Produção:**](server/prod/README.md)
 * [**Developer:**](server/dev/README.md)
+
+
+<!-- START_ID:bloco_final -->
 ---
-**Desenvolvido por Francisco Silva (FSilva) — 2026**
+**Desenvolvido por Francisco Silva (FSilva)**
+
+_Atualizado em: 14/05/2026_
+<!-- END_ID:bloco_final -->

@@ -16,3 +16,7 @@ echo -e "${CYAN}================================================================
 echo -e "${YELLOW}           GERAR DOCUMENTAÇÃO DO PROJETO${RESET}"
 echo -e "${CYAN}================================================================${RESET}"
 
+bash cabecalho.sh
+bash estrutura.sh
+bash blocos.sh
+bash rodape.sh

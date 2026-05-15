@@ -27,7 +27,7 @@ services:
       - "-c"
       - "max_connections=100"
       - "-c"                     
-      - "idle_session_timeout=5000"
+      - "idle_session_timeout=60000"
 
 
     volumes:

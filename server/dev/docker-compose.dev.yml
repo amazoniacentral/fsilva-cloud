@@ -26,5 +26,8 @@ services:
   celery-beat:
     env_file:
       - .env
+  whatsapp:
+    env_file:
+      - .env
   
       

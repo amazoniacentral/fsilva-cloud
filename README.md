@@ -5,30 +5,78 @@
 _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
 <!-- END_ID:cabecalho -->
 
-## 🚀 Instalação Rápida na VPS
-* **Repositório:** [amazoniacentral/docker-vps](https://github.com/amazoniacentral/docker-vps)
-
+## 🚀 Preparação da VPS
 **Comando de execução direta:**
 ```bash
 apt update && apt install -y curl && curl -sSL https://raw.githubusercontent.com/amazoniacentral/docker-vps/main/setup.sh | sudo bash
 ```
+**Documentação:** [amazoniacentral/docker-vps](https://github.com/amazoniacentral/docker-vps)
 
 ## 🔐 Autenticação no GitHub
-O script acima prepara a VPS e gera uma chave SSH para que a VPS possa baixar seus repositórios privados e submódulos sem pedir senha.
-
-1. Copie a chave pública gerada:
+* Gerar e Adicionar a Chave SSH Se você ainda não tem uma chave ou o GitHub não a conhece, faça isso:
+1. Gerar a chave (dê ENTER em tudo):
 ```bash
+ssh-keygen -t ed25519 -C "docker-vps"
+```
+
+2. Copiar a chave gerada:
+```baah
 cat ~/.ssh/id_ed25519.pub
 ```
 
-2. Adicione esta chave no seu GitHub em: **Settings -> Deploy Keys** (no repositório) ou em **Settings -> SSH and GPG keys** (na sua conta).
+3. Adicione esta chave no seu GitHub em: **Settings -> Deploy Keys** (no repositório) ou em **Settings -> SSH and GPG keys** (na sua conta).
+Após essa configuração, pode usar o git com ssh
 
 ## 🏗️ Instalação da Estrutura FSilva Cloud
-Após configurar a chave no GitHub, execute o instalador da stack para clonar os repositórios e subir os containers:
+1. Clonar os repositórios:
+```bash
+mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@github.com:amazoniacentral/fsilva-cloud.git . 
+```
+2. Configurar as variaveis de ambiente ``.env``
+Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.env.example``.
+
+<!-- START_ID:bloco_variaveis -->
+```bash
+.
+├── apps
+│   ├── gvendas
+│   │   └── .env.example
+│   ├── media
+│   │   └── .env.example
+│   ├── netdata
+│   │   └── .env.example
+│   ├── sgn
+│   │   └── .env.example
+│   ├── storage
+│   │   └── .env.example
+│   ├── whatsapp
+│   │   └── .env.example
+│   └── .env.example
+├── database
+│   └── .env.example
+├── proxy
+│   ├── traefik
+│   │   └── .env.example
+│   └── tunnel
+│       └── .env.example
+├── scripts
+│   └── .env.example
+└── server
+    ├── dev
+    │   └── .env.example
+    └── prod
+        └── .env.example
+
+16 directories, 13 files
+```
+<!-- END_ID:bloco_variaveis -->
+
+3. Criar e subir os containers
 
 ```bash
-mkdir -p /opt/fsilva-cloud && cd /opt/fsilva-cloud && git clone --recursive git@github.com:amazoniacentral/fsilva-cloud.git . && chmod +x scripts/install.sh && ./scripts/install.sh
+bash scripts/deploy/setup.sh
 ```
+
 
 ## Estrutura do projeto 
 Aqui está a estrutura de arquivos do projeto fsilva-cloud
@@ -116,7 +164,8 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── cabecalho.sh
 │   │   ├── estrutura.sh
 │   │   ├── rodape.sh
-│   │   └── setup.sh
+│   │   ├── setup.sh
+│   │   └── variaveis.sh
 │   ├── .env.example
 │   ├── README.md
 │   ├── alias.sh
@@ -154,7 +203,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── .gitmodules
 ├── README.md
 ├── colocarnosfilhos.yml.info
-├── docker-compose.yml
 ├── dump.rdb
 ├── host.dev.yml
 ├── host.prod.yml
@@ -167,8 +215,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ```
 <!-- END_ID:bloco_estrutura -->
 
-
-
 ## Outras configurações
 * [**Banco de Dados:**](database/README.md)
 * [**Apps:**](apps/README.md)
@@ -177,7 +223,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 * [**Scripts Geral:**](scripts/README.md)
 * [**Produção:**](server/prod/README.md)
 * [**Developer:**](server/dev/README.md)
-
 
 <!-- START_ID:bloco_final -->
 ---

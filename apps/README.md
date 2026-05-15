@@ -5,6 +5,31 @@
 _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acessíveis de forma segura e eficiente, adaptando-se a diferentes cenários de rede._
 <!-- END_ID:cabecalho -->
 
+# Configurar as variaveis de ambiente ``.env``
+Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.env.example``. de acordo com o que deseja. 
+
+<!-- START_ID:bloco_variaveis -->
+```bash
+./apps
+├── gvendas
+│   └── .env.example
+├── media
+│   └── .env.example
+├── netdata
+│   └── .env.example
+├── sgn
+│   └── .env.example
+├── storage
+│   └── .env.example
+├── whatsapp
+│   └── .env.example
+└── .env.example
+
+7 directories, 7 files
+```
+<!-- END_ID:bloco_variaveis -->
+
+# Estrutura de pastas do projeto
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps

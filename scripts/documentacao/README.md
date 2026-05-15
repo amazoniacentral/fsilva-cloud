@@ -13,9 +13,10 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── cabecalho.sh
 ├── estrutura.sh
 ├── rodape.sh
-└── setup.sh
+├── setup.sh
+└── variaveis.sh
 
-1 directory, 6 files
+1 directory, 7 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

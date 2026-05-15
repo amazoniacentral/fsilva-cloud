@@ -19,7 +19,8 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 │   ├── cabecalho.sh
 │   ├── estrutura.sh
 │   ├── rodape.sh
-│   └── setup.sh
+│   ├── setup.sh
+│   └── variaveis.sh
 ├── .env.example
 ├── README.md
 ├── alias.sh
@@ -39,7 +40,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── status.sh
 └── sync_rclone.sh
 
-3 directories, 28 files
+3 directories, 29 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

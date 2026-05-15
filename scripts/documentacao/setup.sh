@@ -18,5 +18,6 @@ echo -e "${CYAN}================================================================
 
 bash cabecalho.sh
 bash estrutura.sh
+bash variaveis.sh
 bash blocos.sh
 bash rodape.sh

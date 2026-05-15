@@ -59,6 +59,7 @@ services:
       - MALLOC_ARENA_MAX=2
     networks:
       - net_db
+      - net_boot
       - net_web_only
     deploy:
       resources:

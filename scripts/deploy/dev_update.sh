@@ -19,7 +19,7 @@ echo -e "${AZUL}      GESTOR AVANÇADO DOCKER (.dev.yml)      ${NC}"
 echo -e "${AZUL}==============================================${NC}"
 
 # Mapeia apenas arquivos .yml ou .yaml que contenham ".dev" no nome
-mapfile -t YAML_FILES < <(ls "$CD_DIR"/*dev.yml "$CD_DIR"/*dev.yaml 2>/dev/null)
+mapfile -t YAML_FILES < <(ls "$CD_DIR"/*.dev.yml "$CD_DIR"/*.dev.yaml 2>/dev/null)
 
 # Verifica se a lista está vazia
 if [ ${#YAML_FILES[@]} -eq 0 ]; then

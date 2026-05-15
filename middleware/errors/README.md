@@ -20,12 +20,6 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- END_ID:bloco_estrutura -->
 
 
-### Configurações de variáveis .env
-```.env <!-- ID: .env.example -->
-# Configurações de Domínio
-DOMAIN=netdata.seu-dominio.com
-```
-
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**

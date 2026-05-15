@@ -15,7 +15,6 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 │   └── setup.sh
 ├── documentacao
 │   ├── README.md
-│   ├── atualizar_example_readme_env.sh
 │   ├── blocos.sh
 │   ├── cabecalho.sh
 │   ├── estrutura.sh
@@ -40,20 +39,25 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── status.sh
 └── sync_rclone.sh
 
-3 directories, 29 files
+3 directories, 28 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
-### Configurações de variáveis .env
+### Configurações para baixar de outro servidor via Rsync
+Execute o comando abaixo para baixar os arquivos
+```bash 
+bash db_baixar.sh
+```
+para evitar que peça todos os dados, crie um arquivo ``.env`` e preencha com os campos abaixo.
 ```.env <!-- ID: .env.example -->
 # Configurações para o Rsync (Transferência Remota)
-# RSYNC_ORIGEM_USER=seu_usuario_remoto
-# RSYNC_ORIGEM_IP=123.123.123.123
-# RSYNC_ORIGEM_PATH=/caminho/no/servidor/remoto/backup.backup
+RSYNC_ORIGEM_USER=seu_usuario_remoto
+RSYNC_ORIGEM_IP=123.123.123.123
+RSYNC_ORIGEM_PATH=/caminho/no/servidor/remoto/backup.backup
 
 # Configurações de Paths Locais (Opcional, conforme scripts anteriores)
-# DESTINO_PATH_BANCO=/caminho/local/do/backup.backup
+DESTINO_PATH_BANCO=/caminho/local/do/backup.backup
 ```
 
 <!-- START_ID:bloco_final -->

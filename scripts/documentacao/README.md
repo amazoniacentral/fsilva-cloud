@@ -9,14 +9,13 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ```bash
 ./scripts/documentacao
 ├── README.md
-├── atualizar_example_readme_env.sh
 ├── blocos.sh
 ├── cabecalho.sh
 ├── estrutura.sh
 ├── rodape.sh
 └── setup.sh
 
-1 directory, 7 files
+1 directory, 6 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

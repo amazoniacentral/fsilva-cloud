@@ -112,7 +112,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   └── setup.sh
 │   ├── documentacao
 │   │   ├── README.md
-│   │   ├── atualizar_example_readme_env.sh
 │   │   ├── blocos.sh
 │   │   ├── cabecalho.sh
 │   │   ├── estrutura.sh
@@ -164,7 +163,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── tunnel.dev.yml
 └── tunnel.prod.yml
 
-26 directories, 103 files
+26 directories, 102 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

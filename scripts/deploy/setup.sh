@@ -8,7 +8,6 @@ VERMELHO='\033[0;31m'
 NC='\033[0m' # Sem cor
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-CD_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 
 # Garante entrada de dados via terminal
 exec 3<>/dev/tty
@@ -28,66 +27,72 @@ case $OPCAO in
         echo -e "\n${AZUL}[PRODUÇÃO]${NC} Buscando novas versões no GitHub..."
         git fetch --all --tags --quiet
         
-        # Obtém a lista de tags
-        TAGS=$(git tag -l)
+        TAGS=$(git tag -l | sort -V)
 
         if [ -z "$TAGS" ]; then
-            echo -e "${VERMELHO}Nenhuma tag encontrada no repositório.${NC}"
+            echo -e "${VERMELHO}Nenhuma tag encontrada.${NC}"
             exit 1
         fi
 
         echo -e "\n${AMARELO}Versões disponíveis:${NC}"
-        # Lista as tags com numeração para escolha
         select TAG_SELECIONADA in $TAGS; do
             if [ -n "$TAG_SELECIONADA" ]; then
-                echo -e "\n${VERDE}Selecionado:${NC} $TAG_SELECIONADA"
-                echo -e "Executando checkout..."
+                echo -e "\n${VERDE}Fazendo checkout da Tag: $TAG_SELECIONADA${NC}"
                 git checkout "$TAG_SELECIONADA"
-
-                # Executa o script de atualização de prod se ele existir
+                
+                echo "== Atualizando Submódulos (Modo Produção) =="
+                # Em produção, apenas sincronizamos com o que a TAG pede
+                git submodule update --init --recursive
+                
                 if [ -f "$SCRIPT_DIR/prod_update.sh" ]; then
                     bash "$SCRIPT_DIR/prod_update.sh"
                 fi
                 break
-            else
-                echo -e "${VERMELHO}Opção inválida. Escolha um número da lista.${NC}"
             fi
         done <&3
         ;;
 
     2)
-        echo -e "\n${AZUL}[DESENVOLVIMENTO]${NC} Buscando branches no GitHub..."
+        echo -e "\n${AZUL}[DESENVOLVIMENTO]${NC} Buscando branches..."
         git fetch --all --quiet
-        
-        # Correção do grep para evitar erro com '->' e limpeza do nome da branch
         mapfile -t BRANCHES < <(git branch -r | grep -v -- "->" | sed 's/origin\///;s/^[[:space:]]*//')
-
-        if [ ${#BRANCHES[@]} -eq 0 ]; then
-            echo -e "${VERMELHO}Nenhuma branch encontrada.${NC}"
-            exit 1
-        fi
 
         echo -e "\n${AMARELO}Branches disponíveis:${NC}"
         select BRANCH_SELECIONADA in "${BRANCHES[@]}"; do
             if [ -n "$BRANCH_SELECIONADA" ]; then
-                echo -e "\n${VERDE}Selecionado:${NC} $BRANCH_SELECIONADA"
-                echo -e "Executando checkout e pull..."
+                echo -e "\n${AMARELO}Como deseja atualizar a branch $BRANCH_SELECIONADA?${NC}"
+                echo "1) Apenas baixar (git pull)"
+                echo "2) Reset Total (Limpar tudo e forçar origem)"
+                echo -n "Escolha: "
+                read -u 3 MODO_DEV
+
                 git checkout "$BRANCH_SELECIONADA"
-                git pull origin "$BRANCH_SELECIONADA"
-                
-                # Executa o script de atualização de dev se ele existir
+
+                if [ "$MODO_DEV" == "2" ]; then
+                    echo -e "${VERMELHO}Executando Reset Absoluto...${NC}"
+                    git reset --hard "origin/$BRANCH_SELECIONADA"
+                    git clean -fd
+                    
+                    echo "== Resetando Submódulos para origin/main =="
+                    git submodule foreach --recursive "git reset --hard origin/main || true"
+                    git submodule foreach --recursive "git clean -fd"
+                    git submodule update --init --recursive --remote
+                else
+                    echo -e "${VERDE}Executando Pull simples...${NC}"
+                    git pull origin "$BRANCH_SELECIONADA"
+                    git submodule update --init --recursive
+                fi
+
                 if [ -f "$SCRIPT_DIR/dev_update.sh" ]; then
                     bash "$SCRIPT_DIR/dev_update.sh"
                 fi
                 break
-            else
-                echo -e "${VERMELHO}Opção inválida. Escolha um número da lista.${NC}"
             fi
         done <&3
         ;;
 
     *)
-        echo -e "${VERMELHO}Opção inválida. Operação cancelada.${NC}"
+        echo -e "${VERMELHO}Opção inválida.${NC}"
         exit 1
         ;;
 esac

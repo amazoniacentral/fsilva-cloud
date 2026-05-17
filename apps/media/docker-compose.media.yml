@@ -10,7 +10,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
       - media_data:/media_files:ro
-      - catalogos_json_data:/media_files:ro
+      - catalogos_json_data:/media_files/catalogo:ro
     working_dir: /media_files
     deploy:
       resources:

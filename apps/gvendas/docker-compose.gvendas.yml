@@ -5,6 +5,8 @@ services:
       dockerfile: ./apps/gvendas/Dockerfile
       args:
         - REACT_APP_API_DOMAIN=${API_DOMAIN:?api.seu-dominio.com}
+        - REACT_APP_META_APP_ID=${META_APP_ID}
+        - REACT_APP_CONFIG_ID=${CONFIG_ID}
     restart: always
     hostname: gvendas
     working_dir: /usr/share/nginx/html

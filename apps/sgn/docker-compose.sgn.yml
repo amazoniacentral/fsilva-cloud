@@ -46,6 +46,7 @@ services:
       - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles
       - media_data:/code/volumes/media
+      - catalogos_pdf_compress_data:/code/volumes/catalogo/compress
       - catalogos_pdf_data:/code/volumes/catalogo/pdf
       - catalogos_json_data:/code/volumes/catalogo/json
       - gvendas_data:/code/volumes/html
@@ -97,6 +98,7 @@ services:
     volumes:
       - ../../repos/sgn:/code
       - catalogos_pdf_data:/code/volumes/catalogo/pdf
+      - catalogos_pdf_compress_data:/code/volumes/catalogo/compress
       - catalogos_json_data:/code/volumes/catalogo/json
     environment:
       - PYTHONUNBUFFERED=1

@@ -11,6 +11,7 @@ volumes:
   storage_data:
   media_data:
   sgn_data:
+  catalogos_pdf_compress_data:
   catalogos_pdf_data:
   catalogos_json_data:
   netdataconfig:

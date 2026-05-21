@@ -9,9 +9,10 @@ services:
       # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
-      - media_data:/media_files:ro
-      - catalogos_json_data:/catalogo:ro
-    working_dir: /media_files
+      - media_data:/app/storage/media_files:ro
+      - catalogos_json_data:/app/storage/json:ro
+      - catalogos_pdf_compress_data:/app/storage/compress:ro
+    working_dir: /app/storage
     deploy:
       resources:
         limits:

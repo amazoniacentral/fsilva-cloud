@@ -13,6 +13,7 @@ RUN apk add --no-cache \
     libffi-dev \
     jpeg-dev \
     zlib-dev \
+    poppler-utils \
     bash
 
 WORKDIR /code

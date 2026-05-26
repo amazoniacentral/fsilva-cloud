@@ -1,6 +1,8 @@
-name: fsilva-cloud-dev
 
 include:
+  - ../../apps/docker-compose.apps.yml
+  - ../../database/docker-compose.database.yml
+  - ../../middleware/docker-compose.middleware.yml
   - ../docker-compose.server.yml
 
 services:

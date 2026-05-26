@@ -26,7 +26,7 @@ docker run --rm \
   -v "${PROJECT_NAME}_backups":/data/database:ro \
   -v "${PROJECT_NAME}_storage_data":/data/documentos:ro \
   -v "${PROJECT_NAME}_media_data":/data/arquivos:ro \
-  -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos:ro \
+  -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos/compress:ro \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf copy /data $DEST \
   --use-server-modtime \

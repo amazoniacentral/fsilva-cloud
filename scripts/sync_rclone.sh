@@ -26,7 +26,7 @@ docker run --rm \
   --name rclone_sync_worker \
   -v "${PROJECT_NAME}_catalogos_pdf_data":/data \
   -v "$RCLONE_CONFIG_HOST":/config/rclone \
-  rclone/rclone --config /config/rclone/rclone.conf sync $SRC/catalogos /data \
+  rclone/rclone --config /config/rclone/rclone.conf sync $SRC/catalogos/bruto /data \
   --use-server-modtime \
   --delete-during \
   --use-server-modtime \

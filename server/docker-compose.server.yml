@@ -22,10 +22,10 @@ volumes:
 networks:
   net_web_only:
     driver: bridge
-    name: net_web_only
     driver_opts:
       com.docker.network.bridge.name: "br-web-only"
       com.docker.network.bridge.enable_icc: "false"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
   web_tunnel:
     driver: bridge
   web_host:

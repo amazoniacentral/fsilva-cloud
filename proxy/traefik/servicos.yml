@@ -61,7 +61,7 @@ services:
       - "traefik.docker.network=net_proxy"
       
       # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`${DOMAIN:?netdata.seu-domonio.com}`)"
+      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"
       - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
       

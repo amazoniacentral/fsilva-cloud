@@ -2,7 +2,6 @@ services:
   traefik:
     image: traefik:v3.0
     restart: unless-stopped
-    container_name: traefik
     env_file: 
       - .env
     hostname: traefik-edge
@@ -55,7 +54,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
       
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN:?proxy.seu-dominio.com}`)"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN:?proxy.seu-dominio.com}`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"

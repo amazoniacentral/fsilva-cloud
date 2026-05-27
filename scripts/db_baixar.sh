@@ -159,25 +159,24 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
     [[ -z "$REMOTE_PATH" ]] && read -rp "👉 Caminho remoto: " REMOTE_PATH
 
-    mkdir -p ~/.ssh
-
-    if [ ! -f ~/.ssh/known_hosts ]; then
-        touch ~/.ssh/known_hosts
-    fi
-
-    echo -e "\n🔐 Registrando host SSH..."
-
-    ssh-keyscan -H "$RSYNC_ORIGEM_IP" >> ~/.ssh/known_hosts 2>/dev/null || true
+    read -rsp "👉 Senha SSH: " RSYNC_ORIGEM_PASS
+    echo ""
 
     echo -e "\n🔄 Iniciando download..."
 
-    docker run --rm \
+    docker run --rm -it \
+        -e SSHPASS="${RSYNC_ORIGEM_PASS}" \
         -v "${BACKUP_DIR}:/backup" \
-        -v "$HOME/.ssh:/root/.ssh:ro" \
         instrumentisto/rsync-ssh \
-        rsync -avz --progress \
-        "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}" \
-        /backup/
+        sh -c "
+            apk add --no-cache sshpass >/dev/null 2>&1
+
+            rsync -avz --progress \
+            -e 'ssh -o StrictHostKeyChecking=no' \
+            --rsh='sshpass -e ssh' \
+            '${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}' \
+            /backup/
+        "
 
     ARQUIVO_PARA_RESTAURAR=$(find "$BACKUP_DIR" -type f | sort | tail -n 1)
 

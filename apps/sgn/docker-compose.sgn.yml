@@ -76,9 +76,9 @@ services:
       test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8000))'"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s # Dá 30 segundos para as migrações rodarem
-  
+      retries: 10
+      start_period: 120s
+
   # WORKER
   celery-worker:
     build: 

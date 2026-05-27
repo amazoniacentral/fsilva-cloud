@@ -76,7 +76,7 @@ get_input "Nome do NOVO banco de dados: " DB_NAME
 
 echo "----------------------------------------------------------------"
 echo "Criando o banco de dados '$DB_NAME'..."
-docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "CREATE DATABASE $DB_NAME;"
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "CREATE DATABASE $DB_NAME;"
 
 # 2. Decisão de Usuário
 while true; do
@@ -89,7 +89,7 @@ while true; do
             get_input "Senha para o novo usuário: " DB_PASS
             
             echo "Criando usuário '$DB_USER'..."
-            docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+            docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
             break
             ;;
         [Ee]* ) 
@@ -106,7 +106,7 @@ done
 
 # 3. Associação de Permissões
 echo "Atribuindo privilégios do banco '$DB_NAME' ao usuário '$DB_USER'..."
-docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
 # Garante permissões em schemas
 docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;"
 

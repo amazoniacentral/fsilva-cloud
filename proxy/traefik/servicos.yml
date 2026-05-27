@@ -3,6 +3,12 @@ include:
   
 services:
   gvendas:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.gvendas-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.gvendas-internal.service=gvendas-service"
+      - "traefik.http.routers.gvendas-internal.rule=Host(`internal.pwa`)"
+      - "traefik.http.routers.gvendas-internal.priority=1"
     networks:
       - net_proxy
   nginx:

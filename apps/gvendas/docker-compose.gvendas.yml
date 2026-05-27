@@ -13,8 +13,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
     volumes:
       - gvendas_data:/usr/share/nginx/html
       - certificados_data:/usr/share/nginx/.well-known:ro

@@ -146,39 +146,72 @@ if [ -f "$DOT_ENV_PATH" ]; then
 fi
 
 echo -e "\n------------------------------------------------"
-echo "1) Baixar novo backup via SSH/Rsync Docker"
+echo "1) Baixar backup remoto"
 echo "2) Selecionar backup existente"
 
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
 
-    REMOTE_PATH="${RSYNC_ORIGEM_PATH:-${DESTINO_PATH_BANCO:-}}"
-
     [[ -z "${RSYNC_ORIGEM_USER:-}" ]] && read -rp "👉 Usuário SSH: " RSYNC_ORIGEM_USER
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
-    [[ -z "$REMOTE_PATH" ]] && read -rp "👉 Caminho remoto: " REMOTE_PATH
+
+    read -rp "👉 Diretório remoto: " REMOTE_DIR
 
     read -rsp "👉 Senha SSH: " RSYNC_ORIGEM_PASS
     echo ""
 
-    echo -e "\n🔄 Iniciando download..."
+    TMP_LIST=$(mktemp)
 
-    docker run --rm -it \
+    echo -e "\n📂 Listando arquivos remotos..."
+
+    docker run --rm -i \
+        -e SSHPASS="${RSYNC_ORIGEM_PASS}" \
+        instrumentisto/rsync-ssh \
+        sh -c "
+            apk add --no-cache sshpass >/dev/null 2>&1
+
+            sshpass -e ssh \
+            -o StrictHostKeyChecking=no \
+            ${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP} \
+            'find ${REMOTE_DIR} -type f \\( -name \"*.backup\" -o -name \"*.sql\" -o -name \"*.sql.gz\" \\ )'
+        " > "$TMP_LIST"
+
+    mapfile -t REMOTE_FILES < "$TMP_LIST"
+
+    rm -f "$TMP_LIST"
+
+    if [ ${#REMOTE_FILES[@]} -eq 0 ]; then
+        echo -e "${RED}❌ Nenhum backup encontrado no diretório remoto.${RESET}"
+        exit 1
+    fi
+
+    echo -e "\n${YELLOW}Selecione o backup remoto:${RESET}"
+
+    for i in "${!REMOTE_FILES[@]}"; do
+        echo "$((i+1))) ${REMOTE_FILES[$i]}"
+    done
+
+    read -rp "Arquivo: " REMOTE_IDX
+
+    REMOTE_FILE="${REMOTE_FILES[$((REMOTE_IDX-1))]}"
+
+    echo -e "\n🔄 Baixando backup..."
+
+    docker run --rm -i \
         -e SSHPASS="${RSYNC_ORIGEM_PASS}" \
         -v "${BACKUP_DIR}:/backup" \
         instrumentisto/rsync-ssh \
         sh -c "
             apk add --no-cache sshpass >/dev/null 2>&1
 
-            rsync -avz --progress \
+            sshpass -e rsync -avz --progress \
             -e 'ssh -o StrictHostKeyChecking=no' \
-            --rsh='sshpass -e ssh' \
-            '${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}' \
+            '${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_FILE}' \
             /backup/
         "
 
-    ARQUIVO_PARA_RESTAURAR=$(find "$BACKUP_DIR" -type f | sort | tail -n 1)
+    ARQUIVO_PARA_RESTAURAR="${BACKUP_DIR}/$(basename "$REMOTE_FILE")"
 
 else
 

@@ -7,6 +7,18 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 RESET='\033[0m'
 
+# VALIDA DEPENDÊNCIAS
+if ! command -v docker >/dev/null 2>&1; then
+    echo -e "${RED}❌ Docker não está instalado.${RESET}"
+    exit 1
+fi
+
+if ! command -v rsync >/dev/null 2>&1; then
+    echo -e "${RED}❌ rsync não está instalado.${RESET}"
+    echo -e "${YELLOW}Instale com:${RESET} apt install -y rsync"
+    exit 1
+fi
+
 selecionar_container() {
     local pattern=$1
     local prefixo=$2

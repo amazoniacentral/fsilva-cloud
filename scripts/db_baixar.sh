@@ -11,19 +11,30 @@ selecionar_container() {
     local pattern=$1
     local prefixo=$2
     local prompt=$3
+    local obrigatorio=${4:-true}
 
     mapfile -t containers < <(
         docker ps --format "{{.Names}}" \
         | grep "^${prefixo}" \
-        | grep -i "$pattern"
+        | grep -i "$pattern" || true
     )
 
     if [ ${#containers[@]} -eq 0 ]; then
-        echo -e "${RED}❌ Nenhum container encontrado para $prompt${RESET}"
-        exit 1
+
+        if [ "$obrigatorio" = true ]; then
+            echo -e "${RED}❌ Nenhum container encontrado para $prompt${RESET}"
+            exit 1
+        else
+            echo ""
+            return
+        fi
+
     elif [ ${#containers[@]} -eq 1 ]; then
+
         echo "${containers[0]}"
+
     else
+
         echo -e "\n${YELLOW}Selecione o container $prompt:${RESET}" >&2
 
         for i in "${!containers[@]}"; do
@@ -76,8 +87,10 @@ PROJETO_PREFIX="${PROJETOS[$((p_idx-1))]}"
 # CONTAINERS
 CONTAINER_DJANGO=$(selecionar_container "django" "$PROJETO_PREFIX" "Django/App")
 CONTAINER_PG=$(selecionar_container "postgres" "$PROJETO_PREFIX" "PostgreSQL")
-CONTAINER_CELERY=$(selecionar_container "worker" "$PROJETO_PREFIX" "Celery Worker")
-CONTAINER_BEAT=$(selecionar_container "beat" "$PROJETO_PREFIX" "Celery Beat")
+
+CONTAINER_CELERY=$(selecionar_container "worker" "$PROJETO_PREFIX" "Celery Worker" false)
+
+CONTAINER_BEAT=$(selecionar_container "beat" "$PROJETO_PREFIX" "Celery Beat" false)
 
 # VOLUME
 echo -e "\n${YELLOW}Buscando volumes de Backup associados ao projeto...${RESET}"
@@ -100,9 +113,12 @@ mapfile -t VOLUMES_BACKUP < <(
 )
 
 if [ ${#VOLUMES_BACKUP[@]} -eq 1 ]; then
+
     VOLUME_NAME="${VOLUMES_BACKUP[0]}"
     echo -e "✅ Volume selecionado: ${GREEN}$VOLUME_NAME${RESET}"
+
 else
+
     echo -e "\n${YELLOW}Selecione o volume:${RESET}"
 
     for i in "${!VOLUMES_BACKUP[@]}"; do
@@ -126,6 +142,7 @@ fi
 echo -e "\n------------------------------------------------"
 echo "1) Baixar novo backup via Rsync"
 echo "2) Selecionar backup existente"
+
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
@@ -173,10 +190,10 @@ fi
 # CREDENCIAIS
 echo -e "\n🔍 Extraindo credenciais de $CONTAINER_PG..."
 
-PG_SUPER_USER=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_USER=" | cut -d'=' -f2)
+PG_SUPER_USER=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_USER=" | cut -d'=' -f2 || true)
 PG_SUPER_USER=${PG_SUPER_USER:-postgres}
 
-PG_SUPER_PASS=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_PASSWORD=" | cut -d'=' -f2)
+PG_SUPER_PASS=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_PASSWORD=" | cut -d'=' -f2 || true)
 
 PG_NAME=$(docker exec "$CONTAINER_PG" \
     env PGPASSWORD="$PG_SUPER_PASS" \
@@ -197,8 +214,9 @@ fi
 echo -e "\n🚀 Parando serviços..."
 
 docker stop "$CONTAINER_DJANGO" || true
-docker stop "$CONTAINER_CELERY" || true
-docker stop "$CONTAINER_BEAT" || true
+
+[ -n "$CONTAINER_CELERY" ] && docker stop "$CONTAINER_CELERY" || true
+[ -n "$CONTAINER_BEAT" ] && docker stop "$CONTAINER_BEAT" || true
 
 echo -e "\n🧹 Limpando banco: ${YELLOW}$PG_NAME${RESET}"
 
@@ -250,8 +268,9 @@ fi
 
 echo -e "\n🚀 Reiniciando serviços..."
 
-docker start "$CONTAINER_DJANGO"
-docker start "$CONTAINER_CELERY"
-docker start "$CONTAINER_BEAT"
+docker start "$CONTAINER_DJANGO" || true
+
+[ -n "$CONTAINER_CELERY" ] && docker start "$CONTAINER_CELERY" || true
+[ -n "$CONTAINER_BEAT" ] && docker start "$CONTAINER_BEAT" || true
 
 echo -e "\n${GREEN}🏁 PROCESSO FINALIZADO!${RESET}"

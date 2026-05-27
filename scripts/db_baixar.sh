@@ -7,15 +7,9 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 RESET='\033[0m'
 
-# VALIDA DEPENDÊNCIAS
+# VALIDA DOCKER
 if ! command -v docker >/dev/null 2>&1; then
     echo -e "${RED}❌ Docker não está instalado.${RESET}"
-    exit 1
-fi
-
-if ! command -v rsync >/dev/null 2>&1; then
-    echo -e "${RED}❌ rsync não está instalado.${RESET}"
-    echo -e "${YELLOW}Instale com:${RESET} apt install -y rsync"
     exit 1
 fi
 
@@ -152,7 +146,7 @@ if [ -f "$DOT_ENV_PATH" ]; then
 fi
 
 echo -e "\n------------------------------------------------"
-echo "1) Baixar novo backup via Rsync"
+echo "1) Baixar novo backup via SSH/Rsync Docker"
 echo "2) Selecionar backup existente"
 
 read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
@@ -165,13 +159,16 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
     [[ -z "$REMOTE_PATH" ]] && read -rp "👉 Caminho remoto: " REMOTE_PATH
 
-    ARQUIVO_PARA_RESTAURAR=$(mktemp "${BACKUP_DIR}/banco_XXXXXX.sql.gz")
-
     echo -e "\n🔄 Iniciando download..."
 
-    rsync -avz --progress \
+    docker run --rm \
+        -v "${PROJETO_PREFIX}_backups":/backup \
+        instrumentisto/rsync-ssh \
+        rsync -avz --progress \
         "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}" \
-        "$ARQUIVO_PARA_RESTAURAR"
+        /backup/
+
+    ARQUIVO_PARA_RESTAURAR=$(find "$BACKUP_DIR" -type f | sort | tail -n 1)
 
 else
 
@@ -234,6 +231,7 @@ echo -e "\n🧹 Limpando banco: ${YELLOW}$PG_NAME${RESET}"
 
 LIMPAR_CMD="
 DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 CREATE SCHEMA public;
 ALTER SCHEMA public OWNER TO \"$PG_USER_APP\";
 GRANT ALL ON SCHEMA public TO \"$PG_USER_APP\";

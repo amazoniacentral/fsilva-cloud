@@ -159,10 +159,21 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
     [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
     [[ -z "$REMOTE_PATH" ]] && read -rp "👉 Caminho remoto: " REMOTE_PATH
 
+    mkdir -p ~/.ssh
+
+    if [ ! -f ~/.ssh/known_hosts ]; then
+        touch ~/.ssh/known_hosts
+    fi
+
+    echo -e "\n🔐 Registrando host SSH..."
+
+    ssh-keyscan -H "$RSYNC_ORIGEM_IP" >> ~/.ssh/known_hosts 2>/dev/null || true
+
     echo -e "\n🔄 Iniciando download..."
 
     docker run --rm \
-        -v "${PROJETO_PREFIX}_backups":/backup \
+        -v "${BACKUP_DIR}:/backup" \
+        -v "$HOME/.ssh:/root/.ssh:ro" \
         instrumentisto/rsync-ssh \
         rsync -avz --progress \
         "${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP}:${REMOTE_PATH}" \
@@ -231,7 +242,6 @@ echo -e "\n🧹 Limpando banco: ${YELLOW}$PG_NAME${RESET}"
 
 LIMPAR_CMD="
 DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
 CREATE SCHEMA public;
 ALTER SCHEMA public OWNER TO \"$PG_USER_APP\";
 GRANT ALL ON SCHEMA public TO \"$PG_USER_APP\";

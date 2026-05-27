@@ -153,10 +153,13 @@ read -rp "Escolha uma opção (1 ou 2): " OPCAO_INICIAL
 
 if [[ "$OPCAO_INICIAL" == "1" ]]; then
 
-    [[ -z "${RSYNC_ORIGEM_USER:-}" ]] && read -rp "👉 Usuário SSH: " RSYNC_ORIGEM_USER
-    [[ -z "${RSYNC_ORIGEM_IP:-}" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
+    RSYNC_ORIGEM_USER="${RSYNC_ORIGEM_USER:-}"
+    RSYNC_ORIGEM_IP="${RSYNC_ORIGEM_IP:-}"
+    REMOTE_DIR="${RSYNC_ORIGEM_PATH:-${DESTINO_PATH_BANCO:-}}"
 
-    read -rp "👉 Diretório remoto: " REMOTE_DIR
+    [[ -z "$RSYNC_ORIGEM_USER" ]] && read -rp "👉 Usuário SSH: " RSYNC_ORIGEM_USER
+    [[ -z "$RSYNC_ORIGEM_IP" ]] && read -rp "👉 IP remoto: " RSYNC_ORIGEM_IP
+    [[ -z "$REMOTE_DIR" ]] && read -rp "👉 Diretório remoto: " REMOTE_DIR
 
     read -rsp "👉 Senha SSH: " RSYNC_ORIGEM_PASS
     echo ""

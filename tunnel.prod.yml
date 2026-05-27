@@ -1,5 +1,5 @@
 name: fsilva-cloud-prod
 include:
-  - ./proxy/tunnel/servicos.yml
-  - ./server/prod/docker-compose.prod.yml
   - ./server/prod/tunnel.prod.yml
+  - ./server/prod/docker-compose.prod.yml
+  - ./proxy/tunnel/servicos.yml

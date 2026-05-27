@@ -95,7 +95,6 @@ CONTAINER_DJANGO=$(selecionar_container "django" "$PROJETO_PREFIX" "Django/App")
 CONTAINER_PG=$(selecionar_container "postgres" "$PROJETO_PREFIX" "PostgreSQL")
 
 CONTAINER_CELERY=$(selecionar_container "worker" "$PROJETO_PREFIX" "Celery Worker" false)
-
 CONTAINER_BEAT=$(selecionar_container "beat" "$PROJETO_PREFIX" "Celery Beat" false)
 
 # VOLUME
@@ -177,7 +176,7 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
             sshpass -e ssh \
             -o StrictHostKeyChecking=no \
             ${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP} \
-            \"find ${REMOTE_DIR} -type f \( -name '*.backup' -o -name '*.sql' -o -name '*.sql.gz' \)\"
+            \"find ${REMOTE_DIR} -type f \\( -name '*.backup' -o -name '*.sql' -o -name '*.sql.gz' \\)\"
         " > "$TMP_LIST"
 
     mapfile -t REMOTE_FILES < "$TMP_LIST"
@@ -242,29 +241,32 @@ else
     ARQUIVO_PARA_RESTAURAR="${BACKUPS[$((SELECAO-1))]}"
 fi
 
-# CREDENCIAIS
-echo -e "\n🔍 Extraindo credenciais de $CONTAINER_PG..."
+# CREDENCIAIS CORRETAS VIA DJANGO
+echo -e "\n🔍 Extraindo credenciais do Django..."
+
+DATABASE_URL=$(docker exec "$CONTAINER_DJANGO" env | grep "^DATABASE_URL=" | cut -d'=' -f2- || true)
+
+if [ -z "$DATABASE_URL" ]; then
+    echo -e "${RED}❌ DATABASE_URL não encontrada.${RESET}"
+    exit 1
+fi
+
+PG_USER_APP=$(echo "$DATABASE_URL" | sed -E 's#postgres(ql)?://([^:]+):.*#\2#')
+PG_PASS_APP=$(echo "$DATABASE_URL" | sed -E 's#postgres(ql)?://[^:]+:([^@]+)@.*#\2#')
+PG_NAME=$(echo "$DATABASE_URL" | sed -E 's#.*/([^/?]+).*#\1#')
 
 PG_SUPER_USER=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_USER=" | cut -d'=' -f2 || true)
 PG_SUPER_USER=${PG_SUPER_USER:-postgres}
 
 PG_SUPER_PASS=$(docker exec "$CONTAINER_PG" env | grep "^POSTGRES_PASSWORD=" | cut -d'=' -f2 || true)
 
-PG_NAME=$(docker exec "$CONTAINER_PG" \
-    env PGPASSWORD="$PG_SUPER_PASS" \
-    psql -U "$PG_SUPER_USER" -d postgres -t -A -c \
-    "SELECT datname
-     FROM pg_database
-     WHERE datistemplate = false
-     AND datname != 'postgres'
-     LIMIT 1;" | xargs)
-
-PG_USER_APP="$PG_SUPER_USER"
-
 if [ -z "$PG_NAME" ]; then
     echo -e "${RED}❌ Não foi possível identificar o banco.${RESET}"
     exit 1
 fi
+
+echo -e "${GREEN}Banco identificado:${RESET} $PG_NAME"
+echo -e "${GREEN}Usuário app:${RESET} $PG_USER_APP"
 
 echo -e "\n🚀 Parando serviços..."
 

@@ -177,7 +177,7 @@ if [[ "$OPCAO_INICIAL" == "1" ]]; then
             sshpass -e ssh \
             -o StrictHostKeyChecking=no \
             ${RSYNC_ORIGEM_USER}@${RSYNC_ORIGEM_IP} \
-            'find ${REMOTE_DIR} -type f \\( -name \"*.backup\" -o -name \"*.sql\" -o -name \"*.sql.gz\" \\ )'
+            \"find ${REMOTE_DIR} -type f \( -name '*.backup' -o -name '*.sql' -o -name '*.sql.gz' \)\"
         " > "$TMP_LIST"
 
     mapfile -t REMOTE_FILES < "$TMP_LIST"

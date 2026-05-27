@@ -10,7 +10,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
       
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
@@ -45,7 +45,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
       
-      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
+      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN}`)"
       - "traefik.http.routers.media-nginx.entrypoints=websecure"
       - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
       - "traefik.http.services.media-nginx.loadbalancer.server.port=80"
@@ -61,7 +61,7 @@ services:
       - "traefik.docker.network=net_proxy"
       
       # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
+      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"
       - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
       
@@ -78,7 +78,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
       
-      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN}`)"
       - "traefik.http.routers.storage.entrypoints=websecure"
       - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
       # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)

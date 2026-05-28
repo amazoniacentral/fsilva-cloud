@@ -30,9 +30,9 @@ services:
       - "traefik.http.routers.django-api.entrypoints=websecure"
       
       # MIDDLEWARE AUTH (Definição)
-      - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
-      - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
+      # - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
+      # - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
+      # - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
       
       - "traefik.http.services.django.loadbalancer.server.port=8000"
     networks:
@@ -82,7 +82,7 @@ services:
       - "traefik.http.routers.storage.entrypoints=websecure"
       - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
       # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
-      - "traefik.http.routers.storage.middlewares=auth-django@docker,error-pages-middleware@docker"
+      # - "traefik.http.routers.storage.middlewares=auth-django@docker,error-pages-middleware@docker"
       
       # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
       # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente

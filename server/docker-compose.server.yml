@@ -18,6 +18,7 @@ volumes:
   whatsapp_logs:
   certificados_data:
   backups:
+  n8n_data:
     
 networks:
   net_web_only:

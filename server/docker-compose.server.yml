@@ -45,3 +45,6 @@ networks:
   net_db:
     driver: bridge
     internal: true
+  net_n8n:
+    driver: bridge
+    internal: true

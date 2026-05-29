@@ -62,6 +62,7 @@ services:
       net_boot:
         aliases:
           - django-srv
+      net_n8n:
       net_db:
       net_web_only:
     deploy:

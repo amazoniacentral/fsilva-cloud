@@ -12,6 +12,7 @@ services:
     
     networks:
       - net_n8n
+      - net_web_only
       
     deploy:
       resources:

@@ -2,6 +2,19 @@ include:
   - ./docker-compose.traefik.yml
   
 services:
+  traefik:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+    
+      # 👇 acessível só localmente
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+    
+      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
+
   gvendas:
     networks:
       - net_proxy
@@ -61,24 +74,24 @@ services:
       - "traefik.http.routers.media-nginx.middlewares=block-internal-header,error-pages-middleware"
     networks:
       - net_proxy
-  netdata:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+  # netdata:
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.docker.network=net_proxy"
       
-      # Roteador e Domínio
-      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`)"
-      - "traefik.http.routers.netdata.entrypoints=websecure"
-      - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
+  #     # Roteador e Domínio
+  #     - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`)"
+  #     - "traefik.http.routers.netdata.entrypoints=websecure"
+  #     - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
       
-      # Vinculação ao Serviço
-      - "traefik.http.routers.netdata.service=netdata-service"
-      - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
+  #     # Vinculação ao Serviço
+  #     - "traefik.http.routers.netdata.service=netdata-service"
+  #     - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
       
-      # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
-      - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
-    networks:
-      - net_proxy
+  #     # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
+  #     - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
+  #   networks:
+  #     - net_proxy
   storage:
     labels:
       - "traefik.enable=true"

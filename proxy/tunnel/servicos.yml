@@ -17,9 +17,6 @@ services:
   media:
     networks:
       - net_tunnel
-  netdata:
-    networks:
-      - net_tunnel
   storage:
     networks:
       - net_tunnel

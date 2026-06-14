@@ -23,11 +23,11 @@ services:
     labels:
       - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
       
-  netdata:
-    env_file:
-      - .env
-    labels:
-      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
+  # netdata:
+  #   env_file:
+  #     - .env
+  #   labels:
+  #     - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
 
   storage:
     env_file:

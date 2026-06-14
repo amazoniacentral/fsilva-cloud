@@ -78,7 +78,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 120s
+      start_period: 300s
 
   # WORKER
   celery-worker:
@@ -122,11 +122,8 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     depends_on:
-      postgres:
-        condition: service_healthy
       django:
         condition: service_healthy
-  #docker exec -it fsilva-cloud-dev-celery-worker-1 celery -A sgn purge
 
   # BEAT
   celery-beat:
@@ -156,8 +153,6 @@ services:
           cpus: '0.05'
           memory: 128M
     depends_on:
-      postgres:
-        condition: service_healthy
       django:
         condition: service_healthy
 

@@ -24,7 +24,7 @@ services:
           memory: 64M
     command:
       - "--api.dashboard=true"
-      - "--entrypoints.traefik.address=127.0.0.1:8080"
+      - "--entrypoints.traefik.address=:8080"
       
       - "--log.level=INFO"
       # LIGA OS LOGS DE ACESSO (Necessário para os gráficos de requisições)

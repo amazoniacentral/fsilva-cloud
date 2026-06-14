@@ -6,14 +6,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
-    
-      # 👇 acessível só localmente
-      # - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)"
+
+      # =========================
+      # DASHBOARD ROUTER
+      # =========================
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`) || PathPrefix(`/`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-    
-      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
+
+      # =========================
+      # BASIC AUTH
+      # =========================
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
+      - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
 
   gvendas:
     networks:

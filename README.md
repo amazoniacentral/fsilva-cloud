@@ -43,6 +43,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   │   └── .env.example
 │   ├── media
 │   │   └── .env.example
+│   ├── n8n
+│   │   └── .env.example
 │   ├── netdata
 │   │   └── .env.example
 │   ├── sgn
@@ -67,7 +69,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
     └── prod
         └── .env.example
 
-16 directories, 13 files
+17 directories, 14 files
 ```
 <!-- END_ID:bloco_variaveis -->
 
@@ -95,6 +97,10 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── README.md
 │   │   ├── docker-compose.media.yml
 │   │   └── nginx.conf
+│   ├── n8n
+│   │   ├── .env.example
+│   │   ├── README.md
+│   │   └── docker-compose.n8n.yml
 │   ├── netdata
 │   │   ├── .env.example
 │   │   ├── README.md
@@ -190,12 +196,14 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── README.md
 │   │   ├── docker-compose.dev.yml
 │   │   ├── host.dev.yml
+│   │   ├── traefik.dev.yml
 │   │   └── tunnel.dev.yml
 │   ├── prod
 │   │   ├── .env.example
 │   │   ├── README.md
 │   │   ├── docker-compose.prod.yml
 │   │   ├── host.prod.yml
+│   │   ├── traefik.prod.yml
 │   │   └── tunnel.prod.yml
 │   ├── README.md
 │   └── docker-compose.server.yml
@@ -211,7 +219,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── tunnel.dev.yml
 └── tunnel.prod.yml
 
-26 directories, 102 files
+27 directories, 107 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -228,5 +236,5 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

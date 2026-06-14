@@ -57,12 +57,13 @@ O Netdata funciona assim:
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
 # Configurações de Domínio
-DOMAIN=netdata.seu-dominio.com
+HOST=127.0.0.1
+PORT_NETDATA=1999
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

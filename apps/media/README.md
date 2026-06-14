@@ -22,12 +22,12 @@ _Uma estrutura h√≠brida para garantir que seus aplicativos Docker estejam acess√
 ```.env <!-- ID: .env.example -->
 #Dominio das Midias
 
-#MEDIA_DOMAIN=cdn.gvendas.app.br
+MEDIA_DOMAIN=seu_dominio_media
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

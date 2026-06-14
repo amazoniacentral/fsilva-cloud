@@ -24,12 +24,16 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 #Dominio da API
 #Este pwa é multi dominio então os somínios são inseeidos aitomaticamente pela Api
 
-#API_DOMAIN=api.gvendas.app.br
+API_DOMAIN=dominio_da_api
+
+#WHATSAPP META Api Oficial
+META_APP_ID=sua_chave_meta_app_id
+CONFIG_ID=sua_chave_meta_config
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

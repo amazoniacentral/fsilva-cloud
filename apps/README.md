@@ -15,6 +15,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   └── .env.example
 ├── media
 │   └── .env.example
+├── n8n
+│   └── .env.example
 ├── netdata
 │   └── .env.example
 ├── sgn
@@ -25,7 +27,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   └── .env.example
 └── .env.example
 
-7 directories, 7 files
+8 directories, 8 files
 ```
 <!-- END_ID:bloco_variaveis -->
 
@@ -44,6 +46,10 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   ├── README.md
 │   ├── docker-compose.media.yml
 │   └── nginx.conf
+├── n8n
+│   ├── .env.example
+│   ├── README.md
+│   └── docker-compose.n8n.yml
 ├── netdata
 │   ├── .env.example
 │   ├── README.md
@@ -70,7 +76,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ├── auth-nginx.conf
 └── docker-compose.apps.yml
 
-7 directories, 30 files
+8 directories, 33 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -78,19 +84,19 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
 # --- INFRAESTRUTURA ---
-#API_DOMAIN=dominio_da_api
-#MEDIA_DOMAIN=dominio_de_medias
-#STORAGE_DOMAIN=dominio_do_storage
+API_DOMAIN=dominio_da_api
+MEDIA_DOMAIN=dominio_de_medias
+STORAGE_DOMAIN=dominio_do_storage
 
 
 # --- CONTAINER WHATSAPP ---
-#WHATSAPP_CONTAINER=whatsapp
-#WHATSAPP_CONTAINER_PORT=3000
+WHATSAPP_CONTAINER=whatsapp
+WHATSAPP_CONTAINER_PORT=3000
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

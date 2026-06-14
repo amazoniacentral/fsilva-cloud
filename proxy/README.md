@@ -44,5 +44,5 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

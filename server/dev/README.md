@@ -12,9 +12,10 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── README.md
 ├── docker-compose.dev.yml
 ├── host.dev.yml
+├── traefik.dev.yml
 └── tunnel.dev.yml
 
-1 directory, 5 files
+1 directory, 6 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -56,5 +57,5 @@ TUNNEL_TOKEN=seu_token_aqui_sem_aspas
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

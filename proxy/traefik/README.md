@@ -22,14 +22,12 @@ _Uma estrutura h√≠brida para garantir que seus aplicativos Docker estejam acess√
 ```.env <!-- ID: .env.example -->
 # Gerar Certificado Let's
 
-#ACME_EMAIL=seu-email@dominio.com
-#Painel do Traefik
-#DOMAIN=traefik.seu-dominio.com
+ACME_EMAIL=seu-email@dominio.com
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 15/05/2026_
+_Atualizado em: 14/06/2026_
 <!-- END_ID:bloco_final -->

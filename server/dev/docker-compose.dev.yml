@@ -4,7 +4,6 @@ include:
   - ../../database/docker-compose.database.yml
   - ../../middleware/docker-compose.middleware.yml
   - ../docker-compose.server.yml
-  - ./ssh.dev.yml
 
 services:
   n8n:

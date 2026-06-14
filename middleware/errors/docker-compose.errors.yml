@@ -22,7 +22,7 @@ services:
       - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
 
       # ROTEADOR HTTP CATCH-ALL (CORRIGIDO)
-      - "traefik.http.routers.catch-all-http.rule=HostRegexp(`^.+$`) && !PathPrefix(`/.well-known/acme-challenge/`)"
+      - "traefik.http.routers.catch-all-http.rule=HostRegexp(`^.+$`) && !PathPrefix(`/.well-known/`)"
       - "traefik.http.routers.catch-all-http.entrypoints=web"
       - "traefik.http.routers.catch-all-http.priority=1"
       - "traefik.http.routers.catch-all-http.middlewares=error-pages-middleware"

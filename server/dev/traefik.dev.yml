@@ -1,0 +1,30 @@
+services:
+  traefik:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN:?proxy.seu-dominio.com}`)"
+    
+  nginx:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      
+  media:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
+      
+  netdata:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
+
+  storage:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"

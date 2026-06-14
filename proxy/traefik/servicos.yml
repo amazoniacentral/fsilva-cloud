@@ -22,6 +22,8 @@ services:
   
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.nginx.middlewares=block-internal-header"
+    networks:
+      - net_proxy
   django:
     labels:
       - "traefik.enable=true"

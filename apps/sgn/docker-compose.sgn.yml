@@ -30,18 +30,15 @@ services:
       - .env 
     restart: always
     hostname: api
-    depends_on:
-      postgres:
-        condition: service_healthy
     dns:
       - 1.1.1.1
       - 8.8.8.8
     working_dir: /code
     command: >
       sh -c "python manage.py migrate --noinput && 
-             python manage.py collectstatic --noinput && 
-             python manage.py gerar_sites_html && 
-             gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2"
+            python manage.py collectstatic --noinput && 
+            python manage.py gerar_sites_html && 
+            gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2"
     volumes:
       - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles
@@ -73,12 +70,15 @@ services:
         reservations:
           cpus: '0.05'
           memory: 128M
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8000))'"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 300s
+      start_period: 2100s
 
   # WORKER
   celery-worker:

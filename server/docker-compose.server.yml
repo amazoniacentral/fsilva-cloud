@@ -34,7 +34,6 @@ networks:
     driver: bridge
   net_proxy:
     driver: bridge
-    name: net_proxy
     internal: true
   net_tunnel:
     driver: bridge

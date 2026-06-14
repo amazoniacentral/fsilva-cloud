@@ -1,8 +1,5 @@
 
 services:
-  n8n:
-    ports:
-      - "127.0.0.1:5678:5678"
   gvendas:
     ports:
       - "${HOST:-127.0.0.1}:${PORT_GVENDAS:-3010}:80"
@@ -26,10 +23,5 @@ services:
   storage:
     ports:
       - "${HOST:-127.0.0.1}:${PORT_STORAGE:-8013}:80"
-    networks:
-      - web_host
-  netdata:
-    ports:
-      - "${HOST:-127.0.0.1}:${PORT_NETDATA:-2010}:19999"
     networks:
       - web_host

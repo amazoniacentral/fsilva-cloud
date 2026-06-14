@@ -12,7 +12,7 @@ services:
   netdata:
     ports:
       - "${HOST:-127.0.0.1}:${PORT_NETDATA:-2010}:19999"
-      
+
   nginx:
     env_file:
       - .env

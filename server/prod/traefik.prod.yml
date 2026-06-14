@@ -1,9 +1,16 @@
 services:
+  # traefik:
+  #   env_file:
+  #     - .env
+  #   labels:
+  #     - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN:?proxy.seu-dominio.com}`)"
+  #     - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+  #     - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
   traefik:
     env_file:
       - .env
-    labels:
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN:?proxy.seu-dominio.com}`)"
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT_TRAEFIK:-8080}:8080"
     
   nginx:
     env_file:

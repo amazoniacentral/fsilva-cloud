@@ -31,7 +31,7 @@ cd "$CD_DIR" || exit
 
 # 2. Para o Traefik somente se o container existir e estiver rodando
 if [ "$IS_RUNNING" == "true" ]; then
-    docker compose stop traefik
+    docker compose stop $TRAEFIK_CONTAINER
 fi
 
 # 3. Limpeza do arquivo ACME
@@ -41,7 +41,7 @@ chmod 600 "$ACME_FILE"
 
 # 4. Reinicia o Traefik somente se ele estava rodando antes
 if [ "$IS_RUNNING" == "true" ]; then
-    docker compose start traefik
+    docker compose start $TRAEFIK_CONTAINER
 fi
 
 # Retorna ao diretório de scripts

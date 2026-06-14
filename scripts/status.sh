@@ -232,7 +232,7 @@ TRAEFIK_CONTAINERS=$(docker ps --format '{{.Names}}' | grep "traefik")
 for TRAEFIK_CONTAINER in $TRAEFIK_CONTAINERS; do
     IS_RUNNING=$(docker inspect -f '{{.State.Running}}' "$TRAEFIK_CONTAINER" 2>/dev/null)
     if [ "$IS_RUNNING" == "true" ]; then
-        echo -e "${CYAN}Container: $TRAEFIK_CONTAINER{RESET}"
+        echo -e "${CYAN}Container: $TRAEFIK_CONTAINER ${RESET}"
         echo -e "${YELLOW}           CERTIFICADOS SSL E SAÚDE${RESET}"
         
         ACME_FILE="${BASE_DIR}/proxy/traefik/certificados/acme.json"

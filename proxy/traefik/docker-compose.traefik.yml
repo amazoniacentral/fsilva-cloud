@@ -10,11 +10,6 @@ services:
       - 8.8.8.8
     networks:
       - net_proxy
-      - web_traefik
-    ports:
-      - 80:80
-      - 443:443
-      - 127.0.0.1:8080:8080
     deploy:
       resources:
         limits:
@@ -23,31 +18,6 @@ services:
         reservations:
           cpus: '0.01'
           memory: 64M
-    # command:
-    #   - "--api.dashboard=true"
-    #   - "--api.insecure=false"
-    #   - "--entrypoints.traefik.address=:8080"
-      
-    #   - "--log.level=INFO"
-    #   # LIGA OS LOGS DE ACESSO (Necessário para os gráficos de requisições)
-    #   - "--accesslog=true"
-    #   # HABILITA O SISTEMA DE MÉTRICAS INTERNAS
-    #   - "--metrics.prometheus=true"
-    #   - "--metrics.prometheus.addEntryPointsLabels=true"
-    #   - "--metrics.prometheus.addServicesLabels=true"
-    #   # CONFIGURAÇÕES DE PROVIDERS
-    #   - "--providers.docker=true"
-    #   - "--providers.docker.exposedbydefault=false"
-    #   - "--entrypoints.web.address=:80"
-    #   - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-    #   - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-    #   - "--entrypoints.websecure.address=:443"
-    #   - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-    #   - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
-    #   - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-    #   - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-    #   - "--providers.file.directory=/etc/traefik/dynamic"
-    #   - "--providers.file.watch=true"
     command:
       # =====================
       # API / DASHBOARD
@@ -100,13 +70,3 @@ services:
       - ./certificados:/etc/traefik/acme
       - ./.htpasswd:/etc/traefik/.htpasswd:ro
     working_dir: /etc/traefik/dynamic
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.docker.network=net_proxy"
-      
-    #   - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)"
-    #   - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-    #   - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
-    #   - "traefik.http.routers.traefik-dashboard.service=api@internal"
-    #   - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
-    #   - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"

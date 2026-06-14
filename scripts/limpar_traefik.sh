@@ -12,9 +12,6 @@ echo "Iniciando limpeza de certificados órfãos..."
 BACKUP_DIR="$CD_DIR/proxy/traefik/certificados/backups"
 mkdir -p "$BACKUP_DIR"
 
-if [ -f "$ACME_FILE" ]; then
-    cp "$ACME_FILE" "$BACKUP_DIR/acme_$(date +%Y%m%d_%H%M%S).json.bak"
-fi
 
 # Limpeza de backups antigos
 find "$BACKUP_DIR" -name "*.bak" -type f -mtime +15 -delete
@@ -31,17 +28,20 @@ cd "$CD_DIR" || exit
 
 # 2. Para o Traefik somente se o container existir e estiver rodando
 if [ "$IS_RUNNING" == "true" ]; then
-    docker compose stop $TRAEFIK_CONTAINER
+    docker stop $TRAEFIK_CONTAINER
 fi
 
 # 3. Limpeza do arquivo ACME
+if [ -f "$ACME_FILE" ]; then
+    cp "$ACME_FILE" "$BACKUP_DIR/acme_$(date +%Y%m%d_%H%M%S).json.bak"
+fi
 rm -f "$ACME_FILE"
 touch "$ACME_FILE"
 chmod 600 "$ACME_FILE"
 
 # 4. Reinicia o Traefik somente se ele estava rodando antes
 if [ "$IS_RUNNING" == "true" ]; then
-    docker compose start $TRAEFIK_CONTAINER
+    docker start $TRAEFIK_CONTAINER
 fi
 
 # Retorna ao diretório de scripts

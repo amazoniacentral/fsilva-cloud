@@ -1,6 +1,6 @@
 include:
-  - ./servicos.yml
   - ../traefik/servicos.yml
+  - ./servicos.yml
   
 services:
   traefik:

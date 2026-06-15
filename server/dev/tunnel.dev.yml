@@ -1,3 +1,6 @@
+include:
+  - ./traefik.dev.yml
+  
 services:
   tunnel:
     env_file:

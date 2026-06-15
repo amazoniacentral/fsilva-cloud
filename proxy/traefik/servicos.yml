@@ -5,7 +5,7 @@ services:
   traefik:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
 
       # =========================
       # DASHBOARD ROUTER
@@ -25,7 +25,7 @@ services:
   nginx:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
   
       - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
@@ -44,7 +44,7 @@ services:
   django:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       # A SOLUÇÃO: Criar um router para o Django existir para o Traefik
       # Sem isso, o middleware 'auth-django' abaixo é ignorado pelo Traefik
@@ -66,7 +66,7 @@ services:
   media:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN}`)"
       - "traefik.http.routers.media-nginx.entrypoints=websecure"
@@ -81,7 +81,7 @@ services:
   # netdata:
   #   labels:
   #     - "traefik.enable=true"
-  #     - "traefik.docker.network=net_proxy"
+  #     - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
   #     # Roteador e Domínio
   #     - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`)"
@@ -99,7 +99,7 @@ services:
   storage:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
       
       - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN}`)"
       - "traefik.http.routers.storage.entrypoints=websecure"

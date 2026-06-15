@@ -64,18 +64,18 @@ services:
       # =========================
       # HTTP (80)
       # =========================
-      - "traefik.http.routers.django-api-http.rule=Host(`django-internal.local`)"
-      - "traefik.http.routers.django-api-http.entrypoints=web"
-      - "traefik.http.routers.django-api-http.service=django"
+      - "traefik.http.routers.django-http.rule=Host(`django-internal.local`)"
+      - "traefik.http.routers.django-http.entrypoints=web"
+      - "traefik.http.routers.django-http.service=django"
     
       # =========================
       # HTTPS (443)
       # =========================
-      - "traefik.http.routers.django-api.rule=Host(`django-internal.local`)"
-      - "traefik.http.routers.django-api.entrypoints=websecure"
-      - "traefik.http.routers.django-api.tls=true"
-      - "traefik.http.routers.django-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.django-api.service=django"
+      - "traefik.http.routers.django.rule=Host(`django-internal.local`)"
+      - "traefik.http.routers.django.entrypoints=websecure"
+      - "traefik.http.routers.django.tls=true"
+      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.django.service=django"
     
       - "traefik.http.services.django.loadbalancer.server.port=8000"
 
@@ -94,30 +94,30 @@ services:
       # =========================
       # HTTP (80)
       # =========================
-      - "traefik.http.routers.media-nginx-http.rule=Host(`${MEDIA_DOMAIN}`)"
-      - "traefik.http.routers.media-nginx-http.entrypoints=web"
-      - "traefik.http.routers.media-nginx-http.service=media-nginx"
+      - "traefik.http.routers.media-http.rule=Host(`${MEDIA_DOMAIN}`)"
+      - "traefik.http.routers.media-http.entrypoints=web"
+      - "traefik.http.routers.media-http.service=media"
     
       # =========================
       # HTTPS (443)
       # =========================
-      - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN}`)"
-      - "traefik.http.routers.media-nginx.entrypoints=websecure"
-      - "traefik.http.routers.media-nginx.tls=true"
-      - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.media-nginx.service=media-nginx"
+      - "traefik.http.routers.media.rule=Host(`${MEDIA_DOMAIN}`)"
+      - "traefik.http.routers.media.entrypoints=websecure"
+      - "traefik.http.routers.media.tls=true"
+      - "traefik.http.routers.media.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.media.service=media"
     
       # =========================
       # SERVICE
       # =========================
-      - "traefik.http.services.media-nginx.loadbalancer.server.port=80"
-      - "traefik.http.services.media-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
+      - "traefik.http.services.media.loadbalancer.server.port=80"
+      - "traefik.http.services.media.loadbalancer.responseForwarding.flushInterval=100ms"
     
       # =========================
       # MIDDLEWARES
       # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.media-nginx.middlewares=block-internal-header,error-pages-middleware"
+      - "traefik.http.routers.media.middlewares=block-internal-header,error-pages-middleware"
 
     networks:
       - net_proxy
@@ -130,26 +130,26 @@ services:
       # ======================
       # HTTP (80)
       # ======================
-      - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.service=nginx"
+      - "traefik.http.routers.storage-http.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.storage-http.entrypoints=web"
+      - "traefik.http.routers.storage-http.service=storage"
     
       # ======================
       # HTTPS (443)
       # ======================
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.nginx.entrypoints=websecure"
-      - "traefik.http.routers.nginx.tls=true"
-      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.nginx.service=nginx"
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.storage.entrypoints=websecure"
+      - "traefik.http.routers.storage.tls=true"
+      - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.storage.service=storage"
     
-      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.storage.loadbalancer.server.port=80"
     
       # ======================
       # HEADERS
       # ======================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.nginx.middlewares=block-internal-header"
+      - "traefik.http.routers.storage.middlewares=block-internal-header"
 
     networks:
       - net_proxy

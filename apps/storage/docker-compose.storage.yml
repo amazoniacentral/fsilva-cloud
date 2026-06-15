@@ -16,8 +16,4 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
-    depends_on:
-      django:
-        condition: service_healthy
-          
-          
+  

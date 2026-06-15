@@ -85,7 +85,10 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
                     -h $CONTAINER_DB_ALVO \
                     -U $DB_USER \
                     -d $DB \
-                | gzip > /backup/${DB}/$DATA_PASTA/${DB}_$(date +%Y-%m-%d)_$(date +%H%M).sql.gz
+                    -F c \
+                    -Z 9 \
+                    -b \
+                    -f /backup/${DB}/$DATA_PASTA/db-$(date +%Y-%m-%d)-$(date +%H%M).backup
             "
 
         if [ $? -eq 0 ]; then
@@ -101,7 +104,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
     docker run --rm \
         -v "$VOLUME_BACKUP_COMPETE":/backup \
         alpine sh -c "
-            find /backup -type f -mtime +7 -name '*.sql.gz' -exec rm -f {} + &&
+            find /backup -type f -mtime +180 -name '*.backup' -exec rm -f {} + &&
             find /backup -type d -empty -not -path '/backup' -exec rmdir -p {} + 2>/dev/null
         "
 

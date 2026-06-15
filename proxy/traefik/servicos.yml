@@ -6,17 +6,16 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-
+    
       # =========================
-      # DASHBOARD ROUTER
+      # HTTPS ONLY (RECOMENDADO)
       # =========================
-      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`) || PathPrefix(`/`)"
-      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-
-      # =========================
+    
       # BASIC AUTH
-      # =========================
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
   gvendas:
@@ -25,18 +24,33 @@ services:
   nginx:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-  
+      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+    
+      # =========================
+      # HTTP (porta 80)
+      # =========================
+      - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.nginx-http.entrypoints=web"
+      - "traefik.http.routers.nginx-http.middlewares=redirect-https"
+      - "traefik.http.routers.nginx-http.service=nginx"
+    
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+    
+      # =========================
+      # HTTPS (porta 443)
+      # =========================
       - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls=true"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
-  
-      # 🔥 FALTAVA ISSO
       - "traefik.http.routers.nginx.service=nginx"
-  
+    
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
       - "traefik.http.services.nginx.loadbalancer.responseForwarding.flushInterval=100ms"
-  
+    
+      # =========================
+      # Middleware
+      # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.nginx.middlewares=block-internal-header"
     networks:
@@ -44,19 +58,27 @@ services:
   django:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      
-      # A SOLUÇÃO: Criar um router para o Django existir para o Traefik
-      # Sem isso, o middleware 'auth-django' abaixo é ignorado pelo Traefik
+      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+    
+      # =========================
+      # HTTP (80)
+      # =========================
+      - "traefik.http.routers.django-api-http.rule=Host(`django-internal.local`)"
+      - "traefik.http.routers.django-api-http.entrypoints=web"
+      - "traefik.http.routers.django-api-http.middlewares=redirect-https"
+      - "traefik.http.routers.django-api-http.service=django"
+    
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+    
+      # =========================
+      # HTTPS (443)
+      # =========================
       - "traefik.http.routers.django-api.rule=Host(`django-internal.local`)"
       - "traefik.http.routers.django-api.entrypoints=websecure"
+      - "traefik.http.routers.django-api.tls=true"
+      - "traefik.http.routers.django-api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.django-api.service=django"
-  
-      # MIDDLEWARE AUTH (Definição)
-      # - "traefik.http.middlewares.auth-django.forwardauth.address=http://django:8000/api/user/validar-traefik/"
-      # - "traefik.http.middlewares.auth-django.forwardauth.trustForwardHeader=true"
-      # - "traefik.http.middlewares.auth-django.forwardauth.authResponseHeaders=X-Empresa-Id"
-      
+    
       - "traefik.http.services.django.loadbalancer.server.port=8000"
     networks:
       - net_proxy
@@ -66,49 +88,70 @@ services:
   media:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      
+      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+    
+      # =========================
+      # HTTP (80)
+      # =========================
+      - "traefik.http.routers.media-nginx-http.rule=Host(`${MEDIA_DOMAIN}`)"
+      - "traefik.http.routers.media-nginx-http.entrypoints=web"
+      - "traefik.http.routers.media-nginx-http.middlewares=redirect-https"
+      - "traefik.http.routers.media-nginx-http.service=media-nginx"
+    
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+    
+      # =========================
+      # HTTPS (443)
+      # =========================
       - "traefik.http.routers.media-nginx.rule=Host(`${MEDIA_DOMAIN}`)"
       - "traefik.http.routers.media-nginx.entrypoints=websecure"
+      - "traefik.http.routers.media-nginx.tls=true"
       - "traefik.http.routers.media-nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.media-nginx.service=media-nginx"
+    
+      # =========================
+      # SERVICE
+      # =========================
       - "traefik.http.services.media-nginx.loadbalancer.server.port=80"
       - "traefik.http.services.media-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
+    
+      # =========================
       # MIDDLEWARES
+      # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.media-nginx.middlewares=block-internal-header,error-pages-middleware"
     networks:
       - net_proxy
-  # netdata:
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      
-  #     # Roteador e Domínio
-  #     - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`)"
-  #     - "traefik.http.routers.netdata.entrypoints=websecure"
-  #     - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
-      
-  #     # Vinculação ao Serviço
-  #     - "traefik.http.routers.netdata.service=netdata-service"
-  #     - "traefik.http.services.netdata-service.loadbalancer.server.port=19999"
-      
-  #     # SEGURANÇA: Aplica a autenticação básica que você já usa no Traefik
-  #     - "traefik.http.routers.netdata.middlewares=auth-painel@docker"
-  #   networks:
-  #     - net_proxy
   storage:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-      
-      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN}`)"
-      - "traefik.http.routers.storage.entrypoints=websecure"
-      - "traefik.http.routers.storage.tls.certresolver=letsencrypt"
-      # MIDDLEWARE DE AUTENTICAÇÃO (Chama seu Django)
-      # - "traefik.http.routers.storage.middlewares=auth-django@docker,error-pages-middleware@docker"
-      
-      # Configuração para o Traefik passar o header X-Empresa-Id de volta para o Nginx
-      # Nota: Este middleware deve estar configurado no serviço do Django ou definido globalmente
-      - "traefik.http.services.storage.loadbalancer.server.port=80"
+    
+      # ======================
+      # HTTP (80)
+      # ======================
+      - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.nginx-http.entrypoints=web"
+      - "traefik.http.routers.nginx-http.middlewares=https-redirect"
+      - "traefik.http.routers.nginx-http.service=nginx"
+    
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+    
+      # ======================
+      # HTTPS (443)
+      # ======================
+      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nginx.service=nginx"
+    
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+    
+      # ======================
+      # HEADERS
+      # ======================
+      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
+      - "traefik.http.routers.nginx.middlewares=block-internal-header"
     networks:
       - net_proxy

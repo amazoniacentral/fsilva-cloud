@@ -11,6 +11,7 @@ server {
     # Logs de depuração importantes para ver a comunicação com o Django
     access_log /var/log/nginx/access.log combined;
     error_log /var/log/nginx/error.log debug;
+    
 
     root /storage;
 

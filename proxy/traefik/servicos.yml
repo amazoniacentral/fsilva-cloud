@@ -18,23 +18,22 @@ services:
       # BASIC AUTH
       - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
       - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
+
   gvendas:
     networks:
       - net_proxy
+
   nginx:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
     
       # =========================
       # HTTP (porta 80)
       # =========================
       - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.middlewares=redirect-https"
       - "traefik.http.routers.nginx-http.service=nginx"
-    
-      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
     
       # =========================
       # HTTPS (porta 443)
@@ -53,22 +52,21 @@ services:
       # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.nginx.middlewares=block-internal-header"
+
     networks:
       - net_proxy
+
   django:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
     
       # =========================
       # HTTP (80)
       # =========================
       - "traefik.http.routers.django-api-http.rule=Host(`django-internal.local`)"
       - "traefik.http.routers.django-api-http.entrypoints=web"
-      - "traefik.http.routers.django-api-http.middlewares=redirect-https"
       - "traefik.http.routers.django-api-http.service=django"
-    
-      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
     
       # =========================
       # HTTPS (443)
@@ -80,25 +78,25 @@ services:
       - "traefik.http.routers.django-api.service=django"
     
       - "traefik.http.services.django.loadbalancer.server.port=8000"
+
     networks:
       - net_proxy
+
   celery-worker:
     networks:
       - net_proxy
+
   media:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=fsilva-cloud-dev_net_proxy"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
     
       # =========================
       # HTTP (80)
       # =========================
       - "traefik.http.routers.media-nginx-http.rule=Host(`${MEDIA_DOMAIN}`)"
       - "traefik.http.routers.media-nginx-http.entrypoints=web"
-      - "traefik.http.routers.media-nginx-http.middlewares=redirect-https"
       - "traefik.http.routers.media-nginx-http.service=media-nginx"
-    
-      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
     
       # =========================
       # HTTPS (443)
@@ -120,8 +118,10 @@ services:
       # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.media-nginx.middlewares=block-internal-header,error-pages-middleware"
+
     networks:
       - net_proxy
+
   storage:
     labels:
       - "traefik.enable=true"
@@ -132,10 +132,7 @@ services:
       # ======================
       - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.middlewares=https-redirect"
       - "traefik.http.routers.nginx-http.service=nginx"
-    
-      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
     
       # ======================
       # HTTPS (443)
@@ -153,5 +150,6 @@ services:
       # ======================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
       - "traefik.http.routers.nginx.middlewares=block-internal-header"
+
     networks:
       - net_proxy

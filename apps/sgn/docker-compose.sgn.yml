@@ -40,7 +40,7 @@ services:
             python manage.py gerar_sites_html && 
             gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2"
     volumes:
-      - ../../repos/sgn:/code
+      # - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles
       - media_data:/code/volumes/media
       - catalogos_pdf_compress_data:/code/volumes/catalogo/compress
@@ -97,7 +97,7 @@ services:
       --max-tasks-per-child=50 
       --max-memory-per-child=150000
     volumes:
-      - ../../repos/sgn:/code
+      # - ../../repos/sgn:/code
       - catalogos_pdf_data:/code/volumes/catalogo/pdf
       - catalogos_pdf_compress_data:/code/volumes/catalogo/compress
       - catalogos_json_data:/code/volumes/catalogo/json
@@ -136,8 +136,8 @@ services:
     env_file:
       - .env 
     command: celery -A sgn beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler --max-interval 120
-    volumes:
-      - ../../repos/sgn:/code
+    # volumes:
+    #   - ../../repos/sgn:/code
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code

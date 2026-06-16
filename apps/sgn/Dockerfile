@@ -28,3 +28,6 @@ COPY repos/sgn/requirements.in .
 # Compila e instala as dependências
 RUN pip-compile requirements.in --output-file=requirements.txt && \
     pip install --no-cache-dir -r requirements.txt
+    
+# Copia o restante do codigo
+COPY repos/sgn/ .

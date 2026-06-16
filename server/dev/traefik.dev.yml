@@ -1,11 +1,5 @@
 services:
-  # traefik:
-  #   env_file:
-  #     - .env
-  #   labels:
-  #     - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DOMAIN:?proxy.seu-dominio.com}`)"
-  #     - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-  #     - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+
   nginx:
     env_file:
       - .env
@@ -20,15 +14,16 @@ services:
       - "traefik.http.routers.media-http.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
       - "traefik.http.routers.media.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
       
-  # netdata:
-  #   env_file:
-  #     - .env
-  #   labels:
-  #     - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN:?netdata.seu-domonio.com}`)"
-
   storage:
     env_file:
       - .env
     labels:
       - "traefik.http.routers.storage-http.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
       - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+  
+  pdf-service:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.pdf-service-http.rule=Host(`${PDFSERVICE_DOMAIN:?pdf-service.seu-dominio.com}`)"
+      - "traefik.http.routers.pdf-service.rule=Host(`${PDFSERVICE_DOMAIN:?pdf-service.seu-dominio.com}`)"

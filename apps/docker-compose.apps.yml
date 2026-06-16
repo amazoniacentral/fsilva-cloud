@@ -6,5 +6,6 @@ include:
   - ./storage/docker-compose.storage.yml
   - ./netdata/docker-compose.netdata.yml
   - ./n8n/docker-compose.n8n.yml
+  - ./pdf/docker-compose.pdf.yml
   
   

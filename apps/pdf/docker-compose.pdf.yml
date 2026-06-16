@@ -1,0 +1,19 @@
+
+services:
+  pdf-service:
+    build: 
+      context: ../../
+      dockerfile: ./apps/pdf/Dockerfile
+    restart: always
+    expose:
+      - "3000"
+    networks:
+      - net_n8n
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 100M

@@ -19,6 +19,8 @@ services:
         reservations:
           cpus: '0.10'
           memory: 100M
+    expose:
+      - "5678"
 
     volumes:
       - n8n_data:/home/node/.n8n

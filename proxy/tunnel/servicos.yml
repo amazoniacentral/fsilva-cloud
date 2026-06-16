@@ -20,3 +20,9 @@ services:
   storage:
     networks:
       - net_tunnel
+  pdf-service:
+    networks:
+      - net_tunnel
+  n8n:
+    networks:
+      - net_tunnel

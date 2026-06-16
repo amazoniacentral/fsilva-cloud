@@ -55,6 +55,7 @@ pgdata/
 **/.htpasswd
 **/.env.local
 **/.env.production
+**/node_modules/
 
 # --- Git Submodules ---
 # Não ignore as pastas dos submódulos! O Git precisa rastrear os ponteiros.

@@ -11,6 +11,8 @@ services:
     networks:
       - net_tunnel
       - web_tunnel
+    warp-routing:
+      enabled: true
     deploy:
       resources:
         limits:

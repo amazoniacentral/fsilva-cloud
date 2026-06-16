@@ -21,9 +21,3 @@ services:
       - "traefik.http.routers.storage-http.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
       - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
   
-  pdf-service:
-    env_file:
-      - .env
-    labels:
-      - "traefik.http.routers.pdf-service-http.rule=Host(`${PDFSERVICE_DOMAIN:?pdf-service.seu-dominio.com}`)"
-      - "traefik.http.routers.pdf-service.rule=Host(`${PDFSERVICE_DOMAIN:?pdf-service.seu-dominio.com}`)"

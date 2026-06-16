@@ -11,6 +11,8 @@ services:
         reservations:
           cpus: '0.10'
           memory: 100M
+    expose:
+      - "19999"
     cap_add:
       - SYS_PTRACE
       - SYS_ADMIN

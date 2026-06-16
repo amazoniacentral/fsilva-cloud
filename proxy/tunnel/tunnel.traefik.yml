@@ -6,3 +6,5 @@ services:
   traefik:
     networks:
       - net_tunnel
+    warp-routing:
+      enabled: true

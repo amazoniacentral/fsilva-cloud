@@ -11,9 +11,7 @@ body {
   color: #333;
 }
 
-.content {
-  padding: 30px;
-}
+.content { padding: 30px; }
 
 .day {
   border: 1px solid #ddd;
@@ -36,24 +34,13 @@ body {
   border-bottom: 1px solid #eee;
 }
 
-.summary div {
-  min-width: 120px;
-}
+.entrada { color: green; font-weight: bold; }
+.saida { color: red; font-weight: bold; }
+.total { font-weight: bold; color: #000; }
 
-.entrada {
-  color: green;
-  font-weight: bold;
-}
-
-.saida {
-  color: red;
-  font-weight: bold;
-}
-
-.total {
-  font-weight: bold;
-  color: #000;
-}
+/* usa o tipo direto */
+.ENTRADA { color: green; font-weight: bold; }
+.SAIDA { color: red; font-weight: bold; }
 
 table {
   width: 100%;
@@ -77,6 +64,8 @@ td {
 
 <div class="content">
 
+{{#each this}}
+
 <h1>{{title}}</h1>
 
 {{#each items}}
@@ -90,23 +79,17 @@ td {
   <div class="summary">
     <div>
       Entradas:<br>
-      <span class="entrada">
-        R$ {{entradas}}
-      </span>
+      <span class="entrada">R$ {{entradas}}</span>
     </div>
 
     <div>
       Saídas:<br>
-      <span class="saida">
-        R$ {{saidas}}
-      </span>
+      <span class="saida">R$ {{saidas}}</span>
     </div>
 
     <div>
       Total:<br>
-      <span class="total">
-        R$ {{total}}
-      </span>
+      <span class="total">R$ {{total}}</span>
     </div>
   </div>
 
@@ -127,12 +110,8 @@ td {
         <td>{{tipo}}</td>
         <td>{{descricao}}</td>
         <td>{{origem}}</td>
-        <td>
-          {{#if (eq tipo "ENTRADA")}}
-            <span class="entrada">+ R$ {{valor}}</span>
-          {{else}}
-            <span class="saida">- R$ {{valor}}</span>
-          {{/if}}
+        <td class="{{tipo}}">
+          R$ {{valor}}
         </td>
       </tr>
       {{/each}}
@@ -141,6 +120,8 @@ td {
   </table>
 
 </div>
+
+{{/each}}
 
 {{/each}}
 

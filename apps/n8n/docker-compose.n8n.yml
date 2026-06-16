@@ -4,6 +4,12 @@ services:
     restart: unless-stopped
 
     environment:
+      - N8N_EMAIL_MODE=smtp
+      - N8N_SMTP_HOST=smtp.gmail.com
+      - N8N_SMTP_PORT=587
+      - N8N_SMTP_USER=franciscosilva.executivo@gmail.com
+      - N8N_SMTP_PASS=izknqjrslohzjwze
+      - N8N_SMTP_SENDER=N8N <no-reply@gvendas.app.br>
       - TZ=America/Sao_Paulo
       - GENERIC_TIMEZONE=America/Sao_Paulo
     

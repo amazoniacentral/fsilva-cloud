@@ -24,15 +24,16 @@ h1 { margin-bottom: 20px; }
 
 .header {
   background: #f5f5f5;
-  padding: 10px 15px;
+  padding: 5px 15px;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .summary {
   display: flex;
   gap: 20px;
-  padding: 10px 15px;
-  font-size: 14px;
+  padding: 5px 15px;
+  font-size: 12px;
   border-bottom: 1px solid #eee;
 }
 
@@ -47,14 +48,15 @@ table {
 
 th {
   background: #fafafa;
-  padding: 10px;
+  padding: 5px;
   text-align: left;
+  font-size: 12px;
 }
 
 td {
-  padding: 10px;
+  padding: 3px;
   border-top: 1px solid #eee;
-  font-size: 13px;
+  font-size: 10px;
 }
 </style>
 
@@ -65,36 +67,36 @@ td {
 <div class="content">
 
 <!-- SEM fallback, direto data.data -->
-<h1>{{title}}</h1>
-
-{{#each items}}
+<h3>{{title}}</h3>
 
 <div class="day">
-
   <div class="header">
-    📅 {{data}}
+    📅 {{periodo}}
   </div>
 
   <div class="summary">
     <div>
       Entradas:<br>
-      <span class="entrada">R$ {{entradas}}</span>
+      <span class="entrada">R$ {{money entradas}}</span>
     </div>
 
     <div>
       Saídas:<br>
-      <span class="saida">R$ {{saidas}}</span>
+      <span class="saida">R$ {{money saidas}}</span>
     </div>
 
     <div>
-      Total:<br>
-      <span class="total">R$ {{total}}</span>
+      Saldo:<br>
+      <span class="total">R$ {{money total}}</span>
     </div>
   </div>
-
+</div>
+{{#each items}}
+<div>
   <table>
     <thead>
       <tr>
+        <th>Data</th>
         <th>Tipo</th>
         <th>Descrição</th>
         <th>Origem</th>
@@ -105,17 +107,16 @@ td {
     <tbody>
       {{#each lancamentos}}
       <tr>
+        <td>{{date data}}</td>
         <td>{{tipo}}</td>
         <td>{{descricao}}</td>
         <td>{{origem}}</td>
-        <td>R$ {{valor}}</td>
+        <td>R$ {{money valor}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
-
 </div>
-
 {{/each}}
 
 </div>

@@ -3,6 +3,29 @@ const path = require("path");
 const handlebars = require("handlebars");
 const puppeteer = require("puppeteer");
 
+// 👇 registra o helper ANTES de compilar o template
+handlebars.registerHelper("money", (value) => {
+  return Number(value || 0).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+});
+
+handlebars.registerHelper("date", (value) => {
+  if (!value) return "";
+
+  return new Date(value).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+});
+
+async function generateHTML(templateString, data) {
+  const template = handlebars.compile(templateString);
+  return template(data);
+}
+
 async function generatePDF(templateName, data) {
   const filePath = path.join(__dirname, "templates", templateName);
   const htmlTemplate = fs.readFileSync(filePath, "utf8");

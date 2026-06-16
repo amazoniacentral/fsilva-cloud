@@ -6,13 +6,6 @@ include:
   - ../docker-compose.server.yml
 
 services:
-  n8n:
-    ports:
-      - "${HOST:-127.0.0.1}:${PORT_N8N:-5678}:5678"
-  netdata:
-    ports:
-      - "${HOST:-127.0.0.1}:${PORT_NETDATA:-2000}:19999"
-
   nginx:
     env_file:
       - .env

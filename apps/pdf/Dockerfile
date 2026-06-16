@@ -1,6 +1,6 @@
-FROM node:20-slim
+FROM node:22-slim
 
-# Dependências do Puppeteer
+# Dependências do Chromium (Puppeteer)
 RUN apt-get update && apt-get install -y \
   chromium \
   fonts-liberation \
@@ -14,14 +14,22 @@ RUN apt-get update && apt-get install -y \
   libatk-bridge2.0-0 \
   libgtk-3-0 \
   libgbm1 \
+  ca-certificates \
+  --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY package.json .
+# melhor cache do npm
+COPY package.json package-lock.json* ./
+
 RUN npm install
 
 COPY . .
+
+# MUITO IMPORTANTE pro Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 EXPOSE 3000
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.content {
+  padding: 30px;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.day {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.day-header {
+  background: #f5f5f5;
+  padding: 15px;
+}
+
+.day-header h3 {
+  margin: 0 0 10px 0;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 14px;
+}
+
+.summary div {
+  min-width: 150px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #fafafa;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.valor-entrada {
+  color: green;
+  font-weight: bold;
+}
+
+.valor-saida {
+  color: red;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="content">
+
+  <h1>{{title}}</h1>
+
+  <p>
+    Total de registros: {{count}}
+  </p>
+
+  {{#each results}}
+
+  <div class="day">
+
+    <div class="day-header">
+      <h3>Data: {{data}}</h3>
+
+      <div class="summary">
+        <div>
+          <strong>Saldo Inicial:</strong><br>
+          R$ {{saldo_inicial}}
+        </div>
+
+        <div>
+          <strong>Entradas:</strong><br>
+          R$ {{entradas}}
+        </div>
+
+        <div>
+          <strong>Saídas:</strong><br>
+          R$ {{saidas}}
+        </div>
+
+        <div>
+          <strong>Saldo do Dia:</strong><br>
+          R$ {{saldo_do_dia}}
+        </div>
+
+        <div>
+          <strong>Saldo Final:</strong><br>
+          R$ {{saldo_final}}
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Descrição</th>
+          <th>Origem</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {{#each lancamentos}}
+        <tr>
+          <td>{{data}}</td>
+          <td>{{tipo}}</td>
+          <td>{{descricao}}</td>
+          <td>{{origem}}</td>
+
+          <td>
+            {{#if (eq tipo "ENTRADA")}}
+              <span class="valor-entrada">
+                R$ {{valor}}
+              </span>
+            {{else}}
+              <span class="valor-saida">
+                R$ {{valor}}
+              </span>
+            {{/if}}
+          </td>
+        </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+
+  </div>
+
+  {{/each}}
+
+</div>
+
+</body>
+</html>

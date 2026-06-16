@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.content {
+  padding: 30px;
+}
+
+.day {
+  border: 1px solid #ddd;
+  margin-bottom: 25px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.header {
+  background: #f5f5f5;
+  padding: 12px 15px;
+  font-weight: bold;
+}
+
+.summary {
+  display: flex;
+  gap: 20px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.summary div {
+  min-width: 120px;
+}
+
+.entrada {
+  color: green;
+  font-weight: bold;
+}
+
+.saida {
+  color: red;
+  font-weight: bold;
+}
+
+.total {
+  font-weight: bold;
+  color: #000;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #fafafa;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-top: 1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="content">
+
+<h1>{{title}}</h1>
+
+{{#each results}}
+
+<div class="day">
+
+  <div class="header">
+    📅 {{data}}
+  </div>
+
+  <div class="summary">
+    <div>
+      Entradas:<br>
+      <span class="entrada">
+        R$ {{entradas}}
+      </span>
+    </div>
+
+    <div>
+      Saídas:<br>
+      <span class="saida">
+        R$ {{saidas}}
+      </span>
+    </div>
+
+    <div>
+      Total:<br>
+      <span class="total">
+        R$ {{total}}
+      </span>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Origem</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {{#each lancamentos}}
+      <tr>
+        <td>{{tipo}}</td>
+        <td>{{descricao}}</td>
+        <td>{{origem}}</td>
+        <td>
+          {{#if (eq tipo "ENTRADA")}}
+            <span class="entrada">+ R$ {{valor}}</span>
+          {{else}}
+            <span class="saida">- R$ {{valor}}</span>
+          {{/if}}
+        </td>
+      </tr>
+      {{/each}}
+
+    </tbody>
+  </table>
+
+</div>
+
+{{/each}}
+
+</div>
+
+</body>
+</html>

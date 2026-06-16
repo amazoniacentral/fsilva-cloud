@@ -1,14 +1,13 @@
 
 services:
   pdf-service:
-    build: 
-      context: ../../
-      dockerfile: ./apps/pdf/Dockerfile
+    build: ./
     restart: always
     expose:
       - "3000"
     networks:
       - net_n8n
+    working_dir: /app
     deploy:
       resources:
         limits:

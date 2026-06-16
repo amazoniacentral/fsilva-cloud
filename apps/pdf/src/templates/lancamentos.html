@@ -13,16 +13,18 @@ body {
 
 .content { padding: 30px; }
 
+h1 { margin-bottom: 20px; }
+
 .day {
   border: 1px solid #ddd;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .header {
   background: #f5f5f5;
-  padding: 12px 15px;
+  padding: 10px 15px;
   font-weight: bold;
 }
 
@@ -36,11 +38,7 @@ body {
 
 .entrada { color: green; font-weight: bold; }
 .saida { color: red; font-weight: bold; }
-.total { font-weight: bold; color: #000; }
-
-/* usa o tipo direto */
-.ENTRADA { color: green; font-weight: bold; }
-.SAIDA { color: red; font-weight: bold; }
+.total { color: #000; font-weight: bold; }
 
 table {
   width: 100%;
@@ -56,16 +54,17 @@ th {
 td {
   padding: 10px;
   border-top: 1px solid #eee;
+  font-size: 13px;
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="content">
 
-{{#each this}}
-
+<!-- SEM fallback, direto data.data -->
 <h1>{{title}}</h1>
 
 {{#each items}}
@@ -104,24 +103,18 @@ td {
     </thead>
 
     <tbody>
-
       {{#each lancamentos}}
       <tr>
         <td>{{tipo}}</td>
         <td>{{descricao}}</td>
         <td>{{origem}}</td>
-        <td class="{{tipo}}">
-          R$ {{valor}}
-        </td>
+        <td>R$ {{valor}}</td>
       </tr>
       {{/each}}
-
     </tbody>
   </table>
 
 </div>
-
-{{/each}}
 
 {{/each}}
 

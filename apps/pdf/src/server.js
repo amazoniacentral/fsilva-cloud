@@ -4,13 +4,14 @@ const { generatePDF } = require("./pdf");
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-app.post("/pdf/report", async (req, res) => {
+app.post("/pdf", async (req, res) => {
   try {
-    const pdf = await generatePDF("report.html", req.body);
+    const { template, filename, data } = req.body;
+    const pdf = await generatePDF(template || "report.html", data);
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": "inline; filename=report.pdf",
+      "Content-Disposition": `inline; filename=${filename || "report.pdf"}`,
     });
 
     res.send(pdf);

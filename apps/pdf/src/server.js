@@ -6,8 +6,8 @@ app.use(express.json({ limit: "10mb" }));
 
 app.post("/pdf", async (req, res) => {
   try {
-    const { template, filename, data } = req.body;
-    const pdf = await generatePDF(template || "report.html", data);
+    const { template, filename } = req.body;
+    const pdf = await generatePDF(template || "report.html", req.body);
 
     res.set({
       "Content-Type": "application/pdf",

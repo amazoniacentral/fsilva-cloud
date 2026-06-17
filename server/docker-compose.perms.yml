@@ -6,4 +6,4 @@ services:
     volumes:
       - n8n_docs_data:/data
     command: >
-      sh -c "chmod -R 777 /data"
+      sh -c "chown -R 1000:1000 /data && chmod -R 777 /data"

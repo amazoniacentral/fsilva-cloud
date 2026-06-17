@@ -31,4 +31,4 @@ services:
 
     volumes:
       - n8n_data:/home/node/.n8n
-      - storage_data:/app/documentos
+      - n8n_docs_data:/app/documentos

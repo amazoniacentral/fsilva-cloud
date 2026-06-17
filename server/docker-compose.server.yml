@@ -19,6 +19,7 @@ volumes:
   certificados_data:
   backups:
   n8n_data:
+  n8n_docs_data:
     
 networks:
   net_web_only:

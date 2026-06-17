@@ -8,7 +8,7 @@ services:
     networks:
       - net_n8n
     environment:
-      - SFTP_USERS=admin:admin:0:0:upload
+      - SFTP_USERS=admin:admin::upload
     volumes:
       - n8n_docs_data:/home/admin/upload/documentos
       - catalogos_pdf_compress_data:/home/admin/upload/catalogos:ro

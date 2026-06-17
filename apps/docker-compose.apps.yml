@@ -5,8 +5,8 @@ include:
   - ./media/docker-compose.media.yml
   - ./storage/docker-compose.storage.yml
   - ./netdata/docker-compose.netdata.yml
-  - ./n8n/docker-compose.n8n.yml
-  - ./pdf/docker-compose.pdf.yml
   - ./sftp/docker-compose.sftp.yml
+  - ./pdf/docker-compose.pdf.yml
+  - ./n8n/docker-compose.n8n.yml
   
   

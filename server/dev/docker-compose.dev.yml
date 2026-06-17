@@ -33,6 +33,7 @@ services:
       - .env
   
   n8n:
+    user: "0:0"
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=fsilva-cloud-dev-postgres-1

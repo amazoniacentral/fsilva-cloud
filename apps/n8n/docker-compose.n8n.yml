@@ -2,8 +2,6 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: unless-stopped
-    user: "root"
-
     environment:
       - N8N_EMAIL_MODE=smtp
       - N8N_SMTP_HOST=smtp.gmail.com
@@ -14,6 +12,7 @@ services:
       - TZ=America/Sao_Paulo
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${COMPOSE_PROJECT_NAME}-postgres-1
       - DB_POSTGRESDB_PORT=5432
@@ -37,10 +36,10 @@ services:
           memory: 100M
     expose:
       - "5678"
-    working_dir: /home/node/media
+    working_dir: /home/node
     volumes:
       - n8n_data:/home/node/.n8n
-      - n8n_docs_data:/home/node/media
+      - n8n_docs_data:/home/node/.n8n-files
     depends_on:
       postgres:
         condition: service_healthy

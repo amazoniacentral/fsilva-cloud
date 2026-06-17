@@ -30,7 +30,7 @@ services:
       - "5678"
     working_dir: /home/node/media
     volumes:
-      - n8n_data:/home/node/.n8n
+      # - n8n_data:/home/node/.n8n
       - n8n_docs_data:/home/node/media
     depends_on:
       postgres:

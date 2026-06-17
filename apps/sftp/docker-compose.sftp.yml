@@ -1,0 +1,23 @@
+
+services:
+  sftp-service:
+    image: atmoz/sftp:latest
+    restart: always
+    expose:
+      - "22"
+    networks:
+      - net_n8n
+    environment:
+      - SFTP_USERS=admin:admin:::upload
+    volumes:
+      - n8n_docs_data:/home/admin/upload/documentos
+      - catalogos_pdf_compress_data:/home/admin/upload/catalogos:ro
+    working_dir: /home
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 256M
+        reservations:
+          cpus: '0.05'
+          memory: 100M

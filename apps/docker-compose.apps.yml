@@ -7,6 +7,6 @@ include:
   - ./netdata/docker-compose.netdata.yml
   - ./n8n/docker-compose.n8n.yml
   - ./pdf/docker-compose.pdf.yml
-  - ./pdf/docker-compose.sftp.yml
+  - ./sftp/docker-compose.sftp.yml
   
   

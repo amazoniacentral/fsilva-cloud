@@ -7,7 +7,12 @@ services:
       - "3000"
     networks:
       - net_n8n
-    working_dir: /app
+    working_dir: /home/node
+    volumes:
+      - pdf_docs_data:/home/node/pdf-files
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
     deploy:
       resources:
         limits:

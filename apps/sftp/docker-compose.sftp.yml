@@ -13,6 +13,9 @@ services:
       - n8n_docs_data:/home/admin/upload/documentos
       - catalogos_pdf_compress_data:/home/admin/upload/catalogos:ro
     working_dir: /home
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
     deploy:
       resources:
         limits:

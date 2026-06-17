@@ -1,3 +1,12 @@
+# Serviço Auxiliar: Executa o chmod de forma isolada e desliga sozinho
+services:
+  init-permissions:
+    image: alpine:latest
+    user: "0:0"
+    volumes:
+      - pdf_docs_data:/data
+    command: >
+      sh -c "chown -R 1000:1000 /data && chmod -R 777 /data"
 
 volumes:
   postgres_data:
@@ -18,7 +27,7 @@ volumes:
   certificados_data:
   backups:
   n8n_data:
-  n8n_docs_data:
+  pdf_docs_data:
     
 networks:
   net_web_only:

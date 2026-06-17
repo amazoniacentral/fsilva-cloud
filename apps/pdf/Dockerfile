@@ -30,14 +30,14 @@ RUN apt-get update && apt-get install -y \
   unzip \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /home/node
 
 # cache melhor do npm
 COPY package.json package-lock.json* ./
 
 RUN npm install
 
-COPY . .
+COPY ./src ./src
 
 # ✅ MODO ISOLADO (Puppeteer gerencia Chromium)
 ENV PUPPETEER_SKIP_DOWNLOAD=false

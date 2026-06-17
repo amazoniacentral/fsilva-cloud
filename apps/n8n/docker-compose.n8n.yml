@@ -40,7 +40,9 @@ services:
     working_dir: /home/node
     volumes:
       - n8n_data:/home/node/.n8n
-      - n8n_docs_data:/home/node/.n8n-files
+      - pdf_docs_data:/home/node/.n8n-files
     depends_on:
+      init-permissions:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy

@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    image: docker.n8n.io/n8nio/n8n:latest
     restart: unless-stopped
     environment:
       - N8N_EMAIL_MODE=smtp
@@ -13,6 +13,7 @@ services:
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_RESTRICT_FILE_ACCESS_TO=false
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${COMPOSE_PROJECT_NAME}-postgres-1
       - DB_POSTGRESDB_PORT=5432

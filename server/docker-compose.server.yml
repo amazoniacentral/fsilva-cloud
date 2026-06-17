@@ -13,7 +13,6 @@ volumes:
   netdataconfig:
   netdatalib:
   netdatacache:
-  whatsapp_node_modules:
   whatsapp_sessions:
   whatsapp_logs:
   certificados_data:

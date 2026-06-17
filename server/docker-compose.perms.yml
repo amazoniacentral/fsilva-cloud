@@ -1,0 +1,9 @@
+# Serviço Auxiliar: Executa o chmod de forma isolada e desliga sozinho
+services:
+  init-permissions:
+    image: alpine:latest
+    user: "0:0"
+    volumes:
+      - n8n_docs_data:/data
+    command: >
+      sh -c "chmod -R 777 /data"

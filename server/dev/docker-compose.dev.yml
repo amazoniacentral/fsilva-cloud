@@ -1,5 +1,6 @@
 
 include:
+  - ../docker-compose.perms.yml
   - ../../apps/docker-compose.apps.yml
   - ../../database/docker-compose.database.yml
   - ../../middleware/docker-compose.middleware.yml

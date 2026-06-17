@@ -1,18 +1,12 @@
 
 include:
+  - ../docker-compose.perms.yml
   - ../../apps/docker-compose.apps.yml
   - ../../database/docker-compose.database.yml
   - ../../middleware/docker-compose.middleware.yml
   - ../docker-compose.server.yml
   
 services:
-  n8n:
-    ports:
-      - "${HOST:-127.0.0.1}:${PORT_N8N:-5008}:5678"
-  netdata:
-    ports:
-      - "${HOST:-127.0.0.1}:${PORT_NETDATA:-2010}:19999"
-
   nginx:
     env_file:
       - .env

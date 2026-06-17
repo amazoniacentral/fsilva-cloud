@@ -31,7 +31,7 @@ case $OPCAO in
 
         git fetch --all --tags --quiet
         
-        TAGS=$(git tag -l | sort -V)
+        TAGS=$(git tag -l | sort -V | tac)
 
         if [ -z "$TAGS" ]; then
             echo -e "${VERMELHO}Nenhuma tag encontrada.${NC}"

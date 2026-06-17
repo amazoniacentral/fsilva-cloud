@@ -2,7 +2,6 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: unless-stopped
-    user: "0:0"
 
     environment:
       - N8N_EMAIL_MODE=smtp
@@ -28,8 +27,8 @@ services:
           memory: 100M
     expose:
       - "5678"
-    working_dir: /app/documentos
+    working_dir: /app/data
 
     volumes:
       - n8n_data:/home/node/.n8n
-      - n8n_docs_data:/app/documentos
+      - n8n_docs_data:/app/data

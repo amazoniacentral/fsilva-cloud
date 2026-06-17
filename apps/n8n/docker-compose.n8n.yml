@@ -27,6 +27,8 @@ services:
           memory: 100M
     expose:
       - "5678"
+    working_dir: /app/documentos
 
     volumes:
       - n8n_data:/home/node/.n8n
+      - storage_data:/app/documentos

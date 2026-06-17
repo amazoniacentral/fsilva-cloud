@@ -38,6 +38,7 @@ services:
     expose:
       - "5678"
     working_dir: /home/node
+    command: chmod -R 777 /home/node/.n8n-files
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_docs_data:/home/node/.n8n-files

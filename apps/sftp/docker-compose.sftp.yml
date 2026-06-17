@@ -13,7 +13,6 @@ services:
       - n8n_docs_data:/home/admin/upload/documentos
       - catalogos_pdf_compress_data:/home/admin/upload/catalogos:ro
     working_dir: /home
-    command: chmod -R 777 /home/admin/upload/documentos
     deploy:
       resources:
         limits:

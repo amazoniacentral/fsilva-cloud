@@ -87,30 +87,48 @@ async function generatePDF(templateName, data) {
     headerTemplate: `
       <style>
         #header { padding: 0 !important; }
-        
-        /* Regra crucial: Se o elemento pai do cabeçalho for detectado na primeira página, esconde o conteúdo */
         body { padding: 0 !important; margin: 0 !important; }
         
         .p-header {
           width: 100%;
-          padding: 20px 20px 0 20px; /* Adicionado 20px no topo para afastar da borda física da folha ao imprimir */
+          padding: 20px 20px 0 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           font-size: 10px;
           color: #444;
           border-bottom: 1px solid #eee;
+          animation: esconderPrimeiraPagina 0s forwards;
         }
 
-        /* Técnica nativa do Chromium para ocultar elementos apenas na primeira página */
-        #headerTemplate:has(.pageNumber:empty), 
-        html:has(.pageNumber:empty) .p-header,
-        body:not(:has(.pageNumber:not(:empty))) .p-header {
+        /* Utiliza a injeção nativa do contador de páginas para ocultar o elemento inteiro quando for a página 1 */
+        @keyframes esconderPrimeiraPagina {
+          to {
+            counter-reset: page 1;
+          }
+        }
+
+        /* Seletor definitivo usando a árvore de renderização do Chromium para o headerTemplate */
+        [data-page-number="1"] .p-header,
+        .pageNumber[data-page-number="1"] ~ .p-header,
+        #headerTemplate:not(:has(.pageNumber:not(:empty))) .p-header,
+        html:id("headerTemplate") .p-header {
           display: none !important;
+        }
+
+        /* Fallback via CSS p-header quando o span interno de número de página contiver exatamente "1" */
+        .p-header:has(.pageNumber:contains("1")),
+        html:has(span.pageNumber:inner-circle("1")) .p-header {
+          display: none !important;
+        }
+        
+        /* Abordagem baseada na string injetada pelo Chromium no span */
+        .pageNumber {
+          content: counter(page);
         }
       </style>
       
-      <div class="p-header">
+      <div class="p-header" id="p-header-element">
         <div style="display:flex; align-items:center; gap:10px;">
           <img src="${data.logo || ''}" style="width:28px; height:28px; object-fit:contain;" />
           <strong style="font-size:11px;">${data.company || "Sistema SaaS"}</strong>
@@ -122,9 +140,20 @@ async function generatePDF(templateName, data) {
 
         <div style="font-size:9px; color:#888; display: flex; gap: 5px;">
           <span>${new Date().toLocaleDateString("pt-BR")}</span>
-          <span class="pageNumber" style="display:none;"></span>
+          <span class="pageNumber"></span>
         </div>
       </div>
+
+      <script>
+        // Fallback dinâmico executado durante o ciclo de pintura em lote do Puppeteer PDF
+        setInterval(() => {
+          const pageEl = document.querySelector('.pageNumber');
+          if (pageEl && pageEl.textContent.trim() === '1') {
+            const header = document.getElementById('p-header-element');
+            if (header) header.style.setProperty('display', 'none', 'important');
+          }
+        }, 1);
+      </script>
     `,
 
     footerTemplate: `

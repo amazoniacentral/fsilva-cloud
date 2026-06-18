@@ -35,17 +35,28 @@ async function generatePDF(templateName, data) {
 
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox", 
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage" // Evita travamentos por falta de memória em containers Docker
+    ],
   });
 
   const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: "domcontentloaded" });
+  
+  // Define o timeout como 0 (infinito) na navegação para impedir o colapso dos 30 segundos padrão
+  await page.setContent(html, { 
+    waitUntil: "domcontentloaded",
+    timeout: 0 
+  });
 
   const pdf = await page.pdf({
     format: "A4",
     printBackground: true,
     displayHeaderFooter: true,
 
+    // IMPORTANTE: Imagens em headerTemplate só funcionam de forma segura e sem travar a rede 
+    // se forem injetadas via String Base64 (data:image/png;base64,...). Não use URLs HTTP/HTTPS aqui.
     headerTemplate: `
       <div style="
         width: 100%;
@@ -67,7 +78,7 @@ async function generatePDF(templateName, data) {
         </div>
 
         <div style="font-size:9px; color:#888;">
-          ${new Date().toLocaleDateString()}
+          ${new Date().toLocaleDateString("pt-BR")}
         </div>
       </div>
     `,
@@ -110,6 +121,7 @@ async function generatePDF(templateName, data) {
       left: "20px",
       right: "20px",
     },
+    timeout: 0 // Garante que a geração do PDF também não sofra timeout padrão do Puppeteer
   });
 
   await browser.close();

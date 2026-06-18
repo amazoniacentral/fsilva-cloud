@@ -87,9 +87,13 @@ async function generatePDF(templateName, data) {
     headerTemplate: `
       <style>
         #header { padding: 0 !important; }
+        
+        /* Regra crucial: Se o elemento pai do cabeçalho for detectado na primeira página, esconde o conteúdo */
+        body { padding: 0 !important; margin: 0 !important; }
+        
         .p-header {
           width: 100%;
-          padding: 0 20px;
+          padding: 20px 20px 0 20px; /* Adicionado 20px no topo para afastar da borda física da folha ao imprimir */
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -97,7 +101,15 @@ async function generatePDF(templateName, data) {
           color: #444;
           border-bottom: 1px solid #eee;
         }
+
+        /* Técnica nativa do Chromium para ocultar elementos apenas na primeira página */
+        #headerTemplate:has(.pageNumber:empty), 
+        html:has(.pageNumber:empty) .p-header,
+        body:not(:has(.pageNumber:not(:empty))) .p-header {
+          display: none !important;
+        }
       </style>
+      
       <div class="p-header">
         <div style="display:flex; align-items:center; gap:10px;">
           <img src="${data.logo || ''}" style="width:28px; height:28px; object-fit:contain;" />
@@ -113,16 +125,6 @@ async function generatePDF(templateName, data) {
           <span class="pageNumber" style="display:none;"></span>
         </div>
       </div>
-      <script>
-        // O Puppeteer avalia isso ao renderizar cada página. Se for a página 1, ele oculta o cabeçalho nativo do PDF.
-        const el = document.querySelector('.pageNumber');
-        if (el && el.textContent.trim() === '1') {
-          const container = el.closest('.p-header');
-          if (container) {
-            container.style.display = 'none';
-          }
-        }
-      </script>
     `,
 
     footerTemplate: `

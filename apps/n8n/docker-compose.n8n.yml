@@ -44,7 +44,7 @@ services:
     working_dir: /home/node
     volumes:
       - n8n_data:/home/node/.n8n
-      - pdf_docs_data:/home/node/.n8n-files
+      - pdf_docs_data:/home/node/files
     depends_on:
       init-permissions:
         condition: service_completed_successfully

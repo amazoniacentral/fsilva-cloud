@@ -24,8 +24,8 @@ services:
       - N8N_EMAIL_MARCA_DAGUA=false
       - WEBHOOK_URL=https://n8n.francsilva.com.br/
       - N8N_EDITOR_BASE_URL=https://n8n.francsilva.com.br/
-
-    
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+    user: "root"
     networks:
       - net_n8n
       - net_db
@@ -41,7 +41,6 @@ services:
           memory: 100M
     expose:
       - "5678"
-    user: "root"
     working_dir: /home/node
     volumes:
       - n8n_data:/home/node/.n8n

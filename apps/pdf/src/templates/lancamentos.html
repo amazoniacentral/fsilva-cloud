@@ -65,57 +65,62 @@ td {
 <body>
 
 <div class="content">
-
-<!-- SEM fallback, direto data.data -->
-<h3>{{title}}</h3>
-
-<div class="day">
-  <div class="header">
-    📅 {{periodo}}
-  </div>
-
-  <div class="summary">
-    <div>
-      Entradas:<br>
-      <span class="entrada">R$ {{money entradas}}</span>
+  
+  {{> meuCabecalhoGrande}}
+  
+  {{#data}}
+    
+    <div class="day">
+      <div class="header">
+        📅 {{periodo}}
+      </div>
+  
+      <div class="summary">
+        <div>
+          Entradas:<br>
+          <span class="entrada">R$ {{money entradas}}</span>
+        </div>
+  
+        <div>
+          Saídas:<br>
+          <span class="saida">R$ {{money saidas}}</span>
+        </div>
+  
+        <div>
+          Saldo:<br>
+          <span class="total">R$ {{money total}}</span>
+        </div>
+      </div>
     </div>
-
+    
     <div>
-      Saídas:<br>
-      <span class="saida">R$ {{money saidas}}</span>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Origem</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+          {{#each lancamentos}}
+          <tr>
+            <td>{{date data}}</td>
+            <td>{{tipo}}</td>
+            <td>{{descricao}}</td>
+            <td>{{origem}}</td>
+            <td>R$ {{money valor}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
+    
+  {{/data}}
 
-    <div>
-      Saldo:<br>
-      <span class="total">R$ {{money total}}</span>
-    </div>
-  </div>
-</div>
-<div>
-  <table>
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Tipo</th>
-        <th>Descrição</th>
-        <th>Origem</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {{#each lancamentos}}
-      <tr>
-        <td>{{date data}}</td>
-        <td>{{tipo}}</td>
-        <td>{{descricao}}</td>
-        <td>{{origem}}</td>
-        <td>R$ {{money valor}}</td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
-</div>
 </div>
 
 </body>

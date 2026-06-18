@@ -21,6 +21,13 @@ handlebars.registerHelper("date", (value) => {
   });
 });
 
+// 👇 REGISTRAÇÃO DO TEMPLATE HERDADO (PARTIAL)
+const headerPartialPath = path.join(__dirname, "templates", "header-principal.html");
+if (fs.existsSync(headerPartialPath)) {
+  const headerPartialHtml = fs.readFileSync(headerPartialPath, "utf8");
+  handlebars.registerPartial("meuCabecalhoGrande", headerPartialHtml);
+}
+
 async function generateHTML(templateString, data) {
   const template = handlebars.compile(templateString);
   return template(data);
@@ -78,16 +85,20 @@ async function generatePDF(templateName, data) {
     // IMPORTANTE: Imagens em headerTemplate só funcionam de forma segura e sem travar a rede 
     // se forem injetadas via String Base64 (data:image/png;base64,...). Não use URLs HTTP/HTTPS aqui.
     headerTemplate: `
-      <div style="
-        width: 100%;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 10px;
-        color: #444;
-        border-bottom: 1px solid #eee;
-      ">
+      <style>
+        #header { padding: 0 !important; }
+        .p-header {
+          width: 100%;
+          padding: 0 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 10px;
+          color: #444;
+          border-bottom: 1px solid #eee;
+        }
+      </style>
+      <div class="p-header">
         <div style="display:flex; align-items:center; gap:10px;">
           <img src="${data.logo || ''}" style="width:28px; height:28px; object-fit:contain;" />
           <strong style="font-size:11px;">${data.company || "Sistema SaaS"}</strong>
@@ -97,10 +108,21 @@ async function generatePDF(templateName, data) {
           ${data.title || "Documento"}
         </div>
 
-        <div style="font-size:9px; color:#888;">
-          ${new Date().toLocaleDateString("pt-BR")}
+        <div style="font-size:9px; color:#888; display: flex; gap: 5px;">
+          <span>${new Date().toLocaleDateString("pt-BR")}</span>
+          <span class="pageNumber" style="display:none;"></span>
         </div>
       </div>
+      <script>
+        // O Puppeteer avalia isso ao renderizar cada página. Se for a página 1, ele oculta o cabeçalho nativo do PDF.
+        const el = document.querySelector('.pageNumber');
+        if (el && el.textContent.trim() === '1') {
+          const container = el.closest('.p-header');
+          if (container) {
+            container.style.display = 'none';
+          }
+        }
+      </script>
     `,
 
     footerTemplate: `

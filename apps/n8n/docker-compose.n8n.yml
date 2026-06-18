@@ -41,6 +41,7 @@ services:
           memory: 100M
     expose:
       - "5678"
+    user: "root"
     working_dir: /home/node
     volumes:
       - n8n_data:/home/node/.n8n

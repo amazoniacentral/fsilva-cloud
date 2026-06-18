@@ -38,12 +38,32 @@ async function generatePDF(templateName, data) {
     args: [
       "--no-sandbox", 
       "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage" // Evita travamentos por falta de memória em containers Docker
+      "--disable-dev-shm-usage", // Evita travamentos por falta de memória em containers Docker
+      "--disable-accelerated-2d-canvas",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process" // Diminui drasticamente o consumo de recursos na VPS
     ],
   });
 
   const page = await browser.newPage();
   
+  // Bloqueia requisições externas de rede para impedir lentidão no Docker
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const resourceType = req.resourceType();
+    // Permite apenas o HTML local e dados em Base64 (data:)
+    if (req.url().startsWith("data:") || resourceType === "document") {
+      req.continue();
+    } else if (resourceType === "stylesheet" || resourceType === "font" || resourceType === "image") {
+      // Aborta estilos, fontes e imagens externas que destroem a performance da renderização
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
+
   // Define o timeout como 0 (infinito) na navegação para impedir o colapso dos 30 segundos padrão
   await page.setContent(html, { 
     waitUntil: "domcontentloaded",

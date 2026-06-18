@@ -9,7 +9,7 @@ services:
       - net_n8n
     working_dir: /home/node
     volumes:
-      - pdf_docs_data:/home/node/pdf-files
+      - pdf_docs_data:/home/node/src/output
     depends_on:
       init-permissions:
         condition: service_completed_successfully

@@ -20,9 +20,15 @@ services:
       - DB_POSTGRESDB_PASSWORD=n8n
       - DB_POSTGRESDB_SCHEMA=public
       - N8N_EMAIL_MARCA_DAGUA=false
-      - WEBHOOK_URL=https://n8n.francsilva.com.br/
+      - WEBHOOK_URL=https://webhook.francsilva.com.br/
       - N8N_EDITOR_BASE_URL=https://n8n.francsilva.com.br/
-      - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files
+      - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files,/home/node/treinamento
+      - EXECUTIONS_DATA_PRUNE= "true"
+      - EXECUTIONS_DATA_MAX_AGE= "48" # Mantém apenas 48 horas de histórico
+      - EXECUTIONS_DATA_PRUNE_TIMEOUT= "3600"
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none  # Não grava no disco os testes que deram certo
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all     # Só
+
     networks:
       - net_n8n
       - net_db
@@ -31,7 +37,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: '1.5'
           memory: 1G
         reservations:
           cpus: '0.10'
@@ -42,6 +48,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - pdf_docs_data:/home/node/files
+      - treinamento-ia:home/node/treinamento
     depends_on:
       init-permissions:
         condition: service_completed_successfully

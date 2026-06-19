@@ -6,11 +6,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: '0.4'
           memory: 384M
         reservations:
-          cpus: '0.10'
+          cpus: '0.1'
           memory: 100M
+    pids_limit: 50      
     expose:
       - "19999"
     cap_add:

@@ -1,0 +1,23 @@
+categoria,pergunta,resposta
+WhatsApp,Quais formas de integração com WhatsApp existem no GVendas?,O GVendas possui duas formas de integração: WhatsApp Comum gratuito e WhatsApp Business Oficial da Meta que possui cobrança da Meta.
+WhatsApp,Como conectar o WhatsApp comum?,Acesse Menu Lateral > Cobranças WhatsApp > Conectar WhatsApp e siga as instruções apresentadas na tela.
+WhatsApp,Como conectar o WhatsApp Business da Meta?,Acesse Menu Lateral > Cobranças WhatsApp > Conectar WhatsApp Business e siga o processo de autorização.
+WhatsApp Business,Quais requisitos para usar o WhatsApp Business da Meta?,A Meta exige que o número seja WhatsApp Business e que a empresa possua CNPJ e validação aprovada pela Meta.
+Templates,Como criar templates de mensagens?,Acesse Menu Lateral > Cobranças WhatsApp > Templates e clique no botão + para criar um novo template.
+Templates,Posso editar templates existentes?,Sim. Na tela de Templates é possível editar templates já cadastrados.
+Templates,Posso configurar horários de envio?,Sim. Os templates permitem configurar horários de disparo e intervalos entre mensagens.
+Templates,Posso vincular templates a categorias de clientes?,Sim. Os templates podem ser associados a categorias específicas de clientes.
+Pix,Como enviar cobrança Pix automática pelo WhatsApp?,É necessário conectar um banco em Menu Lateral > Cobranças WhatsApp > Conectar Banco.
+Pix,Como conectar um banco?,Acesse Menu Lateral > Cobranças WhatsApp > Conectar Banco, escolha o banco desejado e conclua a autorização na tela do banco.
+Pix,O que acontece após conectar o banco?,Quando uma cobrança for enviada pelo WhatsApp o sistema enviará automaticamente a chave Pix e o QR Code para o cliente.
+Pix,O sistema dá baixa automática nos pagamentos?,Sim. Quando o banco está conectado o sistema identifica o pagamento e realiza a baixa automática.
+Pix,Quais valores entram na cobrança Pix?,O sistema cobra automaticamente os títulos vencidos hoje e também os títulos em atraso.
+Pix,Como inserir o Pix automático no template?,Basta adicionar a tag [pix] no final do template.
+Pix,O que a tag [pix] faz?,Quando existe um banco conectado a tag [pix] gera automaticamente a cobrança Pix utilizando a integração bancária.
+Pix,Posso cobrar usando minha própria chave Pix sem integrar banco?,Sim. Basta informar a chave diretamente no template.
+Pix,Como usar uma chave Pix manual no template?,Adicione a chave no formato [pix-11966175193] substituindo pelo valor da sua chave Pix.
+Pix,A baixa é automática quando utilizo uma chave Pix manual?,Não. Nesse caso a baixa deverá ser realizada manualmente após o envio do comprovante pelo cliente.
+Pix,Posso cadastrar uma chave Pix padrão no sistema?,Sim. Clique na catraquinha do menu superior, acesse Editar Perfil e preencha o campo Chave Pix.
+Pix,O que acontece quando uso a tag [pix] e não existe banco conectado?,O sistema verifica se existe uma chave Pix cadastrada no perfil e utiliza essa chave para gerar a cobrança.
+Pix,A baixa é automática usando a chave Pix cadastrada no perfil?,Não. A baixa automática só ocorre quando existe um banco conectado ao sistema.
+Integração,Qual a melhor opção para automatizar cobranças?,A integração bancária é a opção mais completa pois envia o Pix automaticamente e realiza a baixa automática dos pagamentos.

@@ -8,10 +8,10 @@ services:
         limits:
           cpus: '0.4'
           memory: 384M
+          pids: 50
         reservations:
           cpus: '0.1'
-          memory: 100M
-    pids_limit: 50      
+          memory: 100M      
     expose:
       - "19999"
     cap_add:

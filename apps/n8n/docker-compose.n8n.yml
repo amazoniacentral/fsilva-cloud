@@ -12,8 +12,6 @@ services:
       - TZ=America/Sao_Paulo
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
-      - N8N_RESTRICT_FILE_ACCESS_TO=false
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${COMPOSE_PROJECT_NAME}-postgres-1
       - DB_POSTGRESDB_PORT=5432
@@ -24,8 +22,7 @@ services:
       - N8N_EMAIL_MARCA_DAGUA=false
       - WEBHOOK_URL=https://n8n.francsilva.com.br/
       - N8N_EDITOR_BASE_URL=https://n8n.francsilva.com.br/
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
-    user: "root"
+      - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files
     networks:
       - net_n8n
       - net_db

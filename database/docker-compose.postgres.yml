@@ -54,8 +54,8 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     expose:
       - "80"
-  networks:
-    - net_proxy
-    - net_tunnel    
+    networks:
+      - net_proxy
+      - net_tunnel    
 
 

@@ -26,12 +26,11 @@ x-n8n-base: &n8n-base
     - N8N_HOST=n8n.${DEFAULT_DOMAIN:-francsilva.com.br}
     - WEBHOOK_URL=https://webhook.${DEFAULT_DOMAIN:-francsilva.com.br}/
     - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_DOMAIN:-francsilva.com.br}/
-    - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files,/home/node/treinamento
-    - EXECUTIONS_DATA_PRUNE=true
     - EXECUTIONS_DATA_MAX_AGE=48
-    - EXECUTIONS_DATA_PRUNE_TIMEOUT=3600
     - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
     - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+    - N8N_RESTRICT_FILE_ACCESS_TO="false"
+
 
   networks:
     - net_n8n

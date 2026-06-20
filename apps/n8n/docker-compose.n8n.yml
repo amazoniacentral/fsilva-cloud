@@ -29,7 +29,7 @@ x-n8n-base: &n8n-base
     - EXECUTIONS_DATA_MAX_AGE=48
     - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
     - EXECUTIONS_DATA_SAVE_ON_ERROR=all
-    - N8N_RESTRICT_FILE_ACCESS_TO="false"
+    - N8N_RESTRICT_FILE_ACCESS_TO="/home/node/files/,/home/node/treinamento/"
 
 
   networks:

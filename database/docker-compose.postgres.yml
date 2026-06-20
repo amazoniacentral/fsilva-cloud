@@ -44,3 +44,18 @@ services:
       retries: 10
       start_period: 300s
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: franciscosilva.exexutivo@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Samsung123##
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    expose:
+      - "80"
+  networks:
+    - net_proxy
+    - net_tunnel    
+
+

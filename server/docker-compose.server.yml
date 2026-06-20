@@ -12,6 +12,7 @@ services:
 
 volumes:
   postgres_data:
+  pgadmin_data:
   redis_data:
   traefik_dynamics:
   gvendas_data:

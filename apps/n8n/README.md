@@ -67,6 +67,9 @@ Um workflow no n8n funciona assim:
 HOST=127.0.0.1
 PORT_N8N=5678
 ```
+Para acessar são duas urls
+Editor - https://n8n.seu-dominio.com
+Webrooks - https://webhook.seu-dominio.com
 
 <!-- START_ID:bloco_final -->
 ---

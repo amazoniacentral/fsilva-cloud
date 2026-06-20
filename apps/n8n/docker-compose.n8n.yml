@@ -1,56 +1,73 @@
+
+x-n8n-base: &n8n-base
+  image: docker.n8n.io/n8nio/n8n:latest
+  restart: unless-stopped
+  user: "root"
+
+  environment:
+    - N8N_EMAIL_MODE=smtp
+    - N8N_SMTP_HOST=smtp.gmail.com
+    - N8N_SMTP_PORT=587
+    - N8N_SMTP_USER=franciscosilva.executivo@gmail.com
+    - N8N_SMTP_PASS=izkn qjrs lohz jwze
+    - N8N_SMTP_SENDER=N8N <no-reply@gvendas.app.br>
+    - TZ=America/Sao_Paulo
+    - GENERIC_TIMEZONE=America/Sao_Paulo
+    - N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
+    - DB_TYPE=postgresdb
+    - DB_POSTGRESDB_HOST=${COMPOSE_PROJECT_NAME}-postgres-1
+    - DB_POSTGRESDB_PORT=5432
+    - DB_POSTGRESDB_DATABASE=n8n
+    - DB_POSTGRESDB_USER=n8n
+    - DB_POSTGRESDB_PASSWORD=n8n
+    - DB_POSTGRESDB_SCHEMA=public
+    - N8N_EMAIL_MARCA_DAGUA=false
+    - N8N_PROTOCOL=https
+    - N8N_HOST=n8n.${DEFAULT_DOMAIN:-francsilva.com.br}
+    - WEBHOOK_URL=https://webhook.${DEFAULT_DOMAIN:-francsilva.com.br}/
+    - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_DOMAIN:-francsilva.com.br}/
+    - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files,/home/node/treinamento
+    - EXECUTIONS_DATA_PRUNE=true
+    - EXECUTIONS_DATA_MAX_AGE=48
+    - EXECUTIONS_DATA_PRUNE_TIMEOUT=3600
+    - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
+    - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+
+  networks:
+    - net_n8n
+    - net_db
+    - net_web_only
+
+  expose:
+    - "5678"
+
+  working_dir: /home/node
+
+  volumes:
+    - n8n_data:/home/node/.n8n
+    - pdf_docs_data:/home/node/files
+    - ./treinamento-ia:/home/node/treinamento
+
+  depends_on:
+    init-permissions:
+      condition: service_completed_successfully
+    postgres:
+      condition: service_healthy
+
+  deploy:
+    resources:
+      limits:
+        cpus: "1.5"
+        memory: 1G
+      reservations:
+        cpus: "0.10"
+        memory: 100M
+
+
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n:latest
-    restart: unless-stopped
-    environment:
-      - N8N_EMAIL_MODE=smtp
-      - N8N_SMTP_HOST=smtp.gmail.com
-      - N8N_SMTP_PORT=587
-      - N8N_SMTP_USER=franciscosilva.executivo@gmail.com
-      - N8N_SMTP_PASS='izkn qjrs lohz jwze'
-      - N8N_SMTP_SENDER=N8N <no-reply@gvendas.app.br>
-      - TZ=America/Sao_Paulo
-      - GENERIC_TIMEZONE=America/Sao_Paulo
-      - N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
-      - DB_TYPE=postgresdb
-      - DB_POSTGRESDB_HOST=${COMPOSE_PROJECT_NAME}-postgres-1
-      - DB_POSTGRESDB_PORT=5432
-      - DB_POSTGRESDB_DATABASE=n8n
-      - DB_POSTGRESDB_USER=n8n
-      - DB_POSTGRESDB_PASSWORD=n8n
-      - DB_POSTGRESDB_SCHEMA=public
-      - N8N_EMAIL_MARCA_DAGUA=false
-      - WEBHOOK_URL=https://webhook.francsilva.com.br/
-      - N8N_EDITOR_BASE_URL=https://n8n.francsilva.com.br/
-      - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/files,/home/node/treinamento
-      - EXECUTIONS_DATA_PRUNE= "true"
-      - EXECUTIONS_DATA_MAX_AGE= "48" # Mantém apenas 48 horas de histórico
-      - EXECUTIONS_DATA_PRUNE_TIMEOUT= "3600"
-      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none  # Não grava no disco os testes que deram certo
-      - EXECUTIONS_DATA_SAVE_ON_ERROR=all     # Só
+    <<: *n8n-base
 
-    networks:
-      - net_n8n
-      - net_db
-      - net_web_only
-      
-    deploy:
-      resources:
-        limits:
-          cpus: '1.5'
-          memory: 1G
-        reservations:
-          cpus: '0.10'
-          memory: 100M
-    expose:
-      - "5678"
-    working_dir: /home/node
-    volumes:
-      - n8n_data:/home/node/.n8n
-      - pdf_docs_data:/home/node/files
-      - ./treinamento-ia:/home/node/treinamento
-    depends_on:
-      init-permissions:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
+  n8n-worker:
+    <<: *n8n-base
+    command: worker

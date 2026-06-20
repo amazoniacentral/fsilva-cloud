@@ -5,7 +5,7 @@ set -e
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Localização do arquivo .env principal do banco para pegar o admin_principal
-MAIN_DB_ENV="$SCRIPT_DIR/../database/.env"
+MAIN_DB_ENV="$SCRIPT_DIR/../../database/.env"
 
 # Verifica se o arquivo .env principal existe e extrai o POSTGRES_USER
 if [ -f "$MAIN_DB_ENV" ]; then
@@ -67,75 +67,21 @@ echo "Container selecionado: $CONTAINER_NAME"
 echo "----------------------------------------------------------------"
 
 echo "================================================================"
-echo "           CONFIGURAÇÃO DE BANCO DE DADOS POSTGRES              "
+echo "           ATIVAÇÃO DO EXTENSION PGVECTOR                       "
 echo "           (Usando Admin: $ADMIN_USER)                          "
 echo "================================================================"
 
-# 1. Nome do Banco (Obrigatório)
-get_input "Nome do NOVO banco de dados: " DB_NAME
+# Solicita o nome do banco de dados onde deseja ativar o vetor
+get_input "Nome do banco de dados existente para ativar o pgvector: " DB_NAME
 
 echo "----------------------------------------------------------------"
-echo "Criando o banco de dados '$DB_NAME'..."
-docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "CREATE DATABASE $DB_NAME;"
+echo "Verificando e ativando a extensão 'vector' no banco '$DB_NAME'..."
 
-# 2. Decisão de Usuário
-while true; do
-    echo -n "Deseja (c)riar um novo usuário ou usar um (e)xistente? (c/e): "
-    read -r USER_CHOICE < /dev/tty
-    
-    case $USER_CHOICE in
-        [Cc]* ) 
-            get_input "Nome do NOVO usuário: " DB_USER
-            get_input "Senha para o novo usuário: " DB_PASS
-            
-            echo "Criando usuário '$DB_USER'..."
-            docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
-            break
-            ;;
-        [Ee]* ) 
-            get_input "Nome do usuário EXISTENTE: " DB_USER
-            echo "A senha não será alterada, mas informe-a para salvar no arquivo e gerar a URL."
-            get_input "Senha do usuário '$DB_USER': " DB_PASS
-            break
-            ;;
-        * ) 
-            echo "Resposta inválida. Digite 'c' para criar ou 'e' para existente."
-            ;;
-    esac
-done
-
-# 3. Associação de Permissões
-echo "Atribuindo privilégios do banco '$DB_NAME' ao usuário '$DB_USER'..."
-docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-# Garante permissões em schemas
-docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;"
-
-
-# 4. Salvar Arquivo com DATABASE_URL
-mkdir -p "$SCRIPT_DIR/.db_conn"
-ENV_PATH="$SCRIPT_DIR/.db_conn/.env.$DB_NAME"
-DB_HOST="$CONTAINER_NAME"
-DB_PORT="5432"
+# Executa o comando de criação da extensão usando os privilégios do usuário administrador logado diretamente no banco alvo
+docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d "$DB_NAME" -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 echo "----------------------------------------------------------------"
-echo "Criando arquivo de ambiente: $ENV_PATH"
-
-cat <<EOF > "$ENV_PATH"
-POSTGRES_DB=$DB_NAME
-POSTGRES_USER=$DB_USER
-POSTGRES_PASSWORD=$DB_PASS
-DB_HOST=$DB_HOST
-DB_PORT=$DB_PORT
-
-# URL de conexão formatada
-DATABASE_URL=postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_NAME
-EOF
-
-chmod 600 "$ENV_PATH"
-
 echo "================================================================"
 echo "  PROCESSO CONCLUÍDO COM SUCESSO!"
-cat "$ENV_PATH"
-echo ""
-echo "  Configurações salvas em: $ENV_PATH"
+echo "  A extensão 'vector' foi habilitada com sucesso no banco '$DB_NAME'."
 echo "================================================================"

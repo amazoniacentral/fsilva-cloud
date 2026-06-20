@@ -1,7 +1,9 @@
 services:
   postgres:
     # image: postgres:15-alpine
-    image: pgvector/pgvector:15-pgvector
+    build:
+      context: .
+      dockerfile: Dockerfile
 
     # container_name: postgres
     restart: always

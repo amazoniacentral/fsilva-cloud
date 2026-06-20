@@ -50,16 +50,27 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
+    hostname: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: "franciscosilva.executivo@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "Samsung123##"
+      PGADMIN_DEFAULT_EMAIL: 'franciscosilva.executivo@gmail.com'
+      PGADMIN_DEFAULT_PASSWORD: 'Samsung123##'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     expose:
       - "80"
     networks:
+      - net_db   
       - net_proxy
-      - net_tunnel    
-
-
+      - net_tunnel   
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    depends_on:
+      postgres:
+        condition: service_healthy

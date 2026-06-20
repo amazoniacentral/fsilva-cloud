@@ -67,14 +67,41 @@ echo "Container selecionado: $CONTAINER_NAME"
 echo "----------------------------------------------------------------"
 
 echo "================================================================"
+echo "           SELEÇÃO DE BANCO DE DADOS                            "
+echo "================================================================"
+
+# Executa comando interno para extrair as bases reais, pulando as padrões do sistema Postgres
+mapfile -t DATABASES < <(docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -t -A -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres', 'rdsadmin');")
+
+if [ ${#DATABASES[@]} -eq 0 ]; then
+    echo "ERRO: Nenhum banco de dados personalizado encontrado nesse container."
+    exit 1
+fi
+
+echo "Selecione o banco de dados para ativar o pgvector:"
+for i in "${!DATABASES[@]}"; do
+    echo "  $((i+1))) ${DATABASES[$i]}"
+done
+
+while true; do
+    echo -n "Digite o número correspondente: "
+    read -r DB_CHOICE < /dev/tty
+    if [[ "$DB_CHOICE" =~ ^[0-9]+$ ]] && [ "$DB_CHOICE" -ge 1 ] && [ "$DB_CHOICE" -le "${#DATABASES[@]}" ]; then
+        DB_NAME="${DATABASES[$((DB_CHOICE-1))]}"
+        break
+    else
+        echo "Opção inválida."
+    fi
+done
+
+echo "Banco de dados selecionado: $DB_NAME"
+echo "----------------------------------------------------------------"
+
+echo "================================================================"
 echo "           ATIVAÇÃO DO EXTENSION PGVECTOR                       "
 echo "           (Usando Admin: $ADMIN_USER)                          "
 echo "================================================================"
 
-# Solicita o nome do banco de dados onde deseja ativar o vetor
-get_input "Nome do banco de dados existente para ativar o pgvector: " DB_NAME
-
-echo "----------------------------------------------------------------"
 echo "Verificando e ativando a extensão 'vector' no banco '$DB_NAME'..."
 
 # Executa o comando de criação da extensão usando os privilégios do usuário administrador logado diretamente no banco alvo

@@ -17,12 +17,11 @@ echo "SINCRONIZAÇÃO DE TODOS OS PROJETOS"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-# Busca todos os nomes de projetos declarados nos arquivos yml/yaml
+# Lê apenas os YAMLs da raiz do BASE_DIR
 PROJECTS=$(
-find "$BASE_DIR" -type f \( \
-    -name "*.yml" -o \
-    -name "*.yaml" \
-\) -exec grep -hE '^[[:space:]]*name:' {} \; |
+grep -hE '^[[:space:]]*name:' \
+    "$BASE_DIR"/*.yml \
+    "$BASE_DIR"/*.yaml 2>/dev/null |
 sed -E 's/^[[:space:]]*name:[[:space:]]*//' |
 sort -u
 )
@@ -37,7 +36,7 @@ echo "$PROJECTS"
 
 for PROJECT_NAME in $PROJECTS; do
 
-    echo ""
+    echo
     echo "==========================================="
     echo "PROJETO: $PROJECT_NAME"
     echo "==========================================="
@@ -45,7 +44,6 @@ for PROJECT_NAME in $PROJECTS; do
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
     TREINAMENTO_VOLUME="${PROJECT_NAME}_treinamento-ia"
 
-    # Evita criar volumes como root caso ainda não existam
     if ! docker volume inspect "$CATALOGO_VOLUME" >/dev/null 2>&1; then
         echo "Volume não encontrado: $CATALOGO_VOLUME"
         continue
@@ -94,5 +92,5 @@ for PROJECT_NAME in $PROJECTS; do
 
 done
 
-echo ""
+echo
 echo "--- Finalizado: $(date '+%Y-%m-%d %H:%M:%S') ---"

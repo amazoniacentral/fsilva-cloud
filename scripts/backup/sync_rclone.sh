@@ -2,14 +2,11 @@
 
 set -e
 
-# Diretório do script
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 
-# Onde está o rclone.conf
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
 
-# Garante a pasta de logs
 mkdir -p "$BASE_DIR/logs"
 
 echo "-------------------------------------------"
@@ -17,7 +14,6 @@ echo "SINCRONIZAÇÃO DE TODOS OS PROJETOS"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-# Lê apenas os YAMLs da raiz do BASE_DIR
 PROJECTS=$(
 grep -hE '^[[:space:]]*name:' \
     "$BASE_DIR"/*.yml \
@@ -42,7 +38,7 @@ for PROJECT_NAME in $PROJECTS; do
     echo "==========================================="
 
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
-    TREINAMENTO_VOLUME="${PROJECT_NAME}_treinamento-ia"
+    TREINAMENTO_VOLUME="${PROJECT_NAME}_treinamento_ia"
 
     if ! docker volume inspect "$CATALOGO_VOLUME" >/dev/null 2>&1; then
         echo "Volume não encontrado: $CATALOGO_VOLUME"

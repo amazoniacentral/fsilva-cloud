@@ -41,21 +41,24 @@ for PROJECT_NAME in $PROJECTS; do
 
     SRC="gvendas:fsilva-cloud/${PROJECT_NAME}"
 
-    # 1) catálogo
+    # CATÁLOGO
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}_catalogos" \
         -v "${CATALOGO_VOLUME}:/data/catalogos" \
         -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
         rclone/rclone \
-        rclone --config /config/rclone/rclone.conf sync \
-        "$SRC/catalogos/bruto" \
-        /data/catalogos \
-        --use-server-modtime --delete-during \
-        --buffer-size 32M --transfers 4 \
-        --checkers 8 --contimeout 60s \
-        --low-level-retries 10 -v
+        sync "$SRC/catalogos/bruto" /data/catalogos \
+        --config /config/rclone/rclone.conf \
+        --use-server-modtime \
+        --delete-during \
+        --buffer-size 32M \
+        --transfers 4 \
+        --checkers 8 \
+        --contimeout 60s \
+        --low-level-retries 10 \
+        -v
 
-    # 2) treinamento (se existir)
+    # TREINAMENTO (se existir)
     if docker volume inspect "$TREINAMENTO_VOLUME" >/dev/null 2>&1; then
 
         docker run --rm \
@@ -63,13 +66,16 @@ for PROJECT_NAME in $PROJECTS; do
             -v "${TREINAMENTO_VOLUME}:/data/treinamento-ia" \
             -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
             rclone/rclone \
-            rclone --config /config/rclone/rclone.conf sync \
-            "$SRC/treinamento-ia" \
-            /data/treinamento-ia \
-            --use-server-modtime --delete-during \
-            --buffer-size 32M --transfers 4 \
-            --checkers 8 --contimeout 60s \
-            --low-level-retries 10 -v
+            sync "$SRC/treinamento-ia" /data/treinamento-ia \
+            --config /config/rclone/rclone.conf \
+            --use-server-modtime \
+            --delete-during \
+            --buffer-size 32M \
+            --transfers 4 \
+            --checkers 8 \
+            --contimeout 60s \
+            --low-level-retries 10 \
+            -v
     else
         echo "Volume treinamento não encontrado (ignorando)"
     fi

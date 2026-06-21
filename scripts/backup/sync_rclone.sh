@@ -14,18 +14,12 @@ echo "SINCRONIZAÇÃO DE TODOS OS PROJETOS"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-# Pega projetos apenas dos volumes existentes (fonte confiável)
 PROJECTS=$(
 docker volume ls --format '{{.Name}}' |
 grep '_catalogos_pdf_data$' |
 sed 's/_catalogos_pdf_data$//' |
 sort -u
 )
-
-if [ -z "$PROJECTS" ]; then
-    echo "Nenhum projeto encontrado."
-    exit 1
-fi
 
 echo "Projetos encontrados:"
 echo "$PROJECTS"
@@ -40,28 +34,34 @@ for PROJECT_NAME in $PROJECTS; do
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
     TREINAMENTO_VOLUME="${PROJECT_NAME}_treinamento_ia"
 
-    # catálogo obrigatório
     if ! docker volume inspect "$CATALOGO_VOLUME" >/dev/null 2>&1; then
         echo "Volume catálogo não encontrado: $CATALOGO_VOLUME"
         continue
     fi
 
-    # treinamento opcional (não trava o script)
     if ! docker volume inspect "$TREINAMENTO_VOLUME" >/dev/null 2>&1; then
-        echo "Volume treinamento não encontrado (ignorando): $TREINAMENTO_VOLUME"
+        echo "Volume treinamento não encontrado (ignorando)"
         TREINAMENTO_VOLUME=""
     fi
 
     SRC="gvendas:fsilva-cloud/${PROJECT_NAME}"
 
-    CMD="rclone --config /config/rclone/rclone.conf sync '$SRC/catalogos/bruto' /data/catalogos \
-        --use-server-modtime --delete-during --buffer-size 32M \
-        --transfers 4 --checkers 8 --contimeout 60s --low-level-retries 10 -v"
+    COMMAND="
+        rclone --config /config/rclone/rclone.conf sync \
+        '$SRC/catalogos/bruto' /data/catalogos \
+        --use-server-modtime --delete-during \
+        --buffer-size 32M --transfers 4 \
+        --checkers 8 --contimeout 60s \
+        --low-level-retries 10 -v
+    "
 
     if [ -n "$TREINAMENTO_VOLUME" ]; then
-        CMD="$CMD && rclone --config /config/rclone/rclone.conf sync '$SRC/treinamento-ia' /data/treinamento-ia \
-        --use-server-modtime --delete-during --buffer-size 32M \
-        --transfers 4 --checkers 8 --contimeout 60s --low-level-retries 10 -v"
+        COMMAND="$COMMAND && rclone --config /config/rclone/rclone.conf sync \
+        '$SRC/treinamento-ia' /data/treinamento-ia \
+        --use-server-modtime --delete-during \
+        --buffer-size 32M --transfers 4 \
+        --checkers 8 --contimeout 60s \
+        --low-level-retries 10 -v"
     fi
 
     docker run --rm \
@@ -69,8 +69,9 @@ for PROJECT_NAME in $PROJECTS; do
         -v "${CATALOGO_VOLUME}:/data/catalogos" \
         ${TREINAMENTO_VOLUME:+-v "${TREINAMENTO_VOLUME}:/data/treinamento-ia"} \
         -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
+        --entrypoint sh \
         rclone/rclone \
-        sh -c "$CMD"
+        -c "$COMMAND"
 
     echo "✓ Sync concluído para $PROJECT_NAME"
 

@@ -31,6 +31,7 @@ volumes:
   backups:
   n8n_data:
   pdf_docs_data:
+  treinamento-ia:
     
 networks:
   net_web_only:

@@ -45,7 +45,7 @@ x-n8n-base: &n8n-base
   volumes:
     - n8n_data:/home/node/.n8n
     - pdf_docs_data:/home/node/files/documentos
-    - ./treinamento-ia:/home/node/files/treinamento
+    - treinamento-ia:/home/node/files/treinamento
 
   depends_on:
     init-permissions:

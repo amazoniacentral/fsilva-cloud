@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
@@ -14,7 +14,6 @@ echo "SINCRONIZAÇÃO DE TODOS OS PROJETOS"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-# Descobre os projetos pelos volumes existentes
 PROJECTS=$(
 docker volume ls --format '{{.Name}}' |
 grep '_catalogos_pdf_data$' |
@@ -39,19 +38,23 @@ for PROJECT_NAME in $PROJECTS; do
 
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
 
-    # Procura automaticamente um volume de treinamento do projeto
     TREINAMENTO_VOLUME=$(
         docker volume ls --format '{{.Name}}' |
         grep "^${PROJECT_NAME}_" |
-        grep 'treinamento'
+        grep 'treinamento' || true
     )
 
+    echo "CATALOGO_VOLUME=$CATALOGO_VOLUME"
+    echo "TREINAMENTO_VOLUME=$TREINAMENTO_VOLUME"
+
     if [ -z "$TREINAMENTO_VOLUME" ]; then
-        echo "Volume de treinamento não encontrado para $PROJECT_NAME"
+        echo "Volume de treinamento não encontrado."
         continue
     fi
 
     SRC="gvendas:fsilva-cloud/${PROJECT_NAME}"
+
+    echo "SRC=$SRC"
 
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}" \

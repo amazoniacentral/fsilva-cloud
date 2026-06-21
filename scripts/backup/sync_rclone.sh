@@ -14,11 +14,11 @@ echo "SINCRONIZAÇÃO DE TODOS OS PROJETOS"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
+# Descobre os projetos pelos volumes existentes
 PROJECTS=$(
-grep -hE '^[[:space:]]*name:' \
-    "$BASE_DIR"/*.yml \
-    "$BASE_DIR"/*.yaml 2>/dev/null |
-sed -E 's/^[[:space:]]*name:[[:space:]]*//' |
+docker volume ls --format '{{.Name}}' |
+grep '_catalogos_pdf_data$' |
+sed 's/_catalogos_pdf_data$//' |
 sort -u
 )
 
@@ -38,15 +38,16 @@ for PROJECT_NAME in $PROJECTS; do
     echo "==========================================="
 
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
-    TREINAMENTO_VOLUME="${PROJECT_NAME}_treinamento_ia"
 
-    if ! docker volume inspect "$CATALOGO_VOLUME" >/dev/null 2>&1; then
-        echo "Volume não encontrado: $CATALOGO_VOLUME"
-        continue
-    fi
+    # Procura automaticamente um volume de treinamento do projeto
+    TREINAMENTO_VOLUME=$(
+        docker volume ls --format '{{.Name}}' |
+        grep "^${PROJECT_NAME}_" |
+        grep 'treinamento'
+    )
 
-    if ! docker volume inspect "$TREINAMENTO_VOLUME" >/dev/null 2>&1; then
-        echo "Volume não encontrado: $TREINAMENTO_VOLUME"
+    if [ -z "$TREINAMENTO_VOLUME" ]; then
+        echo "Volume de treinamento não encontrado para $PROJECT_NAME"
         continue
     fi
 

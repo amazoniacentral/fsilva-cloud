@@ -39,39 +39,40 @@ for PROJECT_NAME in $PROJECTS; do
         continue
     fi
 
-    if ! docker volume inspect "$TREINAMENTO_VOLUME" >/dev/null 2>&1; then
-        echo "Volume treinamento não encontrado (ignorando)"
-        TREINAMENTO_VOLUME=""
-    fi
-
     SRC="gvendas:fsilva-cloud/${PROJECT_NAME}"
 
-    COMMAND="
+    # 1) catálogo
+    docker run --rm \
+        --name "rclone_sync_${PROJECT_NAME}_catalogos" \
+        -v "${CATALOGO_VOLUME}:/data/catalogos" \
+        -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
+        rclone/rclone \
         rclone --config /config/rclone/rclone.conf sync \
-        '$SRC/catalogos/bruto' /data/catalogos \
+        "$SRC/catalogos/bruto" \
+        /data/catalogos \
         --use-server-modtime --delete-during \
         --buffer-size 32M --transfers 4 \
         --checkers 8 --contimeout 60s \
         --low-level-retries 10 -v
-    "
 
-    if [ -n "$TREINAMENTO_VOLUME" ]; then
-        COMMAND="$COMMAND && rclone --config /config/rclone/rclone.conf sync \
-        '$SRC/treinamento-ia' /data/treinamento-ia \
-        --use-server-modtime --delete-during \
-        --buffer-size 32M --transfers 4 \
-        --checkers 8 --contimeout 60s \
-        --low-level-retries 10 -v"
+    # 2) treinamento (se existir)
+    if docker volume inspect "$TREINAMENTO_VOLUME" >/dev/null 2>&1; then
+
+        docker run --rm \
+            --name "rclone_sync_${PROJECT_NAME}_treinamento" \
+            -v "${TREINAMENTO_VOLUME}:/data/treinamento-ia" \
+            -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
+            rclone/rclone \
+            rclone --config /config/rclone/rclone.conf sync \
+            "$SRC/treinamento-ia" \
+            /data/treinamento-ia \
+            --use-server-modtime --delete-during \
+            --buffer-size 32M --transfers 4 \
+            --checkers 8 --contimeout 60s \
+            --low-level-retries 10 -v
+    else
+        echo "Volume treinamento não encontrado (ignorando)"
     fi
-
-    docker run --rm \
-        --name "rclone_sync_${PROJECT_NAME}" \
-        -v "${CATALOGO_VOLUME}:/data/catalogos" \
-        ${TREINAMENTO_VOLUME:+-v "${TREINAMENTO_VOLUME}:/data/treinamento-ia"} \
-        -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
-        --entrypoint sh \
-        rclone/rclone \
-        -c "$COMMAND"
 
     echo "✓ Sync concluído para $PROJECT_NAME"
 

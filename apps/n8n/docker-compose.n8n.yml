@@ -70,3 +70,10 @@ services:
   n8n-worker:
     <<: *n8n-base
     command: worker
+    networks:
+      - net_db  
+    environment:
+      - EXECUTIONS_MODE=queue
+    
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379

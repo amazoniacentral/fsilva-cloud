@@ -32,7 +32,8 @@ x-n8n-base: &n8n-base
     - N8N_RESTRICT_FILE_ACCESS_TO="/home/node/files/"
     - EXECUTIONS_MODE=queue    
     - QUEUE_BULL_REDIS_HOST=redis
-    - QUEUE_BULL_REDIS_PORT=6379    
+    - QUEUE_BULL_REDIS_PORT=6379   
+    - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
 
 
   networks:
@@ -73,3 +74,8 @@ services:
   n8n-worker:
     <<: *n8n-base
     command: worker
+    resources:
+      limits:
+        cpus: "1.0"
+        memory: 768M
+    

@@ -1,128 +1,122 @@
-#!/bin/bash
-# Cores para o terminal
+#!/bin/sh
+
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
-RED='\033[0;31m'
 GREEN='\033[0;32m'
 RESET='\033[0m'
 
-# Define o arquivo de destino
 TARGET_FILE="$HOME/.bashrc"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
+clear
+
+echo "${CYAN}--------------------------------------------------------${RESET}"
+echo "${YELLOW} ATUALIZANDO ALIASES E FUNÇÕES DE SHELL${RESET}"
+echo "${CYAN}--------------------------------------------------------${RESET}"
+
 # ==========================================================
-# 1. FUNÇÕES COMPLEXAS (Strings literais)
+# LIMPA FUNÇÕES ANTIGAS
 # ==========================================================
-GTAG_FUNCTION="gtag() {
-    local VERSION=\$1
-    local DESC=\$2
-    if [ -z \"\$DESC\" ]; then
-        DESC=\$1
-        LAST_TAG=\$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//')
-        if [ -z \"\$LAST_TAG\" ]; then VERSION=\"1.0.0\"; else
-            local IFS=.
-            read -r major minor patch <<< \"\$LAST_TAG\"
-            patch=\$((patch + 1))
-            VERSION=\"\$major.\$minor.\$patch\"
+sed -i '/^gtag()/,/^}/d' "$TARGET_FILE"
+sed -i '/^gcommit()/,/^}/d' "$TARGET_FILE"
+sed -i '/^dexec()/,/^}/d' "$TARGET_FILE"
+
+# ==========================================================
+# GTAG (VERSÃO COMPATÍVEL)
+# ==========================================================
+cat <<'EOF' >> "$TARGET_FILE"
+gtag() {
+    VERSION=$1
+    DESC=$2
+
+    if [ -z "$DESC" ]; then
+        DESC="$1"
+
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//')
+
+        if [ -z "$LAST_TAG" ]; then
+            VERSION="1.0.0"
+        else
+            major=$(echo "$LAST_TAG" | cut -d. -f1)
+            minor=$(echo "$LAST_TAG" | cut -d. -f2)
+            patch=$(echo "$LAST_TAG" | cut -d. -f3)
+
+            patch=$((patch + 1))
+            VERSION="$major.$minor.$patch"
         fi
-        echo \"Auto-incrementando para versão: v\$VERSION\"
+
+        echo "Auto-incrementando versão: v$VERSION"
     fi
-    if [ -z \"\$DESC\" ]; then
-        echo \"ERRO: Descrição obrigatória.\"
+
+    if [ -z "$DESC" ]; then
+        echo "ERRO: Descrição obrigatória"
         return 1
     fi
-    git tag -a \"v\$VERSION\" -m \"\$DESC\"
-    git push origin \"v\$VERSION\"
-    if command -v gh &> /dev/null; then
-        gh release create \"v\$VERSION\" --title \"Versão \$VERSION\" --notes \"\$DESC\"
-        echo \"🚀 Release v\$VERSION publicada no GitHub!\"
+
+    git tag -a "v$VERSION" -m "$DESC"
+    git push origin "v$VERSION"
+
+    if command -v gh >/dev/null 2>&1; then
+        gh release create "v$VERSION" --title "Versão $VERSION" --notes "$DESC"
+        echo "Release publicada"
     else
-        echo \"⚠️ Tag enviada, mas instale o 'gh' para criar Releases automáticas.\"
+        echo "gh não instalado"
     fi
-}"
-
-GCOMMIT_FUNCTION="gcommit() {
-  git pull origin
-  git submodule update --remote --recursive
-  if [ -f \"package.json\" ]; then
-    npm version patch --no-git-tag-version
-  fi
-  git add .
-  git commit -m \"\${1:-Salvando Alterações}\"
-  git push
-}"
-
-DEXEC_FUNCTION="dexec() {
-  if [ -z \"\$1\" ]; then
-    echo \"ERRO: O nome do container é obrigatório.\"
-    echo \"Uso: dexec <nome-do-container>\"
-    return 1
-  fi
-  docker exec -it \"\$1\" sh
-}"
+}
+EOF
 
 # ==========================================================
-# 2. LISTA DE ALIASES
+# GCOMMIT
 # ==========================================================
-declare -a ALIASES=(
-    "ll='ls -lah'"
-    "cls='clear'"
-    "volumes='cd /var/lib/docker/volumes'"
-    "status='bash $SCRIPT_DIR/status.sh'"
-    "start='bash $SCRIPT_DIR/deploy/setup.sh'"
-    "atalhos='bash $SCRIPT_DIR/alias.sh'"
-    "refresh='source $HOME/.bashrc'"
-)
+cat <<'EOF' >> "$TARGET_FILE"
+gcommit() {
+    git pull origin
+    git submodule update --remote --recursive
 
-clear
-echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "${YELLOW}          INICIANDO ATUALIZAÇÃO DE ALIASES/FUNÇÕES${RESET}"
-echo -e "${YELLOW}          $TARGET_FILE...${RESET}"
-echo -e "${CYAN}--------------------------------------------------------${RESET}"
-
-# --- LIMPEZA DE FUNÇÕES ANTIGAS ---
-# Remove blocos antigos (do nome da função até a chave de fechamento no início da linha)
-sed -i '/gtag()/,/^}/d' "$TARGET_FILE"
-sed -i '/gcommit()/,/^}/d' "$TARGET_FILE"
-sed -i '/dexec()/,/^}/d' "$TARGET_FILE"
-
-# Insere as novas funções no final do arquivo
-echo "$GTAG_FUNCTION" >> "$TARGET_FILE"
-echo "FUNÇÃO ATUALIZADA: gtag"
-
-echo "$GCOMMIT_FUNCTION" >> "$TARGET_FILE"
-echo "FUNÇÃO ATUALIZADA: gcommit"
-
-echo "$DEXEC_FUNCTION" >> "$TARGET_FILE"
-echo "FUNÇÃO ATUALIZADA: dexec"
-
-# --- PROCESSANDO ALIASES (SUBSTITUIÇÃO TOTAL PELO NOME) ---
-for NOVO_ALIAS in "${ALIASES[@]}"; do
-    # Extrai o nome do alias (ex: ll)
-    NOME_ALIAS=$(echo "$NOVO_ALIAS" | cut -d'=' -f1)
-    LINHA_COMPLETA="alias $NOVO_ALIAS"
-    
-    # Se o nome do alias existir no arquivo (independente do valor), deleta a linha inteira
-    if grep -q "^alias $NOME_ALIAS=" "$TARGET_FILE"; then
-        sed -i "/^alias $NOME_ALIAS=/d" "$TARGET_FILE"
-    else
-        echo -e "${GREEN}ADICIONADO:${RESET} $NOME_ALIAS"
+    if [ -f "package.json" ]; then
+        npm version patch --no-git-tag-version
     fi
-    
-    # Adiciona a nova definição ao final
-    echo "$LINHA_COMPLETA" >> "$TARGET_FILE"
-done
 
-# Aplica as mudanças
-echo -e "${CYAN}--------------------------------------------------------${RESET}"
-echo -e "${GREEN}SUCESSO: Configurações atualizadas!${RESET}"
+    git add .
+    git commit -m "${1:-Salvando Alterações}"
+    git push
+}
+EOF
 
-echo -e "\n${CYAN}--------------------------------------------------------${RESET}"
-echo -e "${YELLOW}             CONFIGURAÇÕES ATUAIS (RESUMO):${RESET}"
-echo -e "${CYAN}--------------------------------------------------------${RESET}"
-grep "^alias " "$TARGET_FILE" | tail -n 5
-grep -q "gtag()" "$TARGET_FILE" && echo "Função gtag: Versionamento de código no git"
-grep -q "gcommit()" "$TARGET_FILE" && echo "Função gcommit: Enviar Commit pronto"
-grep -q "dexec()" "$TARGET_FILE" && echo "Função dexec: Entrar no container"
+# ==========================================================
+# DEXEC
+# ==========================================================
+cat <<'EOF' >> "$TARGET_FILE"
+dexec() {
+    if [ -z "$1" ]; then
+        echo "Uso: dexec <container>"
+        return 1
+    fi
 
-echo -e "\n${CYAN}-------------------- by Francisco Silva ----------------${RESET}\n"
+    docker exec -it "$1" sh
+}
+EOF
+
+# ==========================================================
+# ALIASES (compatível)
+# ==========================================================
+ALIASES="
+alias ll='ls -lah'
+alias cls='clear'
+alias volumes='cd /var/lib/docker/volumes'
+alias status='bash $SCRIPT_DIR/status.sh'
+alias start='bash $SCRIPT_DIR/deploy/setup.sh'
+alias atalhos='bash $SCRIPT_DIR/alias.sh'
+alias refresh='source $HOME/.bashrc'
+"
+
+echo "$ALIASES" >> "$TARGET_FILE"
+
+echo "${GREEN}SUCESSO: Configurações aplicadas com segurança!${RESET}"
+
+echo ""
+echo "Resumo:"
+grep '^alias ' "$TARGET_FILE" | tail -n 5
+echo "gtag: OK"
+echo "gcommit: OK"
+echo "dexec: OK"

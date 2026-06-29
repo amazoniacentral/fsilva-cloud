@@ -35,9 +35,9 @@ echo "6. Use auto config? ESCOLHA 'y' (Sim!)"
 echo "--------------------------------------------------------"
 read -p "Pressione [Enter] para começar a configuração..."
 
-# Abre a porta 53682 que o Rclone usa para receber o token do Google
+# Vincula a porta 53682 corretamente para permitir o redirecionamento via SSH
 docker run --rm -it \
-  -p 127.0.0.1:53682:53682 \
+  -p 0.0.0.0:53682:53682 \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \
   rclone/rclone config
 

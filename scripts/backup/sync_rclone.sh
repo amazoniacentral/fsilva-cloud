@@ -39,7 +39,7 @@ for PROJECT_NAME in $PROJECTS; do
         continue
     fi
 
-    SRC="gvendas:fsilva-cloud/${PROJECT_NAME}"
+    SRC="gdrive:fsilva-cloud/${PROJECT_NAME}"
 
     # CATÁLOGO
     docker run --rm \

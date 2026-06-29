@@ -9,7 +9,7 @@ PROJECT_NAME="fsilva-cloud-dev"
 
 # Onde o seu rclone.conf REALMENTE está
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
-DEST="gvendas:${PROJECT_NAME}"
+DEST="gdrive:${PROJECT_NAME}"
 
 # Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"

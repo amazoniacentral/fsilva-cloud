@@ -38,7 +38,7 @@ read -p "Pressione [Enter] para começar a configuração..."
 
 # Mantém a porta 5572 aberta apenas internamente (localhost) durante a execução
 docker run --rm -it \
-  -p 127.0.0.1:5572:5572 \
+  -p 127.0.0.1:53682:53682 \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \
   rclone/rclone config
 

@@ -31,12 +31,11 @@ echo "2. Nomeie como 'gdrive'"
 echo "3. Escolha o número do 'Google Drive'"
 echo "4. Deixe Client ID e Secret em BRANCO"
 echo "5. Scope escolha '1' (Full Access)"
-echo "6. Use auto config? Escolha 'n' (Pois você está na VPS)"
-echo "7. Copie o link gerado, autorize no seu PC e cole o código aqui."
+echo "6. Use auto config? ESCOLHA 'y' (Sim!)"
 echo "--------------------------------------------------------"
 read -p "Pressione [Enter] para começar a configuração..."
 
-# Mantém a porta 5572 aberta apenas internamente (localhost) durante a execução
+# Abre a porta 53682 que o Rclone usa para receber o token do Google
 docker run --rm -it \
   -p 127.0.0.1:53682:53682 \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \

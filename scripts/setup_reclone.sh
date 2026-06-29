@@ -31,15 +31,14 @@ echo "2. Nomeie como 'gdrive'"
 echo "3. Escolha o número do 'Google Drive'"
 echo "4. Deixe Client ID e Secret em BRANCO"
 echo "5. Scope escolha '1' (Full Access)"
-echo "6. Use auto config? ESCOLHA 'y' (Sim!)"
+echo "6. Service Account File deixe em BRANCO"
+echo "7. Edit advanced config? Escolha 'n' (Não)"
+echo "8. Use web browser to automatically authenticate? ESCOLHA 'n'"
 echo "--------------------------------------------------------"
 read -p "Pressione [Enter] para começar a configuração..."
 
-# Vincula a porta 53682 corretamente para permitir o redirecionamento via SSH
+# Roda o Rclone injetando a variável que força a exibição do link longo do Google
 docker run --rm -it \
-  -p 0.0.0.0:53682:53682 \
+  -e RCLONE_CONFIG_BASE64=1 \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \
   rclone/rclone config
-
-echo "--- Instalação Concluída ---"
-echo "Teste a conexão com: docker run --rm -v $RCLONE_CONFIG_DIR:/config/rclone rclone/rclone lsd gdrive:"

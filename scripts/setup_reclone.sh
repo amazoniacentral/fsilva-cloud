@@ -7,26 +7,23 @@ RCLONE_CONFIG_DIR="$BASE_DIR/config/rclone"
 mkdir -p "$RCLONE_CONFIG_DIR"
 clear
 echo "--------------------------------------------------------"
-echo "        AUTENTICAÇÃO FORÇADA POR CÓDIGO (DEVICE)        "
+echo "        AUTENTICAÇÃO POR CÓDIGO DE DISPOSITIVO (TV)     "
 echo "--------------------------------------------------------"
 
-# Baixa a imagem do Rclone
+echo "Baixando imagem Docker do Rclone..."
 docker pull rclone/rclone:latest
 
+echo ""
 echo "--------------------------------------------------------"
-echo "INSTRUÇÕES IMPORTANTES:"
-echo "1. Digite 'n' para New Remote e nomeie como 'gdrive'"
-echo "2. Escolha o número do 'Google Drive'"
-echo "3. Client ID e Secret: Deixe em BRANCO (Dê Enter)! O script já vai injetar."
-echo "4. Scope: Escolha '1' (Full Access)"
-echo "5. Na pergunta 'Use web browser...', DIGITE 'n' (Não)"
+echo "O Rclone vai tentar iniciar o fluxo agora."
+echo "Fique atento ao terminal para ver o código de 8 dígitos!"
 echo "--------------------------------------------------------"
 read -p "Pressione [Enter] para iniciar..."
 
-# Executa o Rclone injetando as credenciais públicas oficiais do Rclone para forçar o código na tela
+# Cria o remote diretamente usando o fluxo de dispositivo (Device Auth)
 docker run --rm -it \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \
-  rclone/rclone config \
-  --drive-client-id="232357567553-763hhv6878be7662o8vs56525g06eb90.apps.googleusercontent.com" \
-  --drive-client-secret="LQiT6Y6YEvE7Y6_9z7f_9z7f" \
-  --auth-no-open-browser
+  rclone/rclone config create gdrive drive \
+  config_is_local=false \
+  service_account_file="" \
+  scope="drive"

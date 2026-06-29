@@ -23,22 +23,23 @@ clear
 echo "Baixando imagem Docker do Rclone..."
 docker pull rclone/rclone:latest
 
-# 4. Iniciar o assistente de configuração
+# 4. Iniciar a Interface Web com segurança (Bloqueado para fora da VPS)
 echo "--------------------------------------------------------"
-echo "ATENÇÃO: Agora vamos configurar o acesso ao Google Drive."
-echo "1. Escolha 'n' para New Remote"
-echo "2. Nomeie como 'gdrive'"
-echo "3. Escolha o número do 'Google Drive'"
-echo "4. Deixe Client ID e Secret em BRANCO"
-echo "5. Scope escolha '1' (Full Access)"
-echo "6. Use auto config? Escolha 'n' (Pois você está na VPS)"
-echo "7. Copie o link gerado, autorize no seu PC e cole o código aqui."
+echo "ABRINDO INTERFACE WEB DO RCLONE"
+echo "A porta 5572 estará aberta apenas localmente na VPS."
+echo ""
+echo "Para acessar do seu computador ou celular de forma segura:"
+echo "1. Abra um terminal na sua máquina local e rode o comando:"
+echo "   ssh -N -L 5572:127.0.0.1:5572 seu_usuario_vps@ip_da_sua_vps"
+echo "2. Com o túnel aberto, acesse no navegador: http://127.0.0.1:5572"
 echo "--------------------------------------------------------"
-read -p "Pressione [Enter] para começar a configuração..."
+read -p "Pressione [Enter] para iniciar a interface web..."
 
+# O parâmetro -p 127.0.0.1:5572:5572 garante que a porta NÃO fique exposta para a internet pública
 docker run --rm -it \
+  -p 127.0.0.1:5572:5572 \
   -v "$RCLONE_CONFIG_DIR":/config/rclone \
-  rclone/rclone config
+  rclone/rclone rcd --rc-web-gui --rc-addr :5572 --rc-no-auth
 
 echo "--- Instalação Concluída ---"
 echo "Teste a conexão com: docker run --rm -v $RCLONE_CONFIG_DIR:/config/rclone rclone/rclone lsd gdrive:"

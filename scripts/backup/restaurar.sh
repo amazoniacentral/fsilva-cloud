@@ -19,7 +19,7 @@ PROJECTS=$(
 echo "Projetos encontrados:"
 echo "$PROJECTS"
 
-# Itera sobre cada projeto sem quebrar o TTY/STDIN
+# Itera sobre cada projeto sem quebrar a leitura
 while read -r PROJECT_NAME; do
 
     # Pula linhas vazias se houver
@@ -37,7 +37,7 @@ while read -r PROJECT_NAME; do
     echo "-------------------------------------------"
     echo "--- Restauração Iniciada: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-    # 2. Executa o container sem a flag -t
+    # 2. Executa a restauração com painel visual do Rclone
     docker run --rm \
       --name "rclone_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_backups":/data/database \
@@ -48,7 +48,6 @@ while read -r PROJECT_NAME; do
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
       --progress \
       --stats 1s \
-      --stats-one-line \
       --use-server-modtime \
       --buffer-size 16M \
       --bwlimit 2M \

@@ -136,7 +136,7 @@ else
 fi
 
 BACKUP_DIR="/var/lib/docker/volumes/${VOLUME_NAME}/_data"
-DOT_ENV_PATH="./.env"
+DOT_ENV_PATH="../.env"
 
 # CARREGA .ENV
 if [ -f "$DOT_ENV_PATH" ]; then

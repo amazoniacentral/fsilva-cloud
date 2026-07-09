@@ -37,7 +37,7 @@ while read -r PROJECT_NAME; do
     echo "-------------------------------------------"
     echo "--- Restauração Iniciada: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-    # 2. Executa a restauração com painel visual do Rclone
+    # 2. Executa a restauração apenas para as pastas mapeadas nos volumes
     docker run --rm \
       --name "rclone_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_backups":/data/database \
@@ -46,6 +46,11 @@ while read -r PROJECT_NAME; do
       -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos/compress \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
+      --include "database/**" \
+      --include "documentos/**" \
+      --include "arquivos/**" \
+      --include "catalogos/compress/**" \
+      --exclude "**" \
       --progress \
       --stats 1s \
       --use-server-modtime \

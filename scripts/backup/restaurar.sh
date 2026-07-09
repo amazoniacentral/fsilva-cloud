@@ -38,8 +38,7 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     echo "--- Restauração Iniciada: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
     # 2. Executa o container apontando para os volumes do projeto
-    # Nome do container dinamizado com $PROJECT_NAME para evitar conflito de nomes
-    docker run --rm \
+    docker run --rm -it \
       --name "rclone_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_backups":/data/database \
       -v "${PROJECT_NAME}_storage_data":/data/documentos \
@@ -47,6 +46,8 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
       -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos/compress \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
+      --progress \
+      --stats 1s \
       --use-server-modtime \
       --buffer-size 16M \
       --bwlimit 2M \

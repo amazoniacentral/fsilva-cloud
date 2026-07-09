@@ -4,6 +4,13 @@
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 
+# Configurações globais
+RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
+
+# Garante que a pasta de logs existe (fora do loop, pois só precisa rodar uma vez)
+mkdir -p "$BASE_DIR/logs"
+
+# Busca nomes dos projetos via labels do Docker Compose
 PROJECTS=$(
   docker ps --filter "label=com.docker.compose.project" --format '{{.Label "com.docker.compose.project"}}' |
   sort -u
@@ -11,24 +18,19 @@ PROJECTS=$(
 
 echo "Projetos encontrados:"
 echo "$PROJECTS"
-for PROJECT_NAME in $PROJECTS; do
+
+# Itera sobre cada projeto de forma segura
+echo "$PROJECTS" | while read -r PROJECT_NAME; do
+
+    # Pula linhas vazias se houver
+    [ -z "$PROJECT_NAME" ] && continue
 
     echo
     echo "==========================================="
     echo "PROJETO: $PROJECT_NAME"
     echo "==========================================="
 
-
-    # Nome do projeto definido no seu docker-compose.dev.yml
-    #PROJECT_NAME="fsilva-cloud-dev"
-
-    # Onde o seu rclone.conf REALMENTE está
-    RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
     SRC="gdrive:fsilva-cloud/${PROJECT_NAME}"
-    #DEST="gdrive:${PROJECT_NAME}"
-
-    # Garante que a pasta de logs existe
-    mkdir -p "$BASE_DIR/logs"
 
     echo "-------------------------------------------"
     echo "BACKUP DE DADOS - PROJETO: $PROJECT_NAME"
@@ -36,15 +38,15 @@ for PROJECT_NAME in $PROJECTS; do
     echo "--- Backup Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
     # 2. Executa o container apontando para os volumes do projeto
-    # O Docker Compose nomeia volumes como: [PROJECT_NAME]_[VOLUME_NAME]
+    # Nome do container dinamizado com $PROJECT_NAME para evitar conflito de nomes
     docker run --rm \
-      --name rclone_backup_worker \
+      --name "rclone_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_backups":/data/database:ro \
       -v "${PROJECT_NAME}_storage_data":/data/documentos:ro \
       -v "${PROJECT_NAME}_media_data":/data/arquivos:ro \
       -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos/compress:ro \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
-      rclone/rclone --config /config/rclone/rclone.conf copy /data $SRC \
+      rclone/rclone --config /config/rclone/rclone.conf copy /data "$SRC" \
       --use-server-modtime \
       --buffer-size 16M \
       --bwlimit 2M \
@@ -53,4 +55,11 @@ for PROJECT_NAME in $PROJECTS; do
       --contimeout 60s \
       --low-level-retries 10
 
-echo "--- Backup Finalizado: $(date '+%Y-%m-%d %H:%M:%S') ---"
+    echo "--- Backup Finalizado para $PROJECT_NAME: $(date '+%Y-%m-%d %H:%M:%S') ---"
+
+done
+
+echo
+echo "==========================================="
+echo "TODOS OS BACKUPS FORAM CONCLUÍDOS!"
+echo "==========================================="

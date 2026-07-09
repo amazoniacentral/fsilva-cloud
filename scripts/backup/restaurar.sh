@@ -7,7 +7,7 @@ BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 # Configurações globais
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
 
-# Garante que a pasta de logs existe (fora do loop, pois só precisa rodar uma vez)
+# Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"
 
 # Busca nomes dos projetos via labels do Docker Compose
@@ -19,8 +19,8 @@ PROJECTS=$(
 echo "Projetos encontrados:"
 echo "$PROJECTS"
 
-# Itera sobre cada projeto de forma segura
-echo "$PROJECTS" | while read -r PROJECT_NAME; do
+# Itera sobre cada projeto sem quebrar o TTY/STDIN
+while read -r PROJECT_NAME; do
 
     # Pula linhas vazias se houver
     [ -z "$PROJECT_NAME" ] && continue
@@ -37,8 +37,8 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     echo "-------------------------------------------"
     echo "--- Restauração Iniciada: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-    # 2. Executa o container apontando para os volumes do projeto
-    docker run --rm -it \
+    # 2. Executa o container sem a flag -t
+    docker run --rm \
       --name "rclone_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_backups":/data/database \
       -v "${PROJECT_NAME}_storage_data":/data/documentos \
@@ -48,6 +48,7 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
       --progress \
       --stats 1s \
+      --stats-one-line \
       --use-server-modtime \
       --buffer-size 16M \
       --bwlimit 2M \
@@ -58,7 +59,7 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
 
     echo "--- Restauração Finalizado para $PROJECT_NAME: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-done
+done <<< "$PROJECTS"
 
 echo
 echo "==========================================="

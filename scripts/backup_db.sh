@@ -70,7 +70,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
             -d "$DB" \
             -F c \
             -Z 9 \
-            -b > "$PASTA_DESTINO/db-$(date +%Y-%m-%d)-$(date +%H%M).backup"
+            -b > "$PASTA_DESTINO/${DB}-$(date +%Y-%m-%d)-$(date +%H%M).backup"
 
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
             echo "    Backup concluído com sucesso: $DB"

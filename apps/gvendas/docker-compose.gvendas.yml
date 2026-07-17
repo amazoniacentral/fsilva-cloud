@@ -18,6 +18,7 @@ services:
       - certificados_data:/usr/share/nginx/.well-known:ro
       - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /root/.ssh:/root/.ssh:ro
     deploy:
       resources:
         limits:

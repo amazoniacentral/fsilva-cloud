@@ -51,6 +51,7 @@ services:
       - certificados_data:/code/volumes/certificados
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
+      - /root/.ssh:/root/.ssh:ro
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code

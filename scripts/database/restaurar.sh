@@ -50,7 +50,6 @@ extrair_credenciais() {
     local container_nome=$1
     echo -e "\n🔍 Extraindo credenciais de: ${CYAN}$container_nome${RESET}"
     
-    # Busca variáveis de ambiente
     local env_vars=$(docker exec "$container_nome" env || echo "")
 
     if [[ "$container_nome" == *"django"* ]]; then
@@ -163,6 +162,16 @@ docker stop "$CONTAINER_APP" >/dev/null || true
 
 echo -e "\n🧹 Limpando banco: ${YELLOW}$PG_NAME${RESET}"
 docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; ALTER SCHEMA public OWNER TO \"$PG_USER_APP\"; GRANT ALL ON SCHEMA public TO \"$PG_USER_APP\"; GRANT ALL ON SCHEMA public TO public;"
+
+# --- CHAMADA DO SCRIPT DE EXTENSÕES ---
+if [ -f "./extensao_vetor.sh" ]; then
+    echo -e "${YELLOW}⚙️ Executando script de extensões: extensao_vetor.sh...${RESET}"
+    bash ./extensao_vetor.sh "$CONTAINER_PG" "$PG_NAME" "$PG_SUPER_USER" "$PG_SUPER_PASS"
+else
+    echo -e "${RED}❌ Arquivo extensao_vetor.sh não encontrado no diretório!${RESET}"
+    exit 1
+fi
+# --------------------------------------
 
 echo -e "\n⏳ Restaurando: $(basename "$ARQUIVO_PARA_RESTAURAR")"
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then

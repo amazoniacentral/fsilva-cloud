@@ -68,24 +68,38 @@ x-n8n-base: &n8n-base
         cpus: "0.10"
         memory: 100M
 
-
 services:
   n8n:
     <<: *n8n-base
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   n8n-worker:
     <<: *n8n-base
     command: worker
+    # O Worker não precisa de volumes de backup ou exposição de porta
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - pdf_docs_data:/home/node/files/documentos
+      - treinamento_ia:/home/node/files/treinamento
     deploy:
       resources:
         limits:
           cpus: "0.8"
           memory: 768M
-        reservations:
-          cpus: "0.10"
-          memory: 10M
     depends_on:
       n8n:
         condition: service_healthy
+
           
       

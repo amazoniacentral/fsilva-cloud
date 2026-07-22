@@ -159,5 +159,5 @@ services:
           memory: 128M
     depends_on:
       django:
-        condition: service_healthy
+        condition: service_started
 

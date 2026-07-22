@@ -13,7 +13,7 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
-# --- FUNÇÃO MODIFICADA: SEMPRE FORÇA SELEÇÃO ---
+# FUNÇÃO DE SELEÇÃO
 selecionar_container() {
     local pattern=$1
     local prefixo=$2
@@ -35,14 +35,12 @@ selecionar_container() {
             return
         fi
     else
-        # SEMPRE MOSTRA MENU, MESMO QUE SEJA SÓ 1
         echo -e "\n${YELLOW}Selecione o container $prompt:${RESET}" >&2
         for i in "${!containers[@]}"; do
             echo "$((i+1))) ${containers[$i]}" >&2
         done
         read -rp "Opção: " idx < /dev/tty
         
-        # Validação simples para não quebrar se digitar errado
         if [[ ! "$idx" =~ ^[0-9]+$ ]] || [ "$idx" -lt 1 ] || [ "$idx" -gt "${#containers[@]}" ]; then
              echo -e "${RED}Opção inválida.${RESET}"
              exit 1
@@ -108,12 +106,10 @@ if [ ${#VOLUMES[@]} -eq 0 ]; then echo -e "${RED}❌ Nenhum volume encontrado.${
 
 mapfile -t VOLUMES_BACKUP < <(printf '%s\n' "${VOLUMES[@]}" | grep -i "backup" || printf '%s\n' "${VOLUMES[@]}")
 
-# --- BLOCO MODIFICADO: SEMPRE FORÇA SELEÇÃO DE VOLUME ---
 echo -e "\n${YELLOW}Selecione o volume:${RESET}"
 for i in "${!VOLUMES_BACKUP[@]}"; do echo "$((i+1))) ${VOLUMES_BACKUP[$i]}"; done
 read -rp "Escolha: " v_idx
 VOLUME_NAME="${VOLUMES_BACKUP[$((v_idx-1))]}"
-# -------------------------------------------------------
 
 BACKUP_DIR="/var/lib/docker/volumes/${VOLUME_NAME}/_data"
 
@@ -176,6 +172,12 @@ else
     exit 1
 fi
 # --------------------------------------
+
+# --- CORREÇÃO: TRANSFERINDO POSSE DAS EXTENSÕES ---
+echo -e "${YELLOW}⚙️ Ajustando permissões das extensões para o usuário: $PG_USER_APP${RESET}"
+docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c \
+    "ALTER EXTENSION vector OWNER TO \"$PG_USER_APP\"; ALTER EXTENSION \"uuid-ossp\" OWNER TO \"$PG_USER_APP\";" 2>/dev/null || true
+# --------------------------------------------------
 
 echo -e "\n⏳ Restaurando: $(basename "$ARQUIVO_PARA_RESTAURAR")"
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then

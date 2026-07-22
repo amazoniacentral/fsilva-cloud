@@ -23,6 +23,7 @@ x-n8n-base: &n8n-base
     - DB_POSTGRESDB_SCHEMA=public
     - N8N_EMAIL_MARCA_DAGUA=false
     - N8N_PROTOCOL=https
+    - N8N_PROXY_TRUST=true
     - N8N_HOST=n8n.${DEFAULT_DOMAIN:-francsilva.com.br}
     - WEBHOOK_URL=https://webhook.${DEFAULT_DOMAIN:-francsilva.com.br}/
     - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_DOMAIN:-francsilva.com.br}/

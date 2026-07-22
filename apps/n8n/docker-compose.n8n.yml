@@ -85,7 +85,7 @@ services:
           memory: 768M
     depends_on:
       n8n:
-        condition: service_healthy
+        condition: service_started
 
           
       

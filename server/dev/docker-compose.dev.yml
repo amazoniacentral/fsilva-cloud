@@ -6,7 +6,7 @@ include:
   - ../docker-compose.server.yml
 
 services:
-  nginx:
+  django-nginx:
     env_file:
       - .env
   gvendas:
@@ -22,10 +22,10 @@ services:
   django:
     env_file:
       - .env
-  celery-worker:
+  django-celery-worker:
     env_file:
       - .env
-  celery-beat:
+  django-celery-beat:
     env_file:
       - .env
   whatsapp:

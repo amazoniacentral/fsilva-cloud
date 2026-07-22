@@ -10,7 +10,7 @@ services:
       - "${HOST:-127.0.0.1}:${PORT_DJANGO:-8000}:8000"
     networks:
       - web_host
-  nginx:
+  django-nginx:
     ports:
       - "${HOST:-127.0.0.1}:${PORT_NGINX:-8001}:80"
     networks:

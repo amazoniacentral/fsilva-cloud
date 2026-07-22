@@ -7,7 +7,7 @@ services:
   #     - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
   #     - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
 
-  nginx:
+  django-nginx:
     env_file:
       - .env
     labels:

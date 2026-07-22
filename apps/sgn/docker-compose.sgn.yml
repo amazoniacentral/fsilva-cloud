@@ -20,9 +20,9 @@ services:
       django:
         condition: service_healthy
       django-celery-worker:
-        condition: service_healthy
+        condition: service_started
       django-celery-beat:
-        condition: service_healthy
+        condition: service_started
         
   # APP PRINCIPAL (Django)
   django:

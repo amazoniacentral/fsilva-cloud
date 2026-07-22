@@ -5,13 +5,13 @@ services:
   gvendas:
     networks:
       - net_tunnel
-  nginx:
+  django-nginx:
     networks:
       - net_tunnel
   django:
     networks:
       - net_tunnel
-  celery-worker:
+  django-celery-worker:
     networks:
       - net_tunnel
   media:

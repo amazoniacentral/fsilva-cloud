@@ -23,7 +23,7 @@ services:
     networks:
       - net_proxy
 
-  nginx:
+  django-nginx:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
@@ -82,7 +82,7 @@ services:
     networks:
       - net_proxy
 
-  celery-worker:
+  django-celery-worker:
     networks:
       - net_proxy
 

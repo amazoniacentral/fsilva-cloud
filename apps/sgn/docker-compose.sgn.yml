@@ -19,10 +19,6 @@ services:
     depends_on:
       django:
         condition: service_healthy
-      django-celery-worker:
-        condition: service_started
-      django-celery-beat:
-        condition: service_started
         
   # APP PRINCIPAL (Django)
   django:
@@ -128,8 +124,6 @@ services:
     depends_on:
       django:
         condition: service_healthy
-      django-celery-beat:
-        condition: service_healthy
         
   # BEAT
   django-celery-beat:
@@ -157,9 +151,9 @@ services:
           cpus: '0.05'
           memory: 128M
     depends_on:
-      django:
-        condition: service_started
       redis:
+        condition: service_started
+      django-celery-worker:
         condition: service_started
         
 

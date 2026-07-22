@@ -50,6 +50,7 @@ x-n8n-base: &n8n-base
     - n8n_data:/home/node/.n8n
     - pdf_docs_data:/home/node/files/documentos
     - treinamento_ia:/home/node/files/treinamento
+    - backups:/home/backups:ro
 
   depends_on:
     init-permissions:

@@ -180,13 +180,20 @@ docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER
 # --------------------------------------------------
 
 echo -e "\n⏳ Restaurando: $(basename "$ARQUIVO_PARA_RESTAURAR")"
+# RESTAURAÇÃO SEM --role PARA EVITAR ERRO DE DONO DE EXTENSÃO
 if head -c 5 "$ARQUIVO_PARA_RESTAURAR" | grep -q "PGDMP"; then
-    cat "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" pg_restore -U "$PG_SUPER_USER" -d "$PG_NAME" --no-owner --no-privileges --role="$PG_USER_APP"
+    cat "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" pg_restore -U "$PG_SUPER_USER" -d "$PG_NAME" --no-owner --no-privileges
 elif [[ "$ARQUIVO_PARA_RESTAURAR" == *.gz ]]; then
     gunzip -c "$ARQUIVO_PARA_RESTAURAR" | docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME"
 else
     docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" < "$ARQUIVO_PARA_RESTAURAR"
 fi
+
+# --- FIX FINAL: CORRIGINDO POSSE DAS TABELAS ---
+echo -e "\n${YELLOW}⚙️ Corrigindo posse das tabelas para o usuário: $PG_USER_APP${RESET}"
+docker exec -i -e PGPASSWORD="$PG_SUPER_PASS" "$CONTAINER_PG" psql -U "$PG_SUPER_USER" -d "$PG_NAME" -c \
+    "DO \$\$ DECLARE r RECORD; BEGIN FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP EXECUTE 'ALTER TABLE public.' || quote_ident(r.tablename) || ' OWNER TO \"$PG_USER_APP\"'; END LOOP; END \$\$;" 2>/dev/null || true
+# ----------------------------------------------
 
 echo -e "\n🚀 Reiniciando serviços..."
 docker start "$CONTAINER_APP" >/dev/null || true

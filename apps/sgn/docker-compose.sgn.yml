@@ -43,7 +43,6 @@ services:
             python manage.py gerar_sites_html && 
             gunicorn sgn.wsgi:application --bind 0.0.0.0:8000 --workers 1 --worker-class gevent --worker-connections 1000 --timeout 120 --max-requests 500 --max-requests-jitter 50 --keep-alive 2"
     volumes:
-      # - ../../repos/sgn:/code
       - sgn_data:/code/staticfiles
       - media_data:/code/volumes/media
       - catalogos_pdf_compress_data:/code/volumes/catalogo/compress
@@ -160,4 +159,7 @@ services:
     depends_on:
       django:
         condition: service_started
+      redis:
+        condition: service_started
+        
 

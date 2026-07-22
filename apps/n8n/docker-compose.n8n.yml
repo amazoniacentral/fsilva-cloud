@@ -83,4 +83,8 @@ services:
         reservations:
           cpus: "0.10"
           memory: 10M
+    depends_on:
+      n8n:
+        condition: service_completed_successfully
+          
       

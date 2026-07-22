@@ -13,6 +13,7 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
+# --- FUNÇÃO MODIFICADA: SEMPRE FORÇA SELEÇÃO ---
 selecionar_container() {
     local pattern=$1
     local prefixo=$2
@@ -33,14 +34,19 @@ selecionar_container() {
             echo ""
             return
         fi
-    elif [ ${#containers[@]} -eq 1 ]; then
-        echo "${containers[0]}"
     else
+        # SEMPRE MOSTRA MENU, MESMO QUE SEJA SÓ 1
         echo -e "\n${YELLOW}Selecione o container $prompt:${RESET}" >&2
         for i in "${!containers[@]}"; do
             echo "$((i+1))) ${containers[$i]}" >&2
         done
         read -rp "Opção: " idx < /dev/tty
+        
+        # Validação simples para não quebrar se digitar errado
+        if [[ ! "$idx" =~ ^[0-9]+$ ]] || [ "$idx" -lt 1 ] || [ "$idx" -gt "${#containers[@]}" ]; then
+             echo -e "${RED}Opção inválida.${RESET}"
+             exit 1
+        fi
         echo "${containers[$((idx-1))]}"
     fi
 }
@@ -102,14 +108,12 @@ if [ ${#VOLUMES[@]} -eq 0 ]; then echo -e "${RED}❌ Nenhum volume encontrado.${
 
 mapfile -t VOLUMES_BACKUP < <(printf '%s\n' "${VOLUMES[@]}" | grep -i "backup" || printf '%s\n' "${VOLUMES[@]}")
 
-if [ ${#VOLUMES_BACKUP[@]} -eq 1 ]; then
-    VOLUME_NAME="${VOLUMES_BACKUP[0]}"
-else
-    echo -e "\n${YELLOW}Selecione o volume:${RESET}"
-    for i in "${!VOLUMES_BACKUP[@]}"; do echo "$((i+1))) ${VOLUMES_BACKUP[$i]}"; done
-    read -rp "Escolha: " v_idx
-    VOLUME_NAME="${VOLUMES_BACKUP[$((v_idx-1))]}"
-fi
+# --- BLOCO MODIFICADO: SEMPRE FORÇA SELEÇÃO DE VOLUME ---
+echo -e "\n${YELLOW}Selecione o volume:${RESET}"
+for i in "${!VOLUMES_BACKUP[@]}"; do echo "$((i+1))) ${VOLUMES_BACKUP[$i]}"; done
+read -rp "Escolha: " v_idx
+VOLUME_NAME="${VOLUMES_BACKUP[$((v_idx-1))]}"
+# -------------------------------------------------------
 
 BACKUP_DIR="/var/lib/docker/volumes/${VOLUME_NAME}/_data"
 

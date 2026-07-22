@@ -90,6 +90,8 @@ services:
           cpus: "0.8"
           memory: 768M
     depends_on:
+    init-permissions:
+      condition: service_completed_successfully
       n8n:
         condition: service_healthy
 

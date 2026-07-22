@@ -58,6 +58,9 @@ x-n8n-base: &n8n-base
       condition: service_completed_successfully
     postgres:
       condition: service_healthy
+    redis:
+      condition: service_started
+      
 
   deploy:
     resources:
@@ -77,13 +80,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 2100s
-    depends_on:
-      init-permissions:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
 
   n8n-worker:
     <<: *n8n-base

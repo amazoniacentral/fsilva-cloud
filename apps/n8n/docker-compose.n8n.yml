@@ -75,7 +75,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
+      start_period: 2100s
     depends_on:
       init-permissions:
         condition: service_completed_successfully

@@ -38,20 +38,20 @@ services:
       # =========================
       # HTTPS (porta 443)
       # =========================
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.nginx.entrypoints=websecure"
-      - "traefik.http.routers.nginx.tls=true"
-      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.nginx.service=nginx"
+      - "traefik.http.routers.django-nginx.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.django-nginx.entrypoints=websecure"
+      - "traefik.http.routers.django-nginx.tls=true"
+      - "traefik.http.routers.django-nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.django-nginx.service=django-nginx"
     
-      - "traefik.http.services.nginx.loadbalancer.server.port=80"
-      - "traefik.http.services.nginx.loadbalancer.responseForwarding.flushInterval=100ms"
+      - "traefik.http.services.django-nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.django-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
     
       # =========================
       # Middleware
       # =========================
       - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.nginx.middlewares=block-internal-header"
+      - "traefik.http.routers.django-nginx.middlewares=block-internal-header"
 
     networks:
       - net_proxy

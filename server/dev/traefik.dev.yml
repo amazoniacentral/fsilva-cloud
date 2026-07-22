@@ -5,7 +5,7 @@ services:
       - .env
     labels:
       - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN:-?api.seu-dominio.com}`)"
-      - "traefik.http.routers.nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      - "traefik.http.routers.django-nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
       
   media:
     env_file:

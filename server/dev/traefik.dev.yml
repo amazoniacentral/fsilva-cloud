@@ -1,6 +1,6 @@
 services:
 
-  nginx:
+  django-nginx:
     env_file:
       - .env
     labels:

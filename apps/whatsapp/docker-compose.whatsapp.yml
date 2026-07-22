@@ -12,8 +12,6 @@ services:
       - 8.8.8.8
     working_dir: /code
     volumes:
-      # - ../../repos/push:/code
-      # - whatsapp_node_modules:/code/node_modules
       - whatsapp_sessions:/code/sessions
       - whatsapp_logs:/code/logs
     networks:

@@ -1,24 +1,30 @@
 FROM node:18-bullseye-slim
 
-# Instala FFmpeg e ferramentas de utilidade
+# 1. Instalação de dependências do sistema
+# ffmpeg: para processamento de vídeo
+# procps: útil para debug e monitoramento
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala o nodemon globalmente
+# 2. Instalação de ferramentas globais do Node
 RUN npm install -g nodemon
 
+# 3. Definição do diretório de trabalho
 WORKDIR /app
 
-# Lógica automática: 
-# 1. Verifica se package.json existe, se não, cria um padrão (npm init -y)
-# 2. Instala as dependências de uma vez só
-RUN [ -f package.json ] && \
+# 4. Lógica automática de dependências
+# - Verifica se o package.json existe. 
+# - Se não existir (||), cria um automaticamente com "npm init -y".
+# - Em seguida (&&), instala as bibliotecas necessárias.
+RUN [ -f package.json ] || npm init -y && \
     npm install express multer fluent-ffmpeg cors
 
-# Pastas de trabalho necessárias para o processamento de vídeos
+# 5. Criação das pastas de processamento de vídeos
 RUN mkdir -p /var/www/videos /app/uploads
 
-# Mantém o contêiner vivo para você desenvolver lá dentro
+# 6. Mantém o contêiner rodando (Modo Desenvolvimento)
+# O "tail -f /dev/null" mantém o contêiner vivo para você entrar nele 
+# e rodar comandos ou editar arquivos via volume mapeado.
 CMD ["tail", "-f", "/dev/null"]

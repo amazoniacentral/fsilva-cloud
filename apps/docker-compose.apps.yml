@@ -8,5 +8,6 @@ include:
   - ./sftp/docker-compose.sftp.yml
   - ./pdf/docker-compose.pdf.yml
   - ./n8n/docker-compose.n8n.yml
+  - ./videos/docker-compose.videos.yml
   
   

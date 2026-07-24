@@ -1,0 +1,25 @@
+FROM node:18-bullseye-slim
+
+# Instala FFmpeg e ferramentas de utilidade
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instala o nodemon globalmente (para reiniciar o server ao salvar arquivos)
+RUN npm install -g nodemon
+
+WORKDIR /app
+
+# Copia os arquivos de configuração (se existirem)
+COPY package*.json ./
+
+# Instala as dependências essenciais do projeto
+# Isso garante que o ambiente já venha com as ferramentas que você precisa
+RUN npm install express multer fluent-ffmpeg cors
+
+# Pastas de trabalho necessárias para o processamento de vídeos
+RUN mkdir -p /var/www/videos /app/uploads
+
+# Mantém o contêiner vivo para você desenvolver lá dentro
+CMD ["tail", "-f", "/dev/null"]

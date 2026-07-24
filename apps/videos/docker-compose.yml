@@ -1,0 +1,10 @@
+services:
+  dev-videos:
+    build:
+      context: .
+      dockerfile: DockerfileDev  
+    container_name: dev-videos
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true

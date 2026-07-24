@@ -1,0 +1,32 @@
+services:
+  videos:
+    build: .
+    volumes:
+      - videos_data:/var/www/videos
+    expose:
+      - "3000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+          memswap_limit: 1G
+        reservations:
+          cpus: '0.05'
+          memory: 100M
+
+  nginx-videos:
+    image: nginx:alpine
+    volumes:
+      - videos_data:/var/www/videos:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro 
+    expose:
+      - "80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'    
+          memory: 256M   
+        reservations:
+          cpus: '0.05'
+          memory: 32M   

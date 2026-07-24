@@ -9,9 +9,12 @@ RUN npm install -g nodemon
 
 WORKDIR /app
 
-# Instala as dependências base
-RUN npm install express multer fluent-ffmpeg cors
+# Copia o script para dentro da imagem
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# Garante que as pastas existam
 RUN mkdir -p /var/www/videos /app/uploads
 
-CMD ["tail", "-f", "/dev/null"]
+# Define o script como o comando de entrada
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -37,7 +37,7 @@
 
                 status.innerText = `Enviando pedaço ${i + 1} de ${totalChunks}...`;
 
-                const response = await fetch('http://localhost:3000/upload-chunk', {
+                const response = await fetch('http://localhost:3001/upload-chunk', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/octet-stream',

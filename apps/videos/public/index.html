@@ -7,6 +7,9 @@
 </head>
 <body class="bg-light p-4">
     <div class="container">
+        <div class="mt-3">
+          <a href="/" class="btn btn-secondary">Voltar para lista</a>
+        </div>
         <h2>Vídeos Disponíveis</h2>
         <table class="table table-striped table-hover mt-3 bg-white shadow-sm">
             <thead><tr><th>ID</th><th>Tamanho</th><th>Status</th><th>Ação</th></tr></thead>
@@ -24,7 +27,7 @@
                         <td>${v.id}</td>
                         <td>${v.tamanhoMB || 0} MB</td>
                         <td>${v.codificado ? '<span class="badge bg-success">Pronto</span>' : '<span class="badge bg-warning">Processando</span>'}</td>
-                        <td>${v.codificado ? `<a href="/player?id=${v.id}" class="btn btn-sm btn-info">Assistir</a>` : '-'}</td>
+                        <td>${v.codificado ? `<a href="/player.html?id=${v.id}" class="btn btn-sm btn-info">Assistir</a>` : '-'}</td>
                     </tr>`;
                 });
             });

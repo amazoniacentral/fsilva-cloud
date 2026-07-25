@@ -23,6 +23,7 @@ services:
     expose:
       - "80"
     restart: always
+      
     deploy:
       resources:
         limits:

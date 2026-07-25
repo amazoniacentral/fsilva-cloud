@@ -19,6 +19,7 @@ RUN npm install --only=production
 
 # Copia o restante do código da aplicação
 COPY ./src ./src
+COPY ./public ./public
 
 # Cria a pasta onde os vídeos serão processados e salvos
 RUN mkdir -p /var/www/videos /app/uploads

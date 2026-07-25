@@ -69,8 +69,9 @@ app.post('/upload-chunk', (req, res) => {
                 '-hls_segment_filename', `${targetDir}/v%v/seg_%03d.ts`
             ])
             .output(`${targetDir}/v%v/playlist.m3u8`)
-            .on('error', (err) => {
-                console.error('Erro FFmpeg:', err.message);
+            .on('error', (err, stdout, stderr) => {
+    console.error('Erro FFmpeg:', err.message);
+                console.error('Stderr do FFmpeg:', stderr); // Isso vai te dar o erro real do ffmpeg
                 if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
             })
             .on('end', () => {

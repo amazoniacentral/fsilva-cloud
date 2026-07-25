@@ -13,29 +13,25 @@
     <h2>Upload de Vídeo</h2>
     <input type="file" id="fileInput">
     <button onclick="uploadVideo()">Enviar Vídeo</button>
-
-    <div class="progress-container">
-        <div id="progressBar"></div>
-    </div>
+    <div class="progress-container"><div id="progressBar"></div></div>
     <p id="status"></p>
 
     <script>
         async function uploadVideo() {
             const file = document.getElementById('fileInput').files[0];
-            const status = document.getElementById('status');
-            const progressBar = document.getElementById('progressBar');
-
             if (!file) return alert("Selecione um arquivo");
 
-            const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
+            const CHUNK_SIZE = 2 * 1024 * 1024;
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            const progressBar = document.getElementById('progressBar');
+            const status = document.getElementById('status');
 
             for (let i = 0; i < totalChunks; i++) {
-                const start = i * CHUNK_SIZE;
-                const end = Math.min(start + CHUNK_SIZE, file.size);
-                const chunk = file.slice(start, end);
-
-                status.innerText = `Enviando pedaço ${i + 1} de ${totalChunks}...`;
+                const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                
+                // Timeout para evitar que a requisição fique pendurada
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 20000);
 
                 try {
                     const response = await fetch('/upload-chunk', {
@@ -46,18 +42,19 @@
                             'X-Chunk-Index': i,
                             'X-Is-Last': (i === totalChunks - 1)
                         },
-                        body: chunk
+                        body: chunk,
+                        signal: controller.signal
                     });
 
-                    if (!response.ok) throw new Error("Falha no upload");
-                    
+                    clearTimeout(timeout);
+                    if (!response.ok) throw new Error("Erro no servidor");
                     progressBar.style.width = ((i + 1) / totalChunks) * 100 + "%";
                 } catch (err) {
-                    status.innerText = "Erro ao enviar: " + err.message;
+                    status.innerText = "Erro: " + err.message;
                     return;
                 }
             }
-            status.innerText = "Upload concluído! O servidor está processando o vídeo.";
+            status.innerText = "Upload finalizado!";
         }
     </script>
 </body>

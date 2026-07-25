@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: DockerfileDev  
     container_name: dev-videos
+    restart: unless-stopped
     volumes:
       - .:/app
       - /app/node_modules 

@@ -6,19 +6,26 @@ const ffmpeg = require('fluent-ffmpeg');
 
 const app = express();
 
-// Middleware: Aceita dados binários brutos (chunked)
-// Aumentamos o limite para garantir que o bloco chegue
-app.use(express.raw({ type: 'application/octet-stream', limit: '20mb' }));
+// --- Middlewares ---
 app.use(cors());
+// Middleware para receber chunks de vídeo
+app.use(express.raw({ type: 'application/octet-stream', limit: '50mb' })); 
 
-// Diretórios
+// 1. Servir o seu Front-end (arquivos em /public)
+// Certifique-se que você criou a pasta "public" fora da pasta "src"
+app.use(express.static(path.join(__dirname, '../public')));
+
+// 2. Servir os Vídeos processados (acesso aos arquivos HLS)
 const VIDEO_DIR = '/var/www/videos';
 const UPLOAD_DIR = '/app/uploads';
 
-// Garantir que pastas existam
+app.use('/videos', express.static(VIDEO_DIR));
+
+// Garantir que pastas existam ao iniciar
 if (!fs.existsSync(VIDEO_DIR)) fs.mkdirSync(VIDEO_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+// --- Rota de Upload ---
 app.post('/upload-chunk', (req, res) => {
     const filename = req.headers['x-filename'];
     const chunkIndex = parseInt(req.headers['x-chunk-index']);
@@ -28,7 +35,7 @@ app.post('/upload-chunk', (req, res) => {
 
     const filePath = path.join(UPLOAD_DIR, filename);
 
-    // Se for o primeiro pedaço, cria o arquivo. Se não, faz append.
+    // Escreve ou anexa os pedaços
     if (chunkIndex === 0) {
         fs.writeFileSync(filePath, req.body);
     } else {
@@ -38,12 +45,11 @@ app.post('/upload-chunk', (req, res) => {
     if (isLast) {
         console.log(`Upload concluído: ${filename}. Iniciando processamento...`);
         
-        // Aqui chamamos sua lógica de conversão original
         const inputPath = filePath;
         const folderId = Date.now().toString();
         const targetDir = path.join(VIDEO_DIR, folderId);
         
-        fs.mkdirSync(targetDir);
+        fs.mkdirSync(targetDir, { recursive: true });
 
         ffmpeg(inputPath)
             .inputOptions(['-threads 1']) 
@@ -68,7 +74,7 @@ app.post('/upload-chunk', (req, res) => {
                 if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
             })
             .on('end', () => {
-                console.log('Processamento concluído.');
+                console.log('Processamento concluído. Disponível em: /videos/' + folderId + '/v0/playlist.m3u8');
                 if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
             })
             .run();

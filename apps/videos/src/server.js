@@ -60,7 +60,7 @@ app.post('/upload-chunk', (req, res) => {
         }
 
         ffmpeg(filePath)
-            .inputOptions(['-threads 1'])
+            .inputOptions(['-threads 2'])
             .outputOptions([
                 '-preset', 'veryfast',
                 '-g', '48', '-keyint_min', '48', '-sc_threshold', '0',

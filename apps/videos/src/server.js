@@ -18,6 +18,22 @@ app.use('/videos', express.static(VIDEO_DIR));
 if (!fs.existsSync(VIDEO_DIR)) fs.mkdirSync(VIDEO_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+// Função auxiliar para calcular o tamanho total da pasta
+const getFolderSize = (dirPath) => {
+    let totalSize = 0;
+    const files = fs.readdirSync(dirPath);
+    for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stats = fs.statSync(filePath);
+        if (stats.isDirectory()) {
+            totalSize += getFolderSize(filePath);
+        } else {
+            totalSize += stats.size;
+        }
+    }
+    return totalSize;
+};
+
 app.post('/upload-chunk', (req, res) => {
     const filename = req.headers['x-filename'];
     const chunkIndex = parseInt(req.headers['x-chunk-index']);
@@ -82,6 +98,18 @@ v2/playlist.m3u8
 #EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
 v3/playlist.m3u8`;
                 fs.writeFileSync(path.join(targetDir, 'master.m3u8'), masterPlaylist);
+
+                // --- GERAÇÃO DO METADATA.JSON ---
+                const sizeInBytes = getFolderSize(targetDir);
+                const metadata = {
+                    id: folderId,
+                    dataCriacao: new Date().toISOString(),
+                    tamanhoBytes: sizeInBytes,
+                    tamanhoMB: (sizeInBytes / (1024 * 1024)).toFixed(2)
+                };
+                fs.writeFileSync(path.join(targetDir, 'metadata.json'), JSON.stringify(metadata));
+                // --------------------------------
+
                 console.log(`Processamento concluído: ${folderId}`);
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
@@ -91,6 +119,43 @@ v3/playlist.m3u8`;
     }
 
     res.send({ status: 'recebido' });
+});
+
+// Rota para listar todos os vídeos
+app.get('/videos-list', (req, res) => {
+    try {
+        const folders = fs.readdirSync(VIDEO_DIR);
+
+        const videoList = folders.map(folderName => {
+            const folderPath = path.join(VIDEO_DIR, folderName);
+            const stats = fs.statSync(folderPath);
+            const metaPath = path.join(folderPath, 'metadata.json');
+
+            if (!stats.isDirectory()) return null;
+
+            const masterExists = fs.existsSync(path.join(folderPath, 'master.m3u8'));
+            
+            // Lê o metadata se ele existir
+            let metadata = {};
+            if (fs.existsSync(metaPath)) {
+                metadata = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+            }
+
+            return {
+                id: folderName,
+                fileName: `${folderName}/master.m3u8`,
+                ...metadata, // Espalha os dados do metadata (tamanho, etc)
+                codificado: masterExists
+            };
+        })
+        .filter(item => item !== null)
+        .sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+
+        res.json(videoList);
+    } catch (error) {
+        console.error('Erro ao listar vídeos:', error);
+        res.status(500).json({ error: 'Erro ao listar vídeos' });
+    }
 });
 
 const PORT = 3000;

@@ -2,15 +2,15 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Upload de Vídeo Chunked</title>
+    <title>Upload de Vídeo</title>
     <style>
         body { font-family: sans-serif; padding: 20px; }
-        #progressBar { width: 0%; height: 20px; background: #4caf50; transition: width 0.2s; }
-        .progress-container { width: 100%; border: 1px solid #ccc; margin-top: 10px; }
+        .progress-container { width: 100%; border: 1px solid #ccc; height: 20px; margin-top: 10px; }
+        #progressBar { width: 0%; height: 100%; background: #4caf50; transition: width 0.2s; }
     </style>
 </head>
 <body>
-    <h2>Upload de Vídeo (Bloqueado)</h2>
+    <h2>Upload de Vídeo</h2>
     <input type="file" id="fileInput">
     <button onclick="uploadVideo()">Enviar Vídeo</button>
 
@@ -37,27 +37,27 @@
 
                 status.innerText = `Enviando pedaço ${i + 1} de ${totalChunks}...`;
 
-                const response = await fetch('http://localhost:3001/upload-chunk', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/octet-stream',
-                        'X-Filename': file.name,
-                        'X-Chunk-Index': i,
-                        'X-Is-Last': (i === totalChunks - 1)
-                    },
-                    body: chunk
-                });
+                try {
+                    const response = await fetch('/upload-chunk', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/octet-stream',
+                            'X-Filename': file.name,
+                            'X-Chunk-Index': i,
+                            'X-Is-Last': (i === totalChunks - 1)
+                        },
+                        body: chunk
+                    });
 
-                if (!response.ok) {
-                    status.innerText = "Erro no upload!";
+                    if (!response.ok) throw new Error("Falha no upload");
+                    
+                    progressBar.style.width = ((i + 1) / totalChunks) * 100 + "%";
+                } catch (err) {
+                    status.innerText = "Erro ao enviar: " + err.message;
                     return;
                 }
-
-                const percent = ((i + 1) / totalChunks) * 100;
-                progressBar.style.width = percent + "%";
             }
-
-            status.innerText = "Upload concluído! O vídeo está sendo processado no servidor.";
+            status.innerText = "Upload concluído! O servidor está processando o vídeo.";
         }
     </script>
 </body>

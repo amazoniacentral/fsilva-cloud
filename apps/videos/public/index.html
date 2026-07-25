@@ -18,14 +18,28 @@
     </div>
 
     <script>
+        // Função para formatar a data ISO para PT-BR
+        function formatarData(dataISO) {
+            const data = new Date(dataISO);
+            return data.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
         fetch('/videos-list')
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById('videoTableBody');
+                tbody.innerHTML = ''; // Limpa antes de preencher
                 data.forEach(v => {
                     tbody.innerHTML += `<tr>
                         <td>${v.id}</td>
-                        <td>${v.dataCriacao}</td>
+                        <td>${formatarData(v.dataCriacao)}</td>
                         <td>${v.tamanhoMB || 0} MB</td>
                         <td>${v.codificado ? '<span class="badge bg-success">Pronto</span>' : '<span class="badge bg-warning">Processando</span>'}</td>
                         <td>${v.codificado ? `<a href="/player.html?id=${v.id}" class="btn btn-sm btn-info">Assistir</a>` : '-'}</td>

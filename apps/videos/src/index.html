@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload de Vídeo Chunked</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #progressBar { width: 0%; height: 20px; background: #4caf50; transition: width 0.2s; }
+        .progress-container { width: 100%; border: 1px solid #ccc; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Upload de Vídeo (Bloqueado)</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadVideo()">Enviar Vídeo</button>
+
+    <div class="progress-container">
+        <div id="progressBar"></div>
+    </div>
+    <p id="status"></p>
+
+    <script>
+        async function uploadVideo() {
+            const file = document.getElementById('fileInput').files[0];
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+
+            if (!file) return alert("Selecione um arquivo");
+
+            const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, file.size);
+                const chunk = file.slice(start, end);
+
+                status.innerText = `Enviando pedaço ${i + 1} de ${totalChunks}...`;
+
+                const response = await fetch('http://localhost:3000/upload-chunk', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
+                        'X-Filename': file.name,
+                        'X-Chunk-Index': i,
+                        'X-Is-Last': (i === totalChunks - 1)
+                    },
+                    body: chunk
+                });
+
+                if (!response.ok) {
+                    status.innerText = "Erro no upload!";
+                    return;
+                }
+
+                const percent = ((i + 1) / totalChunks) * 100;
+                progressBar.style.width = percent + "%";
+            }
+
+            status.innerText = "Upload concluído! O vídeo está sendo processado no servidor.";
+        }
+    </script>
+</body>
+</html>

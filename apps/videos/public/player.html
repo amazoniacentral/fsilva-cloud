@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Player de Vídeo</title>
-    <!-- Carrega a biblioteca HLS -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
     <h2>Assistir Vídeo</h2>
-    <!-- O ID do vídeo é a pasta que o FFmpeg criou (o timestamp) -->
-    <input type="text" id="folderId" placeholder="Cole o ID da pasta (ex: 1721855...)">
+    <input type="text" id="folderId" placeholder="Cole o ID da pasta">
     <button onclick="carregarVideo()">Carregar</button>
     
     <br><br>
@@ -18,21 +17,16 @@
         function carregarVideo() {
             const id = document.getElementById('folderId').value;
             const video = document.getElementById('video');
-            // A URL aponta para o servidor e a pasta que o ffmpeg criou
-            const videoSrc = `http://localhost:3001/videos/${id}/v0/playlist.m3u8`;
+            const videoSrc = `http://localhost:3001/videos/${id}/master.m3u8`;
 
             if (Hls.isSupported()) {
-                var hls = new Hls();
+                const hls = new Hls({ autoStartLoad: true });
                 hls.loadSource(videoSrc);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = videoSrc;
-                video.addEventListener('loadedmetadata', function() {
-                    video.play();
-                });
+                video.addEventListener('loadedmetadata', () => video.play());
             }
         }
     </script>

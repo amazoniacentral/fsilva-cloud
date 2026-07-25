@@ -34,12 +34,11 @@ app.post('/upload-chunk', (req, res) => {
     }
 
     if (isLast) {
-        console.log(`Upload concluído: ${filename}. Processando todas as resoluções...`);
+        console.log(`Upload concluído: ${filename}. Processando...`);
         
         const folderId = Date.now().toString();
         const targetDir = path.join(VIDEO_DIR, folderId);
         
-        // Garante as pastas v0, v1, v2, v3
         for (let i = 0; i < 4; i++) {
             fs.mkdirSync(path.join(targetDir, `v${i}`), { recursive: true });
         }
@@ -49,45 +48,41 @@ app.post('/upload-chunk', (req, res) => {
             .outputOptions([
                 '-preset', 'veryfast',
                 '-g', '48', '-keyint_min', '48', '-sc_threshold', '0',
-                
-                // Mapeia vídeo e áudio 4 vezes (para V0, V1, V2, V3)
-                '-map', '0:v', '-map', '0:a?',
-                '-map', '0:v', '-map', '0:a?',
-                '-map', '0:v', '-map', '0:a?',
-                '-map', '0:v', '-map', '0:a?',
-                
+                '-map', '0:v', '-map', '0:a?', '-map', '0:v', '-map', '0:a?',
+                '-map', '0:v', '-map', '0:a?', '-map', '0:v', '-map', '0:a?',
                 '-c:v', 'libx264',
                 '-c:a', 'aac',
                 '-b:a', '128k',
-                
-                // Escala inteligente: -2 mantém proporção (não estica) e ajusta altura fixa
                 '-filter:v:0', 'scale=-2:1080',
                 '-filter:v:1', 'scale=-2:720',
                 '-filter:v:2', 'scale=-2:480',
                 '-filter:v:3', 'scale=-2:360',
-                
-                // Configuração das Variantes de Stream
                 '-var_stream_map', 'v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3',
-                
-                // Bitrates para cada versão
                 '-b:v:0', '5000k',
                 '-b:v:1', '2500k',
                 '-b:v:2', '1200k',
                 '-b:v:3', '800k',
-                
                 '-f', 'hls',
                 '-hls_list_size', '0',
                 '-hls_segment_filename', `${targetDir}/v%v/seg_%03d.ts`
             ])
             .output(`${targetDir}/v%v/playlist.m3u8`)
             .on('error', (err, stdout, stderr) => {
-                console.error('--- ERRO FFmpeg ---');
-                console.error('Mensagem:', err.message);
-                console.error('Stderr:', stderr);
+                console.error('Erro FFmpeg:', err.message);
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .on('end', () => {
-                console.log(`Sucesso! Vídeo disponível em: /videos/${folderId}/v0/playlist.m3u8`);
+                const masterPlaylist = `#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+v0/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720
+v1/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1200000,RESOLUTION=854x480
+v2/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
+v3/playlist.m3u8`;
+                fs.writeFileSync(path.join(targetDir, 'master.m3u8'), masterPlaylist);
+                console.log(`Processamento concluído: ${folderId}`);
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .run();

@@ -20,6 +20,12 @@ services:
   storage:
     networks:
       - net_tunnel
+  videos:
+    networks:
+      - net_tunnel
+  nginx-videos:
+    networks:
+      - net_tunnel
   pdf-service:
     networks:
       - net_tunnel

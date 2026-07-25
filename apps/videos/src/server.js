@@ -95,5 +95,5 @@ v3/playlist.m3u8`;
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://0.0.0.0:${PORT}`);
 });

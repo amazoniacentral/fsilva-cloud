@@ -7,17 +7,14 @@ const ffmpeg = require('fluent-ffmpeg');
 const app = express();
 
 app.use(cors());
-app.use(express.raw({ type: 'application/octet-stream', limit: '50mb' }));
+app.use(express.raw({ type: 'application/octet-stream', limit: '100mb' }));
 
-// Servir front-end
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Servir vídeos processados
 const VIDEO_DIR = '/var/www/videos';
 const UPLOAD_DIR = '/app/uploads';
 app.use('/videos', express.static(VIDEO_DIR));
 
-// Garantir pastas
 if (!fs.existsSync(VIDEO_DIR)) fs.mkdirSync(VIDEO_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -37,44 +34,40 @@ app.post('/upload-chunk', (req, res) => {
     }
 
     if (isLast) {
-        console.log(`Upload concluído: ${filename}. Iniciando processamento...`);
+        console.log(`Upload concluído: ${filename}. Processando...`);
         
-        const inputPath = filePath;
         const folderId = Date.now().toString();
         const targetDir = path.join(VIDEO_DIR, folderId);
         
-        // Cria subpastas para o HLS
         for (let i = 0; i < 4; i++) {
             fs.mkdirSync(path.join(targetDir, `v${i}`), { recursive: true });
         }
 
-        ffmpeg(inputPath)
-            .inputOptions(['-threads 1']) 
+        ffmpeg(filePath)
             .outputOptions([
                 '-preset', 'veryfast',
                 '-g', '48', '-keyint_min', '48', '-sc_threshold', '0',
-                '-map', '0:v', '-map', '0:a?', 
+                '-map', '0:v', '-map', '0:a?',
                 '-c:v', 'libx264',
                 '-c:a', 'aac',
                 '-b:a', '128k',
-                '-vf', 'scale=-2:1080,scale=-2:720,scale=-2:480,scale=-2:360',
-                '-var_stream_map', 'v:0,a:0 v:1,a:0 v:2,a:0 v:3,a:0',
-                '-b:v:0', '5000k',
-                '-b:v:1', '2500k',
-                '-b:v:2', '1200k',
-                '-b:v:3', '800k',
+                // Simplificamos a escala para garantir compatibilidade
+                '-vf', 'scale=-2:720',
+                '-var_stream_map', 'v:0,a:0',
                 '-f', 'hls',
                 '-hls_list_size', '0',
-                '-hls_segment_filename', `${targetDir}/v%v/seg_%03d.ts`
+                '-hls_segment_filename', `${targetDir}/v0/seg_%03d.ts`
             ])
-            .output(`${targetDir}/v%v/playlist.m3u8`)
+            .output(`${targetDir}/v0/playlist.m3u8`)
             .on('error', (err, stdout, stderr) => {
-                console.error('Erro FFmpeg:', err.message);
-                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+                console.error('--- ERRO FFmpeg ---');
+                console.error('Mensagem:', err.message);
+                console.error('Stderr:', stderr);
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .on('end', () => {
-                console.log(`Processamento concluído: ${folderId}`);
-                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+                console.log(`Sucesso! Vídeo em: /videos/${folderId}/v0/playlist.m3u8`);
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .run();
 

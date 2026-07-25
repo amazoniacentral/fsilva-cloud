@@ -48,7 +48,6 @@ app.post('/upload-chunk', (req, res) => {
         const targetDir = path.join(VIDEO_DIR, folderId);
         
         // CRUCIAL: Cria a pasta raiz e as subpastas v0, v1, v2, v3
-        // O FFmpeg falha se essas subpastas não existirem antes de começar
         for (let i = 0; i < 4; i++) {
             fs.mkdirSync(path.join(targetDir, `v${i}`), { recursive: true });
         }
@@ -58,15 +57,27 @@ app.post('/upload-chunk', (req, res) => {
             .outputOptions([
                 '-preset', 'veryfast',
                 '-g', '48', '-keyint_min', '48', '-sc_threshold', '0',
-                '-map', '0:v:0', '-map', '0:v:0', '-map', '0:v:0', '-map', '0:v:0',
+                
+                // Mapeia vídeo e áudio
+                '-map', '0:v', '-map', '0:a?', 
+                
+                // Codecs
                 '-c:v', 'libx264',
-                '-b:v:0', '5000k', '-s:v:0', '1920x1080',
-                '-b:v:1', '2500k', '-s:v:1', '1280x720',
-                '-b:v:2', '1200k', '-s:v:2', '854x480',
-                '-b:v:3', '800k',  '-s:v:3', '640x360',
-                // FIX: Separamos os argumentos corretamente para o FFmpeg não se confundir
-                '-var_stream_map', 'v:0,v:1,v:2,v:3',
-                '-vf', "scale='if(gt(iw,ih),min(1920,iw),-2)':'if(gt(iw,ih),-2,min(1080,ih))'",
+                '-c:a', 'aac',
+                '-b:a', '128k',
+                
+                // Escala mantendo proporção original (sem esticar)
+                '-vf', 'scale=-2:1080,scale=-2:720,scale=-2:480,scale=-2:360',
+                
+                // Streaming Multirresolução
+                '-var_stream_map', 'v:0,a:0 v:1,a:0 v:2,a:0 v:3,a:0',
+                
+                // Taxas de bits
+                '-b:v:0', '5000k',
+                '-b:v:1', '2500k',
+                '-b:v:2', '1200k',
+                '-b:v:3', '800k',
+
                 '-f', 'hls',
                 '-hls_list_size', '0',
                 '-hls_segment_filename', `${targetDir}/v%v/seg_%03d.ts`
@@ -78,7 +89,7 @@ app.post('/upload-chunk', (req, res) => {
                 if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
             })
             .on('end', () => {
-                console.log(`Processamento concluído: /videos/${folderId}/v0/playlist.m3u8`);
+                console.log(`Processamento concluído: ${folderId}`);
                 if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
             })
             .run();

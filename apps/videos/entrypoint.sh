@@ -12,4 +12,5 @@ npm install $PACOTES --save
 echo "Dependências atualizadas no package.json!"
 
 # Mantém o container rodando
-exec tail -f /dev/null
+# exec tail -f /dev/null
+exec npm run dev

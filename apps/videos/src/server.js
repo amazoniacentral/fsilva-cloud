@@ -34,31 +34,52 @@ app.post('/upload-chunk', (req, res) => {
     }
 
     if (isLast) {
-        console.log(`Upload concluído: ${filename}. Processando...`);
+        console.log(`Upload concluído: ${filename}. Processando todas as resoluções...`);
         
         const folderId = Date.now().toString();
         const targetDir = path.join(VIDEO_DIR, folderId);
         
+        // Garante as pastas v0, v1, v2, v3
         for (let i = 0; i < 4; i++) {
             fs.mkdirSync(path.join(targetDir, `v${i}`), { recursive: true });
         }
 
         ffmpeg(filePath)
+            .inputOptions(['-threads 1'])
             .outputOptions([
                 '-preset', 'veryfast',
                 '-g', '48', '-keyint_min', '48', '-sc_threshold', '0',
+                
+                // Mapeia vídeo e áudio 4 vezes (para V0, V1, V2, V3)
                 '-map', '0:v', '-map', '0:a?',
+                '-map', '0:v', '-map', '0:a?',
+                '-map', '0:v', '-map', '0:a?',
+                '-map', '0:v', '-map', '0:a?',
+                
                 '-c:v', 'libx264',
                 '-c:a', 'aac',
                 '-b:a', '128k',
-                // Simplificamos a escala para garantir compatibilidade
-                '-vf', 'scale=-2:720',
-                '-var_stream_map', 'v:0,a:0',
+                
+                // Escala inteligente: -2 mantém proporção (não estica) e ajusta altura fixa
+                '-filter:v:0', 'scale=-2:1080',
+                '-filter:v:1', 'scale=-2:720',
+                '-filter:v:2', 'scale=-2:480',
+                '-filter:v:3', 'scale=-2:360',
+                
+                // Configuração das Variantes de Stream
+                '-var_stream_map', 'v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3',
+                
+                // Bitrates para cada versão
+                '-b:v:0', '5000k',
+                '-b:v:1', '2500k',
+                '-b:v:2', '1200k',
+                '-b:v:3', '800k',
+                
                 '-f', 'hls',
                 '-hls_list_size', '0',
-                '-hls_segment_filename', `${targetDir}/v0/seg_%03d.ts`
+                '-hls_segment_filename', `${targetDir}/v%v/seg_%03d.ts`
             ])
-            .output(`${targetDir}/v0/playlist.m3u8`)
+            .output(`${targetDir}/v%v/playlist.m3u8`)
             .on('error', (err, stdout, stderr) => {
                 console.error('--- ERRO FFmpeg ---');
                 console.error('Mensagem:', err.message);
@@ -66,7 +87,7 @@ app.post('/upload-chunk', (req, res) => {
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .on('end', () => {
-                console.log(`Sucesso! Vídeo em: /videos/${folderId}/v0/playlist.m3u8`);
+                console.log(`Sucesso! Vídeo disponível em: /videos/${folderId}/v0/playlist.m3u8`);
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             })
             .run();

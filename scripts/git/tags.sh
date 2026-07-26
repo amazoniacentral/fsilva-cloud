@@ -36,7 +36,7 @@ fi
 
 if [ -z "$DESC" ]; then
     echo -e "${YELLOW}ERRO: Descrição obrigatória.${RESET}"
-    echo "Uso: ./gtag.sh 'descrição'  OU  ./gtag.sh 1.0.1 'descrição'"
+    echo "Uso: ./tags.sh 'descrição'  OU  ./tags.sh 1.0.1 'descrição'"
     exit 1
 fi
 

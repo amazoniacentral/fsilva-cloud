@@ -18,7 +18,6 @@ echo -e "${CYAN}--------------------------------------------------------${RESET}
 sed -i '/gtag()/,/^}/d' "$TARGET_FILE"
 sed -i '/gcommit()/,/^}/d' "$TARGET_FILE"
 sed -i '/dexec()/,/^}/d' "$TARGET_FILE"
-echo -e "${RED}Funções removidas.${RESET}"
 
 # 2. REMOVE TODOS OS ALIASES ANTIGOS
 sed -i '/^alias /d' "$TARGET_FILE"

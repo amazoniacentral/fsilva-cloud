@@ -9,7 +9,6 @@ on:
     paths:
       - 'apps/gvendas/**'  # Monitora mudanças no Dockerfile e config do Nginx
       - 'repos/gvendas/**' # Monitora mudanças no código-fonte do app
-
 jobs:
   build:
     runs-on: ubuntu-latest

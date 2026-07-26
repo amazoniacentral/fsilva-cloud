@@ -9,21 +9,27 @@ RESET='\033[0m'
 TARGET_FILE="$HOME/.bashrc"
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
+# Função para exibir o que está no arquivo
+exibir_aliases() {
+    echo -e "${CYAN}--- Conteúdo dos Aliases no .bashrc ---${RESET}"
+    grep '^alias ' "$TARGET_FILE" || echo "Nenhum alias encontrado."
+    echo -e "${CYAN}---------------------------------------${RESET}"
+}
+
 clear
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 echo -e "${YELLOW}          LIMPEZA E APONTAMENTO PARA SCRIPTS${RESET}"
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 
-# 1. REMOVE AS FUNÇÕES ANTIGAS (HARDCODED)
-sed -i '/gtag()/,/^}/d' "$TARGET_FILE"
-sed -i '/gcommit()/,/^}/d' "$TARGET_FILE"
-sed -i '/dexec()/,/^}/d' "$TARGET_FILE"
+# Exibe o estado atual antes de limpar
+echo -e "${YELLOW}Estado atual antes da limpeza:${RESET}"
+exibir_aliases
 
-# 2. REMOVE TODOS OS ALIASES ANTIGOS
+# 1. REMOVE TODOS OS ALIASES ANTIGOS
 sed -i '/^alias /d' "$TARGET_FILE"
-echo -e "${RED}Todos os aliases antigos removidos.${RESET}"
+echo -e "${RED}Todos os aliases antigos foram removidos do arquivo.${RESET}"
 
-# 3. ADICIONA OS NOVOS ALIASES APONTANDO PARA OS ARQUIVOS
+# 2. ADICIONA OS NOVOS ALIASES APONTANDO PARA OS ARQUIVOS
 echo "alias ll='ls -lah'" >> "$TARGET_FILE"
 echo "alias cls='clear'" >> "$TARGET_FILE"
 echo "alias volumes='cd /var/lib/docker/volumes'" >> "$TARGET_FILE"
@@ -35,6 +41,16 @@ echo "alias refresh='source $HOME/.bashrc'" >> "$TARGET_FILE"
 # Apontando para os scripts externos
 echo "alias gtag='bash $SCRIPT_DIR/git/gtag.sh'" >> "$TARGET_FILE"
 echo "alias gcommit='bash $SCRIPT_DIR/git/gcommit.sh'" >> "$TARGET_FILE"
+echo "alias dexec='bash $SCRIPT_DIR/dexec.sh'" >> "$TARGET_FILE"
 
 echo -e "${GREEN}SUCESSO: Apontamentos configurados!${RESET}"
+
+# Exibe o estado novo
+exibir_aliases
+
+# EXECUTA O COMANDO PARA SALVAR/APLICAR
+echo -e "${YELLOW}Aplicando mudanças...${RESET}"
+source "$TARGET_FILE"
+
+echo -e "${GREEN}Configurações carregadas com sucesso!${RESET}"
 echo -e "${CYAN}-------------------- by Francisco Silva ----------------${RESET}\n"

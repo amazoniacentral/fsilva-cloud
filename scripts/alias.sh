@@ -39,8 +39,8 @@ echo "alias atalhos='bash $SCRIPT_DIR/alias.sh'" >> "$TARGET_FILE"
 echo "alias refresh='source $HOME/.bashrc'" >> "$TARGET_FILE"
 
 # Apontando para os scripts externos
-echo "alias gtag='bash $SCRIPT_DIR/git/gtag.sh'" >> "$TARGET_FILE"
-echo "alias gcommit='bash $SCRIPT_DIR/git/gcommit.sh'" >> "$TARGET_FILE"
+echo "alias gtag='bash $SCRIPT_DIR/git/tags.sh'" >> "$TARGET_FILE"
+echo "alias gcommit='bash $SCRIPT_DIR/git/commit.sh'" >> "$TARGET_FILE"
 echo "alias dexec='bash $SCRIPT_DIR/dexec.sh'" >> "$TARGET_FILE"
 
 echo -e "${GREEN}SUCESSO: Apontamentos configurados!${RESET}"

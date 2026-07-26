@@ -34,4 +34,6 @@ services:
       - .env
     environment:
       - NETDATA_CHECK_FOR_UPDATES=yes
-      - NETDATA_ARGUMENTS=-W set global "update every" 3
+      - NETDATA_ARGUMENTS=-W set global "update every" 10
+      - NETDATA_CONFIG_GLOBAL_DBENGINE_DISK_SPACE=2048
+

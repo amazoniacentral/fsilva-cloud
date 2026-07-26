@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'  # Dispara o workflow quando você faz push de uma tag que começa com "v" (ex: v1.0.0)
     paths:
       - 'apps/gvendas/**'  # Monitora mudanças no Dockerfile e config do Nginx
       - 'repos/gvendas/**' # Monitora mudanças no código-fonte do app
@@ -39,5 +41,8 @@ jobs:
           # Caminho do Dockerfile dentro da pasta apps
           file: ./apps/gvendas/Dockerfile
           push: true
-          # Nome da imagem com o SHA do commit para versionamento
-          tags: ghcr.io/${{ github.repository }}/gvendas:${{ github.sha }}
+          # Gera a tag com o SHA, a 'latest', e se for uma tag Git, também gera a tag de versão
+          tags: |
+            ghcr.io/${{ github.repository }}/gvendas:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/gvendas:latest
+            ${{ startsWith(github.ref, 'refs/tags/') && format('ghcr.io/{0}/gvendas:{1}', github.repository, github.ref_name) || '' }}

@@ -49,8 +49,8 @@
                 tbody.innerHTML = '';
                 data.forEach(v => {
                     tbody.innerHTML += `<tr>
-                        <td>${v.id}</td>
-                        <td><strong>${v.titulo || 'Sem Título'}</strong></td>
+                    <td>${v.id}</td>
+                        <td><strong>${v.titulo || v.codificado?'Sem Título':'-'}</strong></td>
                         <td>${formatarData(v.dataCriacao)}</td>
                         <td>${v.tamanhoMB || 0} MB</td>
                         <td>${v.codificado ? '<span class="badge bg-success">Pronto</span>' : '<span class="badge bg-warning">Processando</span>'}</td>

@@ -101,7 +101,8 @@ app.post('/upload-chunk', (req, res) => {
     const filename = req.headers['x-filename'];
     const chunkIndex = parseInt(req.headers['x-chunk-index']);
     const isLast = req.headers['x-is-last'] === 'true';
-    const titulo = req.headers['x-titulo'] || 'Sem Título'; // <--- RECEBENDO O TÍTULO
+    const titulo = decodeURIComponent(req.headers['x-titulo'] || 'Sem Título');
+
     
     if (!filename) return res.status(400).send('Nome do arquivo faltando');
 

@@ -1,0 +1,40 @@
+name: Build Gvendas Automático
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/gvendas/**'  # Monitora mudanças no Dockerfile e config do Nginx
+      - 'repos/gvendas/**' # Monitora mudanças no código-fonte do app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout com submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Login no GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build e Push
+        uses: docker/build-push-action@v5
+        with:
+          # context: '.' permite que o Docker acesse tanto a pasta apps quanto a pasta repos
+          context: .
+          # Caminho correto do seu Dockerfile agora:
+          file: ./apps/gvendas/Dockerfile
+          push: true
+          # Nome da imagem (ajustado para a convenção padrão)
+          tags: ghcr.io/${{ github.repository }}/gvendas:${{ github.sha }}

@@ -10,8 +10,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h3 class="mb-3">Player de Vídeo</h3>
-                <video id="video" controls playsinline style="width: 100%; height: auto;"></video>
+                <!-- Título dinâmico aqui -->
+                <h3 id="videoTitle" class="mb-3">Carregando vídeo...</h3>
+                
+                <video id="video" controls playsinline style="width: 100%; height: auto; background-color: #000;"></video>
+                
                 <div class="mt-3">
                     <a href="/" class="btn btn-secondary">Voltar para lista</a>
                 </div>
@@ -23,8 +26,25 @@
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
         const video = document.getElementById('video');
+        const titleElement = document.getElementById('videoTitle');
         const videoSrc = `https://videos.francsilva.com.br/${videoId}/master.m3u8`;
 
+        // Busca a lista de vídeos para encontrar os metadados deste ID
+        fetch('/videos-list')
+            .then(res => res.json())
+            .then(videos => {
+                const videoData = videos.find(v => v.id === videoId);
+                if (videoData) {
+                    titleElement.innerText = videoData.titulo || "Vídeo Sem Título";
+                } else {
+                    titleElement.innerText = "Vídeo não encontrado";
+                }
+            })
+            .catch(() => {
+                titleElement.innerText = "Erro ao carregar detalhes do vídeo";
+            });
+
+        // Lógica do Player
         if (Hls.isSupported()) {
             const hls = new Hls();
             hls.loadSource(videoSrc);

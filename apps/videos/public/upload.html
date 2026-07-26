@@ -10,27 +10,42 @@
     <div class="container mt-5">
         <div class="card shadow p-4">
             <h2>Upload de Vídeo</h2>
+            
             <div class="mb-3">
+                <label for="videoTitle" class="form-label">Título do Vídeo:</label>
+                <input type="text" id="videoTitle" class="form-control" placeholder="Digite o título do vídeo aqui...">
+            </div>
+
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Arquivo de vídeo:</label>
                 <input type="file" id="fileInput" class="form-control">
             </div>
-            <button onclick="uploadVideo()" class="btn btn-primary">Enviar Vídeo</button>
+
+            <button onclick="uploadVideo()" id="uploadBtn" class="btn btn-primary">Enviar Vídeo</button>
+            <a href="/" class="btn btn-secondary">Voltar para a lista</a>
             
-            <div class="progress mt-3" style="height: 25px;">
+            <div class="progress mt-4" style="height: 25px;">
                 <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
             </div>
-            <p id="status" class="mt-2 text-muted"></p>
+            <p id="status" class="mt-2 text-muted fw-bold text-center">0%</p>
         </div>
     </div>
 
     <script>
         async function uploadVideo() {
             const file = document.getElementById('fileInput').files[0];
-            if (!file) return alert("Selecione um arquivo");
+            const title = document.getElementById('videoTitle').value;
+            
+            if (!title) return alert("Por favor, digite um título.");
+            if (!file) return alert("Selecione um arquivo de vídeo.");
 
-            const CHUNK_SIZE = 2 * 1024 * 1024;
+            const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
             const progressBar = document.getElementById('progressBar');
             const status = document.getElementById('status');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            uploadBtn.disabled = true; // Evita cliques duplos
 
             for (let i = 0; i < totalChunks; i++) {
                 const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
@@ -39,20 +54,30 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/octet-stream',
-                            'X-Filename': file.name,
+                            'X-Filename': encodeURIComponent(file.name), // Codificado para segurança
                             'X-Chunk-Index': i,
-                            'X-Is-Last': (i === totalChunks - 1)
+                            'X-Is-Last': (i === totalChunks - 1),
+                            'X-Titulo': encodeURIComponent(title) // Passando o título
                         },
                         body: chunk
                     });
+
                     if (!response.ok) throw new Error("Erro no servidor");
-                    progressBar.style.width = ((i + 1) / totalChunks) * 100 + "%";
+
+                    // Atualiza barra e porcentagem
+                    const percent = Math.round(((i + 1) / totalChunks) * 100);
+                    progressBar.style.width = percent + "%";
+                    status.innerText = percent + "% concluído";
+
                 } catch (err) {
                     status.innerText = "Erro: " + err.message;
+                    uploadBtn.disabled = false;
                     return;
                 }
             }
-            status.innerText = "Upload finalizado!";
+            status.innerText = "Upload finalizado com sucesso!";
+            alert("Vídeo enviado para a fila de processamento!");
+            window.location.href = '/'; // Redireciona para a lista
         }
     </script>
 </body>

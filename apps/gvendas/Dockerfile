@@ -2,8 +2,8 @@
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 
-# Configura o limite de memória do Node.js para 1GB
-ENV NODE_OPTIONS="--max-old-space-size=1024"
+# Configura o limite de memória do Node.js para 2GB
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # 1. Dependências
 COPY repos/gvendas/package*.json ./
@@ -17,9 +17,10 @@ COPY repos/gvendas/ .
 ARG REACT_APP_API_DOMAIN
 ENV REACT_APP_API_DOMAIN=$REACT_APP_API_DOMAIN
 
+# Adicionado GENERATE_SOURCEMAP=false para economizar RAM durante o build
 RUN export VERSION=$(node -p "require('./package.json').version") && \
     echo "Construindo versão: $VERSION" && \
-    REACT_APP_VERSION=$VERSION npm run build
+    REACT_APP_VERSION=$VERSION GENERATE_SOURCEMAP=false npm run build
 
 # Estágio 2: Nginx
 FROM nginx:stable-alpine

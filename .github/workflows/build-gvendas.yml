@@ -2,8 +2,8 @@ name: Build Gvendas Automático
 
 on:
   push:
-    branches:
-      - main
+    #branches:
+    #  - main
     tags:
       - 'v*'  # Dispara o workflow quando você faz push de uma tag que começa com "v" (ex: v1.0.0)
     paths:

@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
           # O PAT é obrigatório aqui para o Git conseguir ler seus submodules privados
           token: ${{ secrets.MY_PAT }}
 

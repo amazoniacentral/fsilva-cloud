@@ -1,8 +1,9 @@
 services:
   gvendas:
     # 1. Substituímos o 'build' pela sua imagem no GHCR
-    image: ghcr.io/amazoniacentral/fsilva-cloud/gvendas:latest 
+    image: ghcr.io/amazoniacentral/fsilva-cloud/gvendas:v1.0.4 
     #v1.0.1
+    #latest
     
     restart: always
     hostname: gvendas

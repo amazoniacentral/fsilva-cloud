@@ -3,7 +3,7 @@ services:
     image: ghcr.io/amazoniacentral/gvendas/gvendas:v1.1.6
     restart: always
     hostname: gvendas
-    working_dir: /usr/share/nginx/html
+    working_dir: /usr/share/nginx/app
     dns:
       - 1.1.1.1
       - 8.8.8.8
@@ -14,7 +14,7 @@ services:
       - CONFIG_ID=${CONFIG_ID}
       
     volumes:
-      - gvendas_data:/usr/share/nginx/html
+      - gvendas_data:/usr/share/nginx/app
       - certificados_data:/usr/share/nginx/.well-known:ro
       - ../auth-nginx.conf:/etc/nginx/auth-nginx.conf:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro

@@ -12,6 +12,3 @@
 	path = dev/gvendas
 	url = git@github.com:amazoniacentral/gvendas.git
 	branch = develop
-[submodule "scripts/git/dev/sgn"]
-	path = scripts/git/dev/sgn
-	url = git@github.com:amazoniacentral/sgn.git

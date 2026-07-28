@@ -33,7 +33,7 @@ services:
       # =========================
       - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.service=nginx"
+      - "traefik.http.routers.nginx-http.service=django-nginx"
     
       # =========================
       # HTTPS (porta 443)

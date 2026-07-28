@@ -6,10 +6,6 @@
 	path = repos/sgn
 	url = git@github.com:amazoniacentral/sgn.git
 	branch = develop
-[submodule "repos/gvendas"]
-	path = repos/gvendas
-	url = git@github.com:amazoniacentral/gvendas.git
-	branch = develop
 [submodule "repos/push"]
 	path = repos/push
 	url = git@github.com:amazoniacentral/push.git

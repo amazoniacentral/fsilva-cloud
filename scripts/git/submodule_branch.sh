@@ -24,10 +24,25 @@ if [ ! -f ".gitmodules" ]; then
 fi
 
 echo -e "Diretório de trabalho: ${GREEN}$(pwd)${RESET}"
-
-# Solicita o nome ou caminho do submódulo
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
-read -p "Digite o caminho ou nome do submódulo (ex: repos/sgn): " INPUT_PATH
+
+# --- LÓGICA DE SELEÇÃO: Argumento ou Menu ---
+if [ -n "$1" ]; then
+    # Se passou argumento, usa ele
+    INPUT_PATH="$1"
+else
+    # Se não passou, abre menu
+    echo -e "${YELLOW}Selecione o submódulo pelo número:${RESET}"
+    mapfile -t LISTA_SUBS < <(git config --file .gitmodules --get-regexp path | awk '{print $2}')
+    
+    select INPUT_PATH in "${LISTA_SUBS[@]}"; do
+        if [ -n "$INPUT_PATH" ]; then
+            break
+        else
+            echo -e "${RED}Opção inválida.${RESET}"
+        fi
+    done
+fi
 
 # Tenta encontrar o caminho exato registrado no .gitmodules
 MODULE_PATH=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep -E "(/|^)$INPUT_PATH$" | head -n 1)
@@ -36,15 +51,13 @@ if [ -z "$MODULE_PATH" ]; then
     MODULE_PATH="$INPUT_PATH"
 fi
 
+# Validação Final
 if ! git config --file .gitmodules --get-regexp path | grep -q "$MODULE_PATH"; then
     echo -e "${RED}ERRO: O submódulo '$MODULE_PATH' não foi encontrado no .gitmodules.${RESET}"
-    echo "Caminhos disponíveis:"
-    git config --file .gitmodules --get-regexp path | awk '{print " - " $2}'
     exit 1
 fi
 
 read -p "Digite a branch que deseja usar (ex: main, develop): " TARGET_BRANCH
-
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 echo -e "Mudando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"
@@ -57,35 +70,26 @@ git submodule sync -- "$MODULE_PATH"
 if [ -d "$MODULE_PATH" ]; then
     cd "$MODULE_PATH" || exit
     
-    # Aborta qualquer operação de merge/rebase travada anterior
     git merge --abort 2>/dev/null
     git rebase --abort 2>/dev/null
     
-    # Busca a branch alvo do servidor
     git fetch origin "$TARGET_BRANCH"
     
-    # Força a troca para a branch alvo e reseta para ficar IDÊNTICO ao servidor
-    # Isso apaga qualquer commit local que não esteja no servidor
     git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
     git reset --hard "origin/$TARGET_BRANCH"
     git clean -fd
     
     cd - > /dev/null
 else
-    # Se a pasta não existir, inicializa do zero
     git submodule update --init --force -- "$MODULE_PATH"
 fi
 
 # 3. Finalização e Commit no projeto principal
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 
-# Adiciona as alterações do .gitmodules e a nova referência do submódulo
 git add .gitmodules "$MODULE_PATH"
-
-# Adiciona qualquer outra mudança pendente (como arquivos deletados no pai)
 git add -u
 
-# Commit apenas se houver algo no stage
 if ! git diff --cached --quiet; then
     git commit -m "Substituição total: $MODULE_PATH fixado em $TARGET_BRANCH"
     echo -e "${GREEN}SUCESSO: Submódulo atualizado e alterações commitadas.${RESET}"

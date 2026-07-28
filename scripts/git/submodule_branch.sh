@@ -41,20 +41,29 @@ fi
 # --- BUSCA DE BRANCHES NO SERVIDOR ---
 echo -e "${YELLOW}Buscando branches remotas para '$MODULE_PATH'...${RESET}"
 
-# Inicializa ou garante que temos o diretório
 git submodule update --init -- "$MODULE_PATH" > /dev/null
 
 cd "$MODULE_PATH" || exit
 git fetch origin --quiet
 
-# Lista branches remotas, remove o prefixo 'origin/', remove o HEAD
-mapfile -t LISTA_BRANCHES < <(git branch -r | grep -v '->' | sed 's/origin\///')
+# Correção: removemos o grep que causava erro e filtramos apenas as linhas necessárias
+mapfile -t LISTA_BRANCHES < <(git branch -r | grep -v "HEAD" | sed 's/origin\///')
 cd - > /dev/null
 
 echo -e "${YELLOW}Selecione a branch desejada:${RESET}"
 select TARGET_BRANCH in "${LISTA_BRANCHES[@]}"; do
-    [ -n "$TARGET_BRANCH" ] && break || echo -e "${RED}Opção inválida.${RESET}"
+    if [ -n "$TARGET_BRANCH" ]; then
+        break
+    else
+        echo -e "${RED}Opção inválida.${RESET}"
+    fi
 done
+
+# Validação de Segurança
+if [ -z "$TARGET_BRANCH" ]; then
+    echo -e "${RED}ERRO: Nenhuma branch foi selecionada. Operação cancelada.${RESET}"
+    exit 1
+fi
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"
 echo -e "Aplicando: ${YELLOW}$MODULE_PATH${RESET} -> Branch: ${YELLOW}$TARGET_BRANCH${RESET}"

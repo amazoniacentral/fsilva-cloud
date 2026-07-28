@@ -46,13 +46,15 @@ git submodule update --init -- "$MODULE_PATH" > /dev/null
 cd "$MODULE_PATH" || exit
 git fetch origin --quiet
 
-# Correção: removemos o grep que causava erro e filtramos apenas as linhas necessárias
-mapfile -t LISTA_BRANCHES < <(git branch -r | grep -v "HEAD" | sed 's/origin\///')
+# Correção: removemos espaços extras do início e limpamos o prefixo origin/
+mapfile -t LISTA_BRANCHES < <(git branch -r | grep -v "HEAD" | sed 's/origin\///' | sed 's/^[[:space:]]*//')
 cd - > /dev/null
 
 echo -e "${YELLOW}Selecione a branch desejada:${RESET}"
 select TARGET_BRANCH in "${LISTA_BRANCHES[@]}"; do
     if [ -n "$TARGET_BRANCH" ]; then
+        # Limpeza extra para garantir que não restem espaços na variável
+        TARGET_BRANCH=$(echo "$TARGET_BRANCH" | xargs)
         break
     else
         echo -e "${RED}Opção inválida.${RESET}"

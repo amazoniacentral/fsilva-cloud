@@ -17,19 +17,22 @@ echo -e "${CYAN}--------------------------------------------------------${RESET}
 
 # 1. Coleta de dados
 read -p "URL do repositório remoto: " REPO_URL
-read -p "Caminho onde o submódulo será instalado (ex: libs/meu-modulo): " MODULE_PATH
+read -p "Caminho onde o submódulo será instalado (ex: dev/gvendas): " MODULE_PATH
 read -p "Branch (deixe em branco para 'main'): " BRANCH
 BRANCH=${BRANCH:-main}
 
-# 2. Validações básicas
+# 2. Validações e Limpeza de Erros Anteriores
 if [ -z "$REPO_URL" ] || [ -z "$MODULE_PATH" ]; then
     echo -e "${RED}ERRO: URL e Caminho são obrigatórios.${RESET}"
     exit 1
 fi
 
-if [ -d "$MODULE_PATH" ] || [ -f "$MODULE_PATH" ]; then
-    echo -e "${RED}ERRO: O caminho '$MODULE_PATH' já existe. Escolha outro ou remova o existente.${RESET}"
-    exit 1
+# Se o caminho existir, tentamos limpar qualquer estado "sujo" (submódulo mal instalado)
+if [ -d "$MODULE_PATH" ]; then
+    echo -e "${YELLOW}O caminho '$MODULE_PATH' já existe. Limpando índice do Git e repositórios aninhados...${RESET}"
+    git rm --cached "$MODULE_PATH" > /dev/null 2>&1
+    rm -rf "$MODULE_PATH/.git"
+    echo -e "${GREEN}Limpeza concluída.${RESET}"
 fi
 
 echo -e "${CYAN}--------------------------------------------------------${RESET}"

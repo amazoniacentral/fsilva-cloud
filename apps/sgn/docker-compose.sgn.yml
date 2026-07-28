@@ -22,9 +22,7 @@ services:
         
   # APP PRINCIPAL (Django)
   django:
-    build: 
-      context: ../../
-      dockerfile: ./apps/sgn/Dockerfile
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
     env_file:
       - .env 
     restart: always
@@ -83,9 +81,7 @@ services:
 
   # WORKER
   django-celery-worker:
-    build: 
-      context: ../../
-      dockerfile: ./apps/sgn/Dockerfile
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
     restart: always
     hostname: worker-task
     working_dir: /code
@@ -127,9 +123,7 @@ services:
         
   # BEAT
   django-celery-beat:
-    build: 
-      context: ../../
-      dockerfile: ./apps/sgn/Dockerfile
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
     restart: always
     hostname: worker-beat
     working_dir: /code

@@ -1,8 +1,6 @@
 services:
   whatsapp:
-    build: 
-      context: ../../
-      dockerfile: ./apps/whatsapp/Dockerfile
+    image: ghcr.io/amazoniacentral/whatsapp/whatsapp:v1.0.0
     restart: always
     hostname: whatsapp
     env_file:

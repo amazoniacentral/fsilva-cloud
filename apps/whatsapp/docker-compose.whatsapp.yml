@@ -8,10 +8,10 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
-    working_dir: /code
+    working_dir: /code/src
     volumes:
-      - whatsapp_sessions:/code/sessions
-      - whatsapp_logs:/code/logs
+      - whatsapp_sessions:/code/src/sessions
+      - whatsapp_logs:/code/src/logs
     networks:
       net_boot:
         aliases:

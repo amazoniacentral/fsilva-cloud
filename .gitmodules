@@ -2,10 +2,6 @@
 	path = repos/docker-vps
 	url = git@github.com:amazoniacentral/docker-vps.git
 	branch = main
-[submodule "repos/push"]
-	path = repos/push
-	url = git@github.com:amazoniacentral/push.git
-	branch = main
 [submodule "dev/gvendas"]
 	path = dev/gvendas
 	url = git@github.com:amazoniacentral/gvendas.git

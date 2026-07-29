@@ -10,3 +10,7 @@
 	path = dev/sgn
 	url = git@github.com:amazoniacentral/sgn.git
 	branch = develop
+[submodule "dev/whatsapp"]
+	path = dev/whatsapp
+	url = git@github.com:amazoniacentral/whatsapp.git
+	branch = main

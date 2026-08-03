@@ -72,6 +72,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      django-nginx:
+        condition: service_started
+        
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import socket; s = socket.socket(); s.connect((\"localhost\", 8000))'"]
       interval: 10s

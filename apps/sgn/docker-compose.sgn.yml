@@ -16,6 +16,9 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
+    depends_on:
+      django:
+        condition: service_healthy
         
   # APP PRINCIPAL (Django)
   django:
@@ -68,8 +71,6 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
-      django-nginx:
         condition: service_started
         
     healthcheck:

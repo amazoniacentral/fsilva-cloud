@@ -22,7 +22,7 @@ services:
         
   # APP PRINCIPAL (Django)
   django:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.1
     env_file:
       - .env 
     restart: always

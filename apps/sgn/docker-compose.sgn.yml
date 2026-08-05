@@ -82,7 +82,7 @@ services:
 
   # WORKER
   django-celery-worker:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.1
     restart: always
     hostname: worker-task
     working_dir: /code
@@ -124,7 +124,7 @@ services:
         
   # BEAT
   django-celery-beat:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.0
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.1
     restart: always
     hostname: worker-beat
     working_dir: /code

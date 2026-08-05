@@ -5,6 +5,9 @@ services:
   gvendas:
     networks:
       - net_tunnel
+  whatsapp:
+    networks:
+      - net_tunnel
   django-nginx:
     networks:
       - net_tunnel

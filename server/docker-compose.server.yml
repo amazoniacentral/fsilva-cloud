@@ -30,6 +30,7 @@ volumes:
   certificados_data:
   backups:
   n8n_data:
+  ollama_data:
   pdf_docs_data:
   treinamento_ia:
   videos_data:

@@ -92,8 +92,8 @@ services:
     container_name: ollama
     expose:
       - "11434"
-  networks:
-    - net_n8n
+    networks:
+      - net_n8n
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped

@@ -99,6 +99,7 @@ services:
       - 1.1.1.1
     volumes:
       - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_NUM_PARALLEL=1
     restart: unless-stopped
-
           

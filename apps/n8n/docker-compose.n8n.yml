@@ -89,14 +89,16 @@ services:
         
   ollama:
     image: ollama/ollama:latest
-    container_name: ollama
     expose:
       - "11434"
     networks:
       - net_n8n
+      - net_web_only
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
 
           
-      

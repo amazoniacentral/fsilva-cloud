@@ -53,12 +53,10 @@ services:
       - PYTHONPATH=/code
       - MALLOC_ARENA_MAX=2
     networks:
-      net_boot:
-        aliases:
-          - django-srv
-      net_n8n:
-      net_db:
-      net_web_only:
+      - net_boot
+      - net_n8n
+      - net_db
+      - net_web_only
     deploy:
       resources:
         limits:

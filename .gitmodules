@@ -14,3 +14,7 @@
 	path = dev/whatsapp
 	url = git@github.com:amazoniacentral/whatsapp.git
 	branch = main
+[submodule "dev/contabilidade"]
+	path = dev/contabilidade
+	url = git@github.com:amazoniacentral/contabilidade.git
+	branch = main

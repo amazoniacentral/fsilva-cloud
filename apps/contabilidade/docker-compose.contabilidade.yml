@@ -1,7 +1,7 @@
 services:
   # CDN - Arquivos Públicos
   contabilidade:
-    image: nginx:alpine
+    image: ghcr.io/amazoniacentral/contabilidade/contabilidade:v1.0.1
     # container_name: media
     restart: always
     hostname: contabilidade

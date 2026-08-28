@@ -8,6 +8,7 @@ services:
     volumes:
       # A VERDADE: Mapeie DIRETAMENTE sobre o default.conf para eliminar o arquivo da imagem
       #- ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - media_data:/app/storage/media_files:ro
     working_dir: /app
     deploy:
       resources:

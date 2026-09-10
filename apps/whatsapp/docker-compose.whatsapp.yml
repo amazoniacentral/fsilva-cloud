@@ -5,6 +5,8 @@ services:
     hostname: whatsapp
     env_file:
       - .env 
+    environment:
+      - NODE_OPTIONS=--no-experimental-fetch
     dns:
       - 1.1.1.1
       - 8.8.8.8

@@ -1,6 +1,6 @@
 services:
   whatsapp:
-    image: ghcr.io/amazoniacentral/whatsapp/whatsapp:v1.0.78
+    image: ghcr.io/amazoniacentral/whatsapp/whatsapp:v1.0.79
     restart: always
     hostname: whatsapp
     env_file:

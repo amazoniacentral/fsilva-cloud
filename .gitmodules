@@ -18,3 +18,7 @@
 	path = dev/contabilidade
 	url = git@github.com:amazoniacentral/contabilidade.git
 	branch = main
+[submodule "dev/cliente"]
+	path = dev/cliente
+	url = git@github.com:amazoniacentral/cliente.git
+	branch = main

@@ -8,6 +8,7 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    command: ["node", "--net-family=ipv4", "src/server.js"]
     working_dir: /code/src
     volumes:
       - whatsapp_sessions:/code/src/sessions
@@ -28,4 +29,3 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
-

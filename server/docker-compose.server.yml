@@ -26,6 +26,7 @@ volumes:
   netdatalib:
   netdatacache:
   whatsapp_sessions:
+  whatsapp_database:
   whatsapp_logs:
   certificados_data:
   backups:

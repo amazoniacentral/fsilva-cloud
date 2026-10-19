@@ -355,5 +355,8 @@ echo -ne "${CYAN}Build Cache Acumulado:${RESET} "; if [[ "$CACHE_RECLAIM" == "0B
 
 echo -e "\n${YELLOW}DICAS DE LIMPEZA:${RESET}"
 echo -e "1. Limpar Tudo: ${CYAN}docker system prune -f${RESET}"
-echo -e "2. Limpar Cache: ${CYAN}docker builder prune -f${RESET}"
+echo -e "2. Limpar Cache: ${CYAN}docker builder prune -f${RESET}" 
+echo -e "3. Limpar Imagens: ${CYAN}docker image prune -a -f${RESET}" 
+
+
 echo -e "${CYAN}================================================================${RESET}"

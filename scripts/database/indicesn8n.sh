@@ -16,22 +16,6 @@ if [ -z "$ADMIN_USER" ]; then
     ADMIN_USER="postgres"
 fi
 
-# Função para garantir que a entrada não seja vazia
-get_input() {
-    local prompt="$1"
-    local var_name="$2"
-    local input=""
-    
-    while [ -z "$input" ]; do
-        echo -n "$prompt"
-        read -r input < /dev/tty
-        if [ -z "$input" ]; then
-            echo "ERRO: O campo não pode ser vazio. Tente novamente."
-        fi
-    done
-    eval "$var_name=\"$input\""
-}
-
 echo "================================================================"
 echo "       OTIMIZAÇÃO DE BANCO - N8N CHAT HISTORIES                 "
 echo "================================================================"
@@ -63,9 +47,35 @@ done
 echo "Container selecionado: $CONTAINER_NAME"
 echo "----------------------------------------------------------------"
 
-# Nome do Banco de Dados do N8N
-get_input "Nome do banco de dados do N8N: " DB_NAME
+echo "Buscando bancos de dados disponíveis no container..."
 
+# Consulta SQL para listar apenas os bancos de dados reais (excluindo templates padrão)
+mapfile -t DATABASES < <(docker exec -i "$CONTAINER_NAME" psql -U "$ADMIN_USER" -d postgres -t -A -c "
+SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;
+")
+
+if [ ${#DATABASES[@]} -eq 0 ]; then
+    echo "ERRO: Nenhum banco de dados encontrado ou falha na conexão."
+    exit 1
+fi
+
+echo "Selecione o banco de dados do N8N:"
+for i in "${!DATABASES[@]}"; do
+    echo "  $((i+1))) ${DATABASES[$i]}"
+done
+
+while true; do
+    echo -n "Digite o número correspondente ao banco: "
+    read -r DB_CHOICE < /dev/tty
+    if [[ "$DB_CHOICE" =~ ^[0-9]+$ ]] && [ "$DB_CHOICE" -ge 1 ] && [ "$DB_CHOICE" -le "${#DATABASES[@]}" ]; then
+        DB_NAME="${DATABASES[$((DB_CHOICE-1))]}"
+        break
+    else
+        echo "Opção inválida."
+    fi
+done
+
+echo "Banco selecionado: $DB_NAME"
 echo "----------------------------------------------------------------"
 echo "Aplicando tabela e índice de performance no banco '$DB_NAME'..."
 

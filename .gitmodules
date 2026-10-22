@@ -18,3 +18,7 @@
 	path = dev/cliente
 	url = git@github.com:amazoniacentral/cliente.git
 	branch = main
+[submodule "dev/gvendas"]
+	path = dev/gvendas
+	url = git@github.com:amazoniacentral/gvendas.git
+	branch = develop

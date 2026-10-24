@@ -68,8 +68,8 @@ x-n8n-base: &n8n-base
         cpus: "1.0"
         memory: 1G
       reservations:
-        cpus: "0.10"
-        memory: 100M
+        cpus: "0.30"
+        memory: 256M
 
 services:
   n8n:

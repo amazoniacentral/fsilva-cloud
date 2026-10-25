@@ -1,6 +1,6 @@
 services:
   cliente:
-    image: ghcr.io/amazoniacentral/cliente/cliente:v1.0.1
+    image: ghcr.io/amazoniacentral/cliente/cliente:v1.0.3
     restart: always
     hostname: cliente
     dns:

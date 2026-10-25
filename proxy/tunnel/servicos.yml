@@ -5,6 +5,10 @@ services:
   gvendas:
     networks:
       - net_tunnel
+  cliente:
+    networks:
+      - net_tunnel
+      
   whatsapp:
     networks:
       - net_tunnel

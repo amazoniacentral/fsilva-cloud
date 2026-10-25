@@ -1,0 +1,22 @@
+services:
+  cliente:
+    image: ghcr.io/amazoniacentral/cliente/cliente:v1.0.0
+    restart: always
+    hostname: cliente
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    working_dir: /code/src
+    networks:
+      net_web_only:
+    expose:
+      - ${PORT:-3000}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
+

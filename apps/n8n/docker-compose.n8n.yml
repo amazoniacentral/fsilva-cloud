@@ -27,14 +27,14 @@ x-n8n-base: &n8n-base
     - N8N_HOST=n8n.${DEFAULT_DOMAIN:-francsilva.com.br}
     - WEBHOOK_URL=https://webhook.${DEFAULT_DOMAIN:-francsilva.com.br}/
     - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_DOMAIN:-francsilva.com.br}/
-    - EXECUTIONS_DATA_MAX_AGE=48
-    - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
     - EXECUTIONS_DATA_SAVE_ON_ERROR=all
     - N8N_RESTRICT_FILE_ACCESS_TO="/home/node/files/"
     - EXECUTIONS_MODE=queue    
     - QUEUE_BULL_REDIS_HOST=redis
     - QUEUE_BULL_REDIS_PORT=6379   
     - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+    - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+    - EXECUTIONS_DATA_MAX_AGE=24   
 
 
   networks:

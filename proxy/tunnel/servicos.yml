@@ -8,7 +8,6 @@ services:
   cliente:
     networks:
       - net_tunnel
-      
   whatsapp:
     networks:
       - net_tunnel

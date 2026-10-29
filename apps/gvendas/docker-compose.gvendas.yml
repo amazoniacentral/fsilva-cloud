@@ -1,6 +1,6 @@
 services:
   gvendas:
-    image: ghcr.io/amazoniacentral/gvendas/gvendas:v1.1.77
+    image: ghcr.io/amazoniacentral/gvendas/gvendas:v1.1.78
     restart: always
     hostname: gvendas
     working_dir: /usr/share/nginx/app

@@ -146,7 +146,7 @@ services:
     depends_on:
       redis:
         condition: service_started
+      django:
+        condition: service_healthy
       django-celery-worker:
         condition: service_started
-        
-

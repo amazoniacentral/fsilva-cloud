@@ -1,8 +1,7 @@
-# Usa uma versão estável e leve do Node.js baseada em Debian
-FROM node:18-bullseye-slim
+# Usa uma versão moderna e estável do Node.js baseada no Debian atualizado
+FROM node:20-slim
 
-# Instala o FFmpeg e dependências necessárias
-# O rm -rf limpa os arquivos temporários, deixando a imagem mais leve
+# Instala o FFmpeg e dependências necessárias de forma limpa
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*

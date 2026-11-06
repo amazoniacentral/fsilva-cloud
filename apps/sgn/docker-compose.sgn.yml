@@ -22,7 +22,7 @@ services:
         
   # APP PRINCIPAL (Django)
   django:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.172
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.171
     env_file:
       - .env 
     restart: always
@@ -80,7 +80,7 @@ services:
 
   # WORKER
   django-celery-worker:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.172
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.171
     restart: always
     hostname: worker-task
     working_dir: /code

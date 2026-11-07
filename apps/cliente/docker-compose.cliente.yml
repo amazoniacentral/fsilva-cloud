@@ -6,7 +6,7 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
-    working_dir: /code/src
+    working_dir: /code
     networks:
       net_web_only:
     expose:

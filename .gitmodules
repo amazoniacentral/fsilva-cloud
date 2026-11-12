@@ -22,3 +22,7 @@
 	path = dev/gvendas
 	url = git@github.com:amazoniacentral/gvendas.git
 	branch = develop
+[submodule "dev/videos"]
+	path = dev/videos
+	url = git@github.com:amazoniacentral/videos.git
+	branch = main

@@ -48,6 +48,7 @@ services:
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
       - /root/.ssh:/root/.ssh:ro
+      - /root/.ssh/id_rsa_oidc:/code/.oidc.key:ro
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code

@@ -54,7 +54,8 @@ pgdata/
 **/acme.json
 **/.htpasswd
 **/node_modules/
-**/oidc.key
+**/.oidc.key
+
 
 # --- Git Submodules ---
 # Não ignore as pastas dos submódulos! O Git precisa rastrear os ponteiros.

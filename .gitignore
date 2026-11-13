@@ -54,7 +54,9 @@ pgdata/
 **/acme.json
 **/.htpasswd
 **/node_modules/
-**/*.oidc.key*
+**/.oidc.key
+.oidc.key
+
 
 
 # --- Git Submodules ---

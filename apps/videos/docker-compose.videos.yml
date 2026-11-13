@@ -32,3 +32,8 @@ services:
         reservations:
           cpus: '0.05'
           memory: 32M   
+          
+    depends_on:
+      videos:
+        condition: service_started
+          

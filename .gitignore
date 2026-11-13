@@ -55,7 +55,6 @@ pgdata/
 **/.htpasswd
 **/node_modules/
 **/.oidc.key
-.oidc.key
 
 
 

@@ -1,6 +1,6 @@
 services:
   videos:
-    image: ghcr.io/amazoniacentral/videos/videos:v1.0.19
+    image: ghcr.io/amazoniacentral/videos/videos:v1.0.20
     volumes:
       - videos_data:/var/www/videos
     expose:

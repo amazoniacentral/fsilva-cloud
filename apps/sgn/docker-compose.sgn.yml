@@ -22,7 +22,7 @@ services:
         
   # APP PRINCIPAL (Django)
   django:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.174
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.175
     env_file:
       - .env 
     restart: always
@@ -48,7 +48,7 @@ services:
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
       - /root/.ssh:/root/.ssh:ro
-      - /root/.ssh/id_rsa_oidc:/code/oidc.key:ro
+      - /root/.ssh/id_rsa_oidc:/code/.oidc.key:ro
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/code
@@ -81,7 +81,7 @@ services:
 
   # WORKER
   django-celery-worker:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.174
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.175
     restart: always
     hostname: worker-task
     working_dir: /code
@@ -123,7 +123,7 @@ services:
         
   # BEAT
   django-celery-beat:
-    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.174
+    image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.175
     restart: always
     hostname: worker-beat
     working_dir: /code

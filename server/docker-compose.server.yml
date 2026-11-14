@@ -35,6 +35,7 @@ volumes:
   pdf_docs_data:
   treinamento_ia:
   videos_data:
+  videos_files:
     
 networks:
   net_web_only:

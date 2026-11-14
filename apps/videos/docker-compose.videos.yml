@@ -1,11 +1,18 @@
 services:
   videos:
     image: ghcr.io/amazoniacentral/videos/videos:v1.0.22
-    volumes:
-      - videos_data:/var/www/videos
     expose:
       - "3000"
     restart: always
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - AUTH_TRUST_HOST=true
+    volumes:
+      - videos_data:/app/data                 # Salva o banco SQLite de produção
+      - videos_files:/var/www/videos
+
     deploy:
       resources:
         limits:
@@ -18,7 +25,7 @@ services:
   nginx-videos:
     image: nginx:alpine
     volumes:
-      - videos_data:/var/www/videos:ro
+      - videos_files:/var/www/videos:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro 
     expose:
       - "80"

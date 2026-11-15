@@ -1,6 +1,6 @@
 services:
   videos:
-    image: ghcr.io/amazoniacentral/videos/videos:v1.0.38
+    image: ghcr.io/amazoniacentral/videos/videos:v1.0.39
     expose:
       - "3000"
     restart: always

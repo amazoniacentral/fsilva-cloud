@@ -16,11 +16,12 @@ DATA_LOG="\\n\\n== \$(date '+\%Y-\%m-\%d \%H:\%M:\%S') == "
 
 declare -a TAREFAS=(
     "0 */12 * * * /sbin/htpdate -s -t google.com >> $LOGS_DIR/cron.log 2>&1"
-    "0 5 * * 0 (echo -e \"$DATA_LOG Limpeza VPS\" && /usr/bin/bash $SCRIPT_DIR/clean.sh) >> $LOGS_DIR/cron.log 2>&1"
-    "0 3 * * * /usr/bin/flock -n /tmp/gvendas_backup.lock /usr/bin/bash -c \"echo -e \\\"$DATA_LOG Backup Diário\\\" && /usr/bin/bash $SCRIPT_DIR/backup_db.sh && /usr/bin/bash $SCRIPT_DIR/backup_rclone.sh\" >> $LOGS_DIR/cron.log 2>&1"
-    "0 4 * * 0 (echo -e \"$DATA_LOG Limpeza Traefik\" && /usr/bin/bash $SCRIPT_DIR/limpar_traefik.sh) >> $LOGS_DIR/cron.log 2>&1"
-    "*/16 * * * * (echo -e \"$DATA_LOG Sync Backups\" && /usr/bin/bash $SCRIPT_DIR/backup/sync_rclone.sh) >> $LOGS_DIR/cron.log 2>&1"
-    "*/14 * * * * (echo -e \"$DATA_LOG Copy Backups\" && /usr/bin/bash $SCRIPT_DIR/backup/copy_rclone.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "0 4 * * 0 (echo -e \"$DATA_LOG Limpeza VPS\" && /usr/bin/bash $SCRIPT_DIR/clean.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "0 */8 * * * (echo -e \"$DATA_LOG Backup Banco de Dados\" && /usr/bin/bash $SCRIPT_DIR/backup/r2/backup-db-encrypted.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "0 5 * * 0 (echo -e \"$DATA_LOG Backup Volume de Dados\" && /usr/bin/bash $SCRIPT_DIR/backup/r2/backup-volumes-encrypted.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "*/45 * * * * (echo -e \"$DATA_LOG Baixar catalogos brutos\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/download-catalogo-bruto.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "2 * * * * (echo -e \"$DATA_LOG Baixar treinamento IA\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/download-catalogo-bruto.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "*/30 * * * * (echo -e \"$DATA_LOG Enviar Catalogo Compress\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/envio-catalogo-compress.sh) >> $LOGS_DIR/cron.log 2>&1"
 )
 
 

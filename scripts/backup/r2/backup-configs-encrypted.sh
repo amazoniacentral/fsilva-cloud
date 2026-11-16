@@ -14,13 +14,13 @@ echo "Origem: ${BASE_DIR}"
 echo "Destino: ${RCLONE_REMOTE} (bucket config)"
 echo "===================================================="
 
-# 2. Executa o rclone via Docker ignorando node_modules e filtrando apenas os arquivos permitidos
+# 2. Executa o rclone via Docker ignorando completamente o node_modules e filtrando configs
 docker run --rm \
   --name "rclone_configs_backup" \
   -v "${BASE_DIR}":/data:ro \
   -v "${RCLONE_CONFIG_HOST}":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf copy /data "${RCLONE_REMOTE}" \
-  --exclude "**/node_modules/**" \
+  --exclude "**/node_modules/" \
   --include "*.env" \
   --include "*.env.*" \
   --include "*.yml" \

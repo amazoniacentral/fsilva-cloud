@@ -16,7 +16,7 @@ if [ -z "$CONTAINERS_POSTGRES" ]; then
     exit 1
 fi
 
-echo "Iniciando backup em massa do PostgreSQL e envio criptografado para o R2..."
+echo "Iniciando backup em massa do PostgreSQL e envio imediato do arquivo novo para o R2..."
 
 # Loop para processar cada container encontrado
 for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
@@ -69,37 +69,41 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
         PASTA_DESTINO="/var/lib/docker/volumes/${VOLUME_BACKUP_COMPETE}/_data/${DB}/${DATA_PASTA}"
         mkdir -p "$PASTA_DESTINO"
 
+        # Nome do arquivo de backup específico gerado agora
+        BACKUP_FILENAME="${DB}-${CONTAINER_DB_ALVO}-$(date +%Y-%m-%d)-$(date +%H%M).backup"
+        LOCAL_FILE_PATH="$PASTA_DESTINO/$BACKUP_FILENAME"
+
         # 7. Executa o pg_dump compactado diretamente de dentro do container
         docker exec -i "$CONTAINER_DB_ALVO" pg_dump \
             -U "$DB_USER" \
             -d "$DB" \
             -F c \
             -Z 9 \
-            -b > "$PASTA_DESTINO/${DB}-${CONTAINER_DB_ALVO}-$(date +%Y-%m-%d)-$(date +%H%M).backup"
+            -b > "$LOCAL_FILE_PATH"
 
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
-            echo "    Backup local concluído com sucesso: $DB"
+            echo "    Backup local concluído com sucesso: $BACKUP_FILENAME"
+
+            # 8. Envia APENAS este arquivo recém-criado de forma criptografada para o R2
+            echo "    Enviando arquivo novo para o Cloudflare R2..."
+            if docker volume inspect "$VOLUME_BACKUP_COMPETE" >/dev/null 2>&1; then
+                docker run --rm \
+                  --name "rclone_upload_${PROJECT_NAME}_${DB}" \
+                  -v "${VOLUME_BACKUP_COMPETE}":/data:ro \
+                  -v "$RCLONE_CONFIG_HOST":/config/rclone \
+                  rclone/rclone --config /config/rclone/rclone.conf copyto \
+                  "/data/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
+                  "${RCLONE_REMOTE}/${PROJECT_NAME}/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
+                  --buffer-size 16M
+                echo "    Upload criptografado do arquivo concluído!"
+            else
+                echo "    Aviso: Volume ${VOLUME_BACKUP_COMPETE} não encontrado para upload."
+            fi
+
         else
-            echo "    Erro ao fazer backup local: $DB"
+            echo "    Erro ao fazer backup local do banco: $DB"
         fi
     done
-
-    # 8. Envio 100% Criptografado para o Cloudflare R2 via Rclone (Docker Container)
-    echo " -> Enviando backups criptografados para o Cloudflare R2..."
-    if docker volume inspect "$VOLUME_BACKUP_COMPETE" >/dev/null 2>&1; then
-        docker run --rm \
-          --name "rclone_db_upload_${PROJECT_NAME}" \
-          -v "${VOLUME_BACKUP_COMPETE}":/data:ro \
-          -v "$RCLONE_CONFIG_HOST":/config/rclone \
-          rclone/rclone --config /config/rclone/rclone.conf copy /data "${RCLONE_REMOTE}/${PROJECT_NAME}" \
-          --fast-list \
-          --buffer-size 16M \
-          --transfers 2 \
-          --checkers 4
-        echo "    Upload criptografado para o R2 concluído!"
-    else
-        echo "    Aviso: Volume ${VOLUME_BACKUP_COMPETE} não encontrado para upload."
-    fi
 
     # 9. Limpeza de backups antigos locais (+180 dias)
     echo " -> Executando limpeza local de backups antigos (+180 dias)..."

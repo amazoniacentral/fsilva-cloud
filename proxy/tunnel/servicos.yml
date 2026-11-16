@@ -29,9 +29,6 @@ services:
   videos:
     networks:
       - net_tunnel
-  nginx-videos:
-    networks:
-      - net_tunnel
   pdf-service:
     networks:
       - net_tunnel

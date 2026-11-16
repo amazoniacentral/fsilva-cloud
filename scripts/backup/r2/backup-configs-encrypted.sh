@@ -5,7 +5,6 @@ set -e
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../../..")             # /opt/fsilva-cloud
 RCLONE_CONFIG_HOST="${BASE_DIR}/config/rclone"
-# Ajustado para usar o remote dedicado 'config-crypt' que aponta para o bucket 'config'
 RCLONE_REMOTE="config-crypt:"
 
 echo "===================================================="
@@ -14,19 +13,19 @@ echo "Origem: ${BASE_DIR}"
 echo "Destino: ${RCLONE_REMOTE} (bucket config)"
 echo "===================================================="
 
-# 2. Executa o rclone via Docker ignorando completamente o node_modules e filtrando configs
+# 2. Executa o rclone via Docker com --filter ordenado (bloqueia node_modules na primeira linha)
 docker run --rm \
   --name "rclone_configs_backup" \
   -v "${BASE_DIR}":/data:ro \
   -v "${RCLONE_CONFIG_HOST}":/config/rclone \
   rclone/rclone --config /config/rclone/rclone.conf copy /data "${RCLONE_REMOTE}" \
-  --exclude "**/node_modules/" \
-  --include "*.env" \
-  --include "*.env.*" \
-  --include "*.yml" \
-  --include "*.yaml" \
-  --include "*.conf" \
-  --exclude "**" \
+  --filter "- **/node_modules/**" \
+  --filter "+ *.env" \
+  --filter "+ *.env.*" \
+  --filter "+ *.yml" \
+  --filter "+ *.yaml" \
+  --filter "+ *.conf" \
+  --filter "- *" \
   --fast-list \
   --buffer-size 16M \
   --transfers 2 \

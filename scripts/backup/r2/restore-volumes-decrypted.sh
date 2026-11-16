@@ -53,6 +53,8 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
       -v "${PROJECT_NAME}_media_data":/data/arquivos \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf copy "$SRC" /data \
+      --include "documentos/**" \
+      --include "arquivos/**" \
       --buffer-size 16M \
       --bwlimit 2M \
       --transfers 2 \

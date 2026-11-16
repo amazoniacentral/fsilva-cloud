@@ -32,7 +32,6 @@ for PROJECT_NAME in $PROJECTS; do
     echo "==========================================="
 
     CATALOGO_VOLUME="${PROJECT_NAME}_catalogos_pdf_data"
-    
 
     if ! docker volume inspect "$CATALOGO_VOLUME" >/dev/null 2>&1; then
         echo "Volume catálogo não encontrado: $CATALOGO_VOLUME"
@@ -42,7 +41,7 @@ for PROJECT_NAME in $PROJECTS; do
     SRC="gdrive:fsilva-cloud/${PROJECT_NAME}"
 
     # BAIXAR APENAS CATÁLOGO BRUTO (Google Drive -> Volume Local)
-    echo "Baixando catálogo bruto para o volume ${CATALOGO_VOLUME}..."
+    echo "Sincronizando catálogo bruto para o volume ${CATALOGO_VOLUME}..."
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}_catalogos" \
         -v "${CATALOGO_VOLUME}:/data/catalogos" \

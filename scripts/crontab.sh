@@ -20,7 +20,7 @@ declare -a TAREFAS=(
     "0 */8 * * * (echo -e \"$DATA_LOG Backup Banco de Dados\" && /usr/bin/bash $SCRIPT_DIR/backup/r2/backup-db-encrypted.sh) >> $LOGS_DIR/cron.log 2>&1"
     "0 5 * * 0 (echo -e \"$DATA_LOG Backup Volume de Dados\" && /usr/bin/bash $SCRIPT_DIR/backup/r2/backup-volumes-encrypted.sh) >> $LOGS_DIR/cron.log 2>&1"
     "*/45 * * * * (echo -e \"$DATA_LOG Baixar catalogos brutos\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/download-catalogo-bruto.sh) >> $LOGS_DIR/cron.log 2>&1"
-    "2 * * * * (echo -e \"$DATA_LOG Baixar treinamento IA\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/download-catalogo-bruto.sh) >> $LOGS_DIR/cron.log 2>&1"
+    "2 * * * * (echo -e \"$DATA_LOG Baixar treinamento IA\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/download-treinamento.sh) >> $LOGS_DIR/cron.log 2>&1"
     "*/30 * * * * (echo -e \"$DATA_LOG Enviar Catalogo Compress\" && /usr/bin/bash $SCRIPT_DIR/backup/gdrive/envio-catalogo-compress.sh) >> $LOGS_DIR/cron.log 2>&1"
 )
 

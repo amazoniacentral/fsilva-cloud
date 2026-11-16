@@ -2,7 +2,8 @@
 set -e
 
 # 1. Configurações de Caminho e Rclone
-BASE_DIR="/opt/fsilva-cloud"
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/../../..")             # Ajuste conforme a estrutura do seu VPS (ex: /opt/fsilva-cloud)
 RCLONE_CONFIG_HOST="${BASE_DIR}/config/rclone"
 RCLONE_REMOTE="r2-crypt:fsilva-cloud/configs"
 

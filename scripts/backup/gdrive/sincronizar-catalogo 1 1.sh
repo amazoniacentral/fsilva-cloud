@@ -3,7 +3,7 @@
 set -e
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
+BASE_DIR=$(readlink -f "$SCRIPT_DIR/../../..")
 
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
 

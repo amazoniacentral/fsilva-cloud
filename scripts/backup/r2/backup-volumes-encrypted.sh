@@ -45,8 +45,8 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     # 2. Executa o container do rclone mapeando os volumes do projeto como leitura (ro)
     docker run --rm \
       --name "rclone_r2_backup_${PROJECT_NAME}" \
-      -v "${PROJECT_NAME}_storage_data":/data/documentos:ro \
-      -v "${PROJECT_NAME}_media_data":/data/arquivos:ro \
+      -v "${PROJECT_NAME}_storage_data":/data/storage_data:ro \
+      -v "${PROJECT_NAME}_media_data":/data/media_data:ro \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf copy /data "$DEST" \
       --use-server-modtime \

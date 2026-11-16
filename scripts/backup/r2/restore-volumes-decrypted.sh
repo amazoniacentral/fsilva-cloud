@@ -49,12 +49,12 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     # 2. Executa o container do rclone mapeando os volumes locais com permissão de escrita
     docker run --rm \
       --name "rclone_r2_restore_${PROJECT_NAME}" \
-      -v "${PROJECT_NAME}_storage_data":/data/documentos \
-      -v "${PROJECT_NAME}_media_data":/data/arquivos \
+      -v "${PROJECT_NAME}_storage_data":/data/storage_data \
+      -v "${PROJECT_NAME}_media_data":/data/media_data \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf copy "$SRC" /data \
-      --include "documentos/**" \
-      --include "arquivos/**" \
+      --include "storage_data/**" \
+      --include "media_data/**" \
       --buffer-size 16M \
       --bwlimit 2M \
       --transfers 2 \

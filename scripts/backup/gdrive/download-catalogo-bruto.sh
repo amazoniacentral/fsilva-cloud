@@ -10,7 +10,7 @@ RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
 mkdir -p "$BASE_DIR/logs"
 
 echo "-------------------------------------------"
-echo "ESPELHAMENTO DE CATÁLOGOS BRUTOS (DRIVE -> SERVIDOR)"
+echo "ESPELHAMENTO DE CATÁLOGOS BRUTOS (APENAS PDF) (DRIVE -> SERVIDOR)"
 echo "-------------------------------------------"
 echo "--- Iniciado: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
@@ -44,8 +44,8 @@ for PROJECT_NAME in $PROJECTS; do
     TEMP_CONFIG_DIR=$(mktemp -d)
     cp "$RCLONE_CONFIG_HOST/rclone.conf" "$TEMP_CONFIG_DIR/rclone.conf"
 
-    # ESPELHAR: Google Drive (Origem) -> Volume Local (Destino)
-    echo "Espelhando catálogo bruto para o volume ${CATALOGO_VOLUME}..."
+    # ESPELHAR: Google Drive (Origem) -> Volume Local (Destino) [Apenas PDFs com --filter]
+    echo "Espelhando apenas arquivos PDF do catálogo bruto para o volume ${CATALOGO_VOLUME}..."
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}_catalogos" \
         -v "${CATALOGO_VOLUME}:/data/catalogos" \
@@ -53,6 +53,8 @@ for PROJECT_NAME in $PROJECTS; do
         rclone/rclone \
         sync "$SRC/catalogos/bruto" /data/catalogos \
         --config /config/rclone/rclone.conf \
+        --filter "+ *.pdf" \
+        --filter "- *" \
         --use-server-modtime \
         --delete-during \
         --buffer-size 32M \
@@ -65,7 +67,7 @@ for PROJECT_NAME in $PROJECTS; do
     # Remove a pasta temporária após o uso
     rm -rf "$TEMP_CONFIG_DIR"
 
-    echo "✓ Espelhamento do catálogo bruto concluído para $PROJECT_NAME"
+    echo "✓ Espelhamento dos PDFs do catálogo bruto concluído para $PROJECT_NAME"
 
 done
 

@@ -45,14 +45,12 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     # Garante que os volumes locais do projeto existam antes de montar (cria se faltar)
     docker volume create "${PROJECT_NAME}_storage_data" >/dev/null 2>&1
     docker volume create "${PROJECT_NAME}_media_data" >/dev/null 2>&1
-    docker volume create "${PROJECT_NAME}_catalogos_pdf_compress_data" >/dev/null 2>&1
 
     # 2. Executa o container do rclone mapeando os volumes locais com permissão de escrita
     docker run --rm \
       --name "rclone_r2_restore_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_storage_data":/data/documentos \
       -v "${PROJECT_NAME}_media_data":/data/arquivos \
-      -v "${PROJECT_NAME}_catalogos_pdf_compress_data":/data/catalogos \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
       rclone/rclone --config /config/rclone/rclone.conf copy "$SRC" /data \
       --buffer-size 16M \

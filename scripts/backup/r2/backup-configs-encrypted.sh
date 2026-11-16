@@ -23,6 +23,8 @@ docker run --rm \
   -v "${RCLONE_CONFIG_HOST}":/config/rclone:ro \
   rclone/rclone --config /config/rclone/rclone.conf copy /data "${RCLONE_REMOTE}" \
   --filter "- **/node_modules/**" \
+  --filter "- **.git/**" \
+  --filter "- **.github/**" \
   --filter "+ *.env" \
   --filter "+ *.env.*" \
   --filter "+ *.yml" \

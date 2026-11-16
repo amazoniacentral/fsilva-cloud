@@ -23,8 +23,8 @@ PROJECTS=$(
 echo "Projetos encontrados:"
 echo "$PROJECTS"
 
-# Itera sobre cada projeto de forma segura
-echo "$PROJECTS" | while read -r PROJECT_NAME; do
+# Itera sobre cada projeto de forma segura (usando heredoc para evitar subshell)
+while read -r PROJECT_NAME; do
 
     # Pula linhas vazias se houver
     [ -z "$PROJECT_NAME" ] && continue
@@ -38,23 +38,26 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     SRC="${RCLONE_REMOTE}${PROJECT_NAME}"
 
     echo "-------------------------------------------"
-    echo "RESTAURAÇÃO R2 (DESCRIPTOGRAFADA) - PROJETO: $PROJECT_NAME"
+    echo "RESTAURAÇÃO R2 (VOLUMES) - PROJETO: $PROJECT_NAME"
     echo "-------------------------------------------"
     echo "--- Restauração Iniciada: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-    # Garante que os volumes locais do projeto existam antes de montar (cria se faltar)
+    # Garante que os volumes locais do projeto existam antes de montar
     docker volume create "${PROJECT_NAME}_storage_data" >/dev/null 2>&1
     docker volume create "${PROJECT_NAME}_media_data" >/dev/null 2>&1
 
-    # 2. Executa o container do rclone mapeando os volumes locais com permissão de escrita
+    # 2. Executa o container do rclone mapeando APENAS storage_data e media_data
     docker run --rm \
       --name "rclone_r2_restore_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_storage_data":/data/storage_data \
       -v "${PROJECT_NAME}_media_data":/data/media_data \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
-      rclone/rclone --config /config/rclone/rclone.conf copy "$SRC" /data \
+      rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
       --include "storage_data/**" \
       --include "media_data/**" \
+      --exclude "**" \
+      --use-server-modtime \
+      --delete-during \
       --buffer-size 16M \
       --bwlimit 2M \
       --transfers 2 \
@@ -65,7 +68,7 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
 
     echo "--- Restauração do R2 Finalizada para $PROJECT_NAME: $(date '+%Y-%m-%d %H:%M:%S') ---"
 
-done
+done <<< "$PROJECTS"
 
 echo
 echo "==========================================="

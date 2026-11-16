@@ -106,8 +106,8 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
         fi
     done
 
-    # 9. Limpeza de backups antigos locais (+180 dias)
-    echo " -> Executando limpeza local de backups antigos (+180 dias)..."
+    # 9. Limpeza de backups antigos locais (+30 dias)
+    echo " -> Executando limpeza local de backups antigos (+30 dias)..."
     TARGET_VOL_DIR="/var/lib/docker/volumes/${VOLUME_BACKUP_COMPETE}/_data"
     if [ -d "$TARGET_VOL_DIR" ]; then
         find "$TARGET_VOL_DIR" -type f -mtime +30 -name '*.backup' -exec rm -f {} + 2>/dev/null

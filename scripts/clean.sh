@@ -11,16 +11,19 @@ echo "-----------------------------------------"
 # Captura o espaço disponível em blocos de 1KB antes da limpeza
 BEFORE_KB=$(df / | awk 'NR==2 {print $4}')
 
-echo "[1/4] Removendo recursos ociosos (containers parados, redes e imagens órfãs)..."
+echo "[1/5] Removendo recursos ociosos (containers parados, redes e imagens órfãs)..."
 docker system prune -f
 
-echo "[2/4] Removendo todo o cache de build do Docker..."
+echo "[2/5] Removendo volumes não utilizados (preservando volumes fsilva-cloud-*)..."
+docker volume ls -q | grep -v '^fsilva-cloud-' | xargs -r docker volume rm
+
+echo "[3/5] Removendo todo o cache de build do Docker..."
 docker builder prune -a -f
 
-echo "[3/4] Removendo imagens antigas..."
+echo "[4/5] Removendo imagens antigas..."
 docker image prune -a -f
 
-echo "[4/4] Limpando cache do apt..."
+echo "[5/5] Limpando cache do apt..."
 apt-get clean
 
 echo "-----------------------------------------"

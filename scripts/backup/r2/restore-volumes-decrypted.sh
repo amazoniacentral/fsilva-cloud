@@ -45,17 +45,29 @@ while read -r PROJECT_NAME; do
     # Garante que os volumes locais do projeto existam antes de montar
     docker volume create "${PROJECT_NAME}_storage_data" >/dev/null 2>&1
     docker volume create "${PROJECT_NAME}_media_data" >/dev/null 2>&1
+    docker volume create "${PROJECT_NAME}_whatsapp_database" >/dev/null 2>&1
+    docker volume create "${PROJECT_NAME}_whatsapp_sessions" >/dev/null 2>&1
+    docker volume create "${PROJECT_NAME}_videos_data" >/dev/null 2>&1
+    docker volume create "${PROJECT_NAME}_videos_files" >/dev/null 2>&1
 
-    # 2. Executa o container do rclone mapeando APENAS storage_data e media_data
+    # 2. Executa o container do rclone mapeando os volumes e utilizando filtros unificados
     docker run --rm \
       --name "rclone_r2_restore_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_storage_data":/data/storage_data \
       -v "${PROJECT_NAME}_media_data":/data/media_data \
+      -v "${PROJECT_NAME}_whatsapp_database":/data/whatsapp_database \
+      -v "${PROJECT_NAME}_whatsapp_sessions":/data/whatsapp_sessions \
+      -v "${PROJECT_NAME}_videos_data":/data/videos_data \
+      -v "${PROJECT_NAME}_videos_files":/data/videos_files \
       -v "$RCLONE_CONFIG_HOST":/config/rclone:ro \
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
-      --include "storage_data/**" \
-      --include "media_data/**" \
-      --exclude "**" \
+      --filter "+ storage_data/**" \
+      --filter "+ media_data/**" \
+      --filter "+ whatsapp_database/**" \
+      --filter "+ whatsapp_sessions/**" \
+      --filter "+ videos_data/**" \
+      --filter "+ videos_files/**" \
+      --filter "- *" \
       --use-server-modtime \
       --delete-during \
       --buffer-size 16M \

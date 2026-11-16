@@ -1,12 +1,13 @@
 #!/bin/bash
+set -e
 
 # 1. Configurações de Caminho e Rclone
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../../..")             # Ajuste conforme a estrutura do seu VPS (ex: /opt/fsilva-cloud)
 RCLONE_CONFIG_HOST="${BASE_DIR}/config/rclone"          # Caminho onde fica o seu rclone.conf
 
-# IMPORTANTE: Use aqui o nome do seu remote criptografado (ex: r2-crypt) configurado no rclone.conf
-RCLONE_REMOTE="r2-crypt:fsilva-cloud/database"
+# IMPORTANTE: Usando o remote dedicado 'database-crypt' que aponta para o bucket 'database'
+RCLONE_REMOTE="database-crypt:"
 
 # 2. Busca TODOS os containers Postgres rodando
 CONTAINERS_POSTGRES=$(docker ps --filter "name=postgres" --filter "status=running" --format "{{.Names}}")
@@ -85,7 +86,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
             echo "    Backup local concluído com sucesso: $BACKUP_FILENAME"
 
             # 8. Envia APENAS este arquivo recém-criado de forma criptografada para o R2
-            echo "    Enviando arquivo novo para o Cloudflare R2..."
+            echo "    Enviando arquivo novo para o Cloudflare R2 (bucket database via database-crypt)..."
             if docker volume inspect "$VOLUME_BACKUP_COMPETE" >/dev/null 2>&1; then
                 docker run --rm \
                   --name "rclone_upload_${PROJECT_NAME}_${DB}" \
@@ -93,7 +94,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
                   -v "$RCLONE_CONFIG_HOST":/config/rclone \
                   rclone/rclone --config /config/rclone/rclone.conf copyto \
                   "/data/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
-                  "${RCLONE_REMOTE}/${PROJECT_NAME}/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
+                  "${RCLONE_REMOTE}${PROJECT_NAME}/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
                   --buffer-size 16M
                 echo "    Upload criptografado do arquivo concluído!"
             else

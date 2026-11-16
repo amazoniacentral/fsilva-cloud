@@ -1,13 +1,13 @@
 #!/bin/bash
+set -e
 
 # 1. Configurações de Caminho e Rclone
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BASE_DIR=$(readlink -f "$SCRIPT_DIR/../../..")
 RCLONE_CONFIG_HOST="${BASE_DIR}/config/rclone"
 
-# IMPORTANTE: Usamos o remote criptografado como origem. 
-# O rclone vai ler do R2, descriptografar sozinho e entregar os arquivos limpos.
-RCLONE_REMOTE="r2-crypt:fsilva-cloud/database"
+# IMPORTANTE: Usando o remote dedicado 'database-crypt' que aponta para o bucket 'database'
+RCLONE_REMOTE="database-crypt:"
 
 # 2. Busca TODOS os containers Postgres rodando para identificar os projetos ativos
 CONTAINERS_POSTGRES=$(docker ps --filter "name=postgres" --filter "status=running" --format "{{.Names}}")
@@ -25,7 +25,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
     echo "PROCESSANDO PROJETO DO CONTAINER: $CONTAINER_DB_ALVO"
 
     # 3. Identificação Automática do Projeto Compose via Label
-    PROJECT_NAME=$(docker inspect "$CONTAIN_DB_ALVO" \
+    PROJECT_NAME=$(docker inspect "$CONTAINER_DB_ALVO" \
         --format='{{index .Config.Labels "com.docker.compose.project"}}' | tr -d '\r')
 
     if [ -z "$PROJECT_NAME" ]; then
@@ -48,7 +48,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
       --name "rclone_db_download_${PROJECT_NAME}" \
       -v "${VOLUME_BACKUP_COMPETE}":/data \
       -v "$RCLONE_CONFIG_HOST":/config/rclone \
-      rclone/rclone --config /config/rclone/rclone.conf copy "${RCLONE_REMOTE}/${PROJECT_NAME}" /data \
+      rclone/rclone --config /config/rclone/rclone.conf copy "${RCLONE_REMOTE}${PROJECT_NAME}" /data \
       --fast-list \
       --buffer-size 16M \
       --transfers 2 \

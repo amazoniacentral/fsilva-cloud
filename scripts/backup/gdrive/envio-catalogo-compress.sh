@@ -40,12 +40,16 @@ for PROJECT_NAME in $PROJECTS; do
 
     SRC="gdrive:fsilva-cloud/${PROJECT_NAME}"
 
+    # BLINDAGEM DO HOST: Cria cópia temporária da config do rclone isolada em /tmp
+    TEMP_CONFIG_DIR=$(mktemp -d)
+    cp "$RCLONE_CONFIG_HOST/rclone.conf" "$TEMP_CONFIG_DIR/rclone.conf"
+
     # ENVIAR (UPLOAD): Servidor Local -> Google Drive (Espelho exato)
     echo "Enviando catálogo compress para o Google Drive..."
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}_compress" \
         -v "${CATALOGO_VOLUME}:/data/compress" \
-        -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
+        -v "$TEMP_CONFIG_DIR:/config/rclone" \
         rclone/rclone \
         sync /data/compress "$SRC/catalogos/compress" \
         --config /config/rclone/rclone.conf \
@@ -57,6 +61,9 @@ for PROJECT_NAME in $PROJECTS; do
         --contimeout 60s \
         --low-level-retries 10 \
         -v
+
+    # Remove a pasta temporária após o uso
+    rm -rf "$TEMP_CONFIG_DIR"
 
     echo "✓ Envio do catálogo compress concluído para $PROJECT_NAME"
 

@@ -91,7 +91,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
                 docker run --rm \
                   --name "rclone_upload_${PROJECT_NAME}_${DB}" \
                   -v "${VOLUME_BACKUP_COMPETE}":/data:ro \
-                  -v "$RCLONE_CONFIG_HOST":/config/rclone \
+                  -v "$RCLONE_CONFIG_HOST":/config/rclone:ro \
                   rclone/rclone --config /config/rclone/rclone.conf copyto \
                   "/data/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \
                   "${RCLONE_REMOTE}${PROJECT_NAME}/${DB}/${DATA_PASTA}/${BACKUP_FILENAME}" \

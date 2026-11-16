@@ -51,7 +51,7 @@ while read -r PROJECT_NAME; do
       --name "rclone_r2_restore_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_storage_data":/data/storage_data \
       -v "${PROJECT_NAME}_media_data":/data/media_data \
-      -v "$RCLONE_CONFIG_HOST":/config/rclone \
+      -v "$RCLONE_CONFIG_HOST":/config/rclone:ro \
       rclone/rclone --config /config/rclone/rclone.conf sync "$SRC" /data \
       --include "storage_data/**" \
       --include "media_data/**" \

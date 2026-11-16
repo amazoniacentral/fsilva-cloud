@@ -20,7 +20,7 @@ echo "===================================================="
 docker run --rm \
   --name "rclone_configs_backup" \
   -v "${BASE_DIR}":/data:ro \
-  -v "${RCLONE_CONFIG_HOST}":/config/rclone \
+  -v "${RCLONE_CONFIG_HOST}":/config/rclone:ro \
   rclone/rclone --config /config/rclone/rclone.conf copy /data "${RCLONE_REMOTE}" \
   --filter "- **/node_modules/**" \
   --filter "+ *.env" \

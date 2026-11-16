@@ -47,7 +47,7 @@ for CONTAINER_DB_ALVO in $CONTAINERS_POSTGRES; do
     docker run --rm \
       --name "rclone_db_download_${PROJECT_NAME}" \
       -v "${VOLUME_BACKUP_COMPETE}":/data \
-      -v "$RCLONE_CONFIG_HOST":/config/rclone \
+      -v "$RCLONE_CONFIG_HOST":/config/rclone:ro \
       rclone/rclone --config /config/rclone/rclone.conf copy "${RCLONE_REMOTE}${PROJECT_NAME}" /data \
       --fast-list \
       --buffer-size 16M \

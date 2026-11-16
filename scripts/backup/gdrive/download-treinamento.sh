@@ -40,12 +40,17 @@ for PROJECT_NAME in $PROJECTS; do
 
     SRC="gdrive:fsilva-cloud/${PROJECT_NAME}"
 
+    # BLINDAGEM DO HOST: Copia o master para uma pasta temporária isolada (/tmp)
+    TEMP_CONFIG_DIR=$(mktemp -d)
+    cp "$RCLONE_CONFIG_HOST/rclone.conf" "$TEMP_CONFIG_DIR/rclone.conf"
+
     # ESPELHAR: Google Drive (Origem) -> Volume Local (Destino)
+    # O rclone atualiza o token na cópia em /tmp, mantendo o host intacto
     echo "Espelhando treinamento IA para o volume ${TREINAMENTO_VOLUME}..."
     docker run --rm \
         --name "rclone_sync_${PROJECT_NAME}_treinamento" \
         -v "${TREINAMENTO_VOLUME}:/data/treinamento-ia" \
-        -v "$RCLONE_CONFIG_HOST:/config/rclone:ro" \
+        -v "$TEMP_CONFIG_DIR:/config/rclone" \
         rclone/rclone \
         sync "$SRC/treinamento-ia" /data/treinamento-ia \
         --config /config/rclone/rclone.conf \
@@ -57,6 +62,9 @@ for PROJECT_NAME in $PROJECTS; do
         --contimeout 60s \
         --low-level-retries 10 \
         -v
+
+    # Remove a pasta temporária para não deixar lixo na VPS
+    rm -rf "$TEMP_CONFIG_DIR"
 
     echo "✓ Espelhamento do treinamento IA concluído para $PROJECT_NAME"
 

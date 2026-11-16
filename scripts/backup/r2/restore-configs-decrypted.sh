@@ -18,7 +18,7 @@ echo "===================================================="
 docker run --rm \
   --name "rclone_configs_restore" \
   -v "${BASE_DIR}":/data \
-  -v "${RCLONE_CONFIG_HOST}":/config/rclone \
+  -v "${RCLONE_CONFIG_HOST}":/config/rclone:ro \
   rclone/rclone --config /config/rclone/rclone.conf copy "${RCLONE_REMOTE}" /data \
   --fast-list \
   --buffer-size 16M \

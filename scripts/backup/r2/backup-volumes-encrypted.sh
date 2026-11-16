@@ -47,7 +47,7 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
       --name "rclone_r2_backup_${PROJECT_NAME}" \
       -v "${PROJECT_NAME}_storage_data":/data/storage_data:ro \
       -v "${PROJECT_NAME}_media_data":/data/media_data:ro \
-      -v "$RCLONE_CONFIG_HOST":/config/rclone \
+      -v "$RCLONE_CONFIG_HOST":/config/rclone:ro \
       rclone/rclone --config /config/rclone/rclone.conf copy /data "$DEST" \
       --use-server-modtime \
       --buffer-size 16M \

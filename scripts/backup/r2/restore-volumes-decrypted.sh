@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # 1. Ajuste de Caminhos
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
@@ -6,6 +7,9 @@ BASE_DIR=$(readlink -f "$SCRIPT_DIR/../..")
 
 # Configurações globais
 RCLONE_CONFIG_HOST="$BASE_DIR/config/rclone"
+
+# IMPORTANTE: Usando o remote dedicado 'volumes-crypt' que aponta para o bucket 'volumes'
+RCLONE_REMOTE="volumes-crypt:"
 
 # Garante que a pasta de logs existe
 mkdir -p "$BASE_DIR/logs"
@@ -30,8 +34,8 @@ echo "$PROJECTS" | while read -r PROJECT_NAME; do
     echo "PROJETO: $PROJECT_NAME"
     echo "==========================================="
 
-    # Origem criptografada no Cloudflare R2
-    SRC="r2-crypt:fsilva-cloud/${PROJECT_NAME}"
+    # Origem criptografada no bucket 'volumes' via volumes-crypt
+    SRC="${RCLONE_REMOTE}${PROJECT_NAME}"
 
     echo "-------------------------------------------"
     echo "RESTAURAÇÃO R2 (DESCRIPTOGRAFADA) - PROJETO: $PROJECT_NAME"
@@ -65,5 +69,5 @@ done
 
 echo
 echo "==========================================="
-echo "TODAS AS RESTAURAÇÕES DO R2 FORAM CONCLUÍDAS!"
+echo "TODAS AS RESTAURAÇÕES DE VOLUMES DO R2 FORAM CONCLUÍDAS!"
 echo "==========================================="

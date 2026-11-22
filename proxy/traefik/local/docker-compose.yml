@@ -79,3 +79,6 @@ networks:
 
 volumes:
   traefik_dynamics:
+
+include:
+  - ../errors/docker-compose.yml

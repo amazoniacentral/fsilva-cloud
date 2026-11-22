@@ -31,13 +31,12 @@ services:
       - "-c"                     
       - "idle_session_timeout=60000"
 
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
     networks:
+      - default
       - net_db
-      
       
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -45,3 +44,10 @@ services:
       timeout: 5s
       retries: 10
       start_period: 300s
+
+networks:
+  default:
+  net_db:
+
+volumes:
+  postgres_data:

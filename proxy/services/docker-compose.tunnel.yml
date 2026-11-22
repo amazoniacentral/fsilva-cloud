@@ -37,5 +37,5 @@ services:
     networks:
       - net_tunnel
 
-import:
+include:
   - ./docker-compose.traefik.yml

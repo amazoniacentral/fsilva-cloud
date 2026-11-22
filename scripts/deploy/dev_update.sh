@@ -7,23 +7,23 @@ AMARELO='\033[1;33m'
 VERMELHO='\033[0;31m'
 NC='\033[0m' # Sem cor
 
-# Diretório atual (ou ajuste para o caminho desejado)
+# Diretório atual (ajustado para server/prod)
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-CD_DIR=$(readlink -f "$SCRIPT_DIR/../../server/dev")
+CD_DIR=$(readlink -f "$SCRIPT_DIR/../../server/prod")
 
 # Garante entrada de dados via terminal
 exec 3<>/dev/tty
 
 echo -e "${AZUL}====================================================${NC}"
-echo -e "${AZUL}    GESTOR AVANÇADO DOCKER (Múltiplos Projetos)    ${NC}"
+echo -e "${AZUL}      GESTOR AVANÇADO DOCKER (Produção / .prod)     ${NC}"
 echo -e "${AZUL}====================================================${NC}"
 
-# Mapeia apenas arquivos .yml ou .yaml que contenham .local, .cloudflare ou .tunnel no nome
-mapfile -t YAML_FILES < <(find "$CD_DIR" -maxdepth 1 -type f \( -name "*.local*" -o -name "*.cloudflare*" -o -name "*.tunnel*" \) \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null)
+# Mapeia apenas arquivos .yml ou .yaml que contenham .prod no nome E também .local, .cloudflare ou .tunnel
+mapfile -t YAML_FILES < <(find "$CD_DIR" -maxdepth 1 -type f \( -name "*.prod*" \) \( -name "*.local*" -o -name "*.cloudflare*" -o -name "*.tunnel*" \) \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null)
 
 # Verifica se a lista está vazia
 if [ ${#YAML_FILES[@]} -eq 0 ]; then
-    echo -e "${VERMELHO}Nenhum arquivo contendo .local, .cloudflare ou .tunnel foi encontrado em: $CD_DIR${NC}"
+    echo -e "${VERMELHO}Nenhum arquivo correspondente foi encontrado em: $CD_DIR${NC}"
     exit 1
 fi
 
@@ -44,7 +44,6 @@ read -u 3 ENTRADA_USUARIO
 ENTRADA_USUARIO=$(echo "$ENTRADA_USUARIO" | tr ',' ' ')
 SELECTED_FILES=()
 
-# Função para verificar se o arquivo já está na lista selecionada
 ja_selecionado() {
     local target="$1"
     for f in "${SELECTED_FILES[@]}"; do
@@ -54,7 +53,6 @@ ja_selecionado() {
 }
 
 for ITEM in $ENTRADA_USUARIO; do
-    # 1. Se o item for um número válido
     if [[ "$ITEM" =~ ^[0-9]+$ ]]; then
         INDEX=$((ITEM - 1))
         if [[ "$INDEX" -ge 0 && "$INDEX" -lt "${#YAML_FILES[@]}" ]]; then
@@ -64,7 +62,6 @@ for ITEM in $ENTRADA_USUARIO; do
             fi
         fi
     else
-        # 2. Se o item for texto (nome do arquivo ou parte dele)
         for FILE in "${YAML_FILES[@]}"; do
             FILENAME=$(basename "$FILE")
             if [[ "${FILENAME,,}" == *"${ITEM,,}"* ]]; then
@@ -114,8 +111,8 @@ select ACAO in "${ACOES[@]}"; do
                     docker compose -f "$FILE" up -d --build
                 else
                     OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
-                    echo -e "${AZUL}Serviços para $FILENAME:${NC}"
-                    PS3="Escolha o serviço: "
+                    echo -e "${AZUL}Serviços disponíveis em $FILENAME:${NC}"
+                    PS3="Escolha o número do serviço: "
                     select SERV in "${OPCOES_SERV[@]}"; do
                         if [ -n "$SERV" ]; then
                             if [ "$SERV" == "TODOS OS SERVIÇOS" ]; then

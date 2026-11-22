@@ -1,7 +1,0 @@
-include:
-  - ./traefik.prod.yml
-
-services:
-  tunnel:
-    env_file:
-      - .env

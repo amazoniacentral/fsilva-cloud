@@ -62,7 +62,6 @@ services:
     working_dir: /etc/traefik/dynamic
 
 networks:
-  net_proxy:
   default:
 
 volumes:

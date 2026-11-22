@@ -10,8 +10,8 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - net_tunnel
       - default
+      - net_tunnel
     deploy:
       resources:
         limits:
@@ -22,8 +22,8 @@ services:
           memory: 64M
 
 networks:
-  net_tunnel:
   default:
+  net_tunnel:
   
 include:
   - ./docker-compose.traefik.yml

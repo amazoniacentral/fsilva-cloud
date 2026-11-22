@@ -1,5 +1,5 @@
 include:
-  - ./docker-compose.tunnel.yml
+  - ./docker-compose.traefik.yml
   
 services:
   gvendas:

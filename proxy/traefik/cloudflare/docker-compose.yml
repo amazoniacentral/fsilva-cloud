@@ -91,3 +91,4 @@ volumes:
   
 include:
   - ../errors/docker-compose.yml
+  - ../docker-compose.servives.yml

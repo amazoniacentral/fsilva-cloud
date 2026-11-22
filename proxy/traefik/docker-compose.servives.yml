@@ -1,6 +1,4 @@
-include:
-  - ./docker-compose.traefik.yml
-  
+# /proxy/traefik/docker-compose.servives.yml
 services:
   gvendas:
     networks:
@@ -9,7 +7,7 @@ services:
   django-nginx:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      - "traefik.docker.network=net_proxy"
     
       # =========================
       # HTTP (porta 80)
@@ -42,7 +40,7 @@ services:
   django:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      - "traefik.docker.network=net_proxy"
     
       # =========================
       # HTTP (80)
@@ -72,7 +70,7 @@ services:
   media:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      - "traefik.docker.network=net_proxy"
     
       # =========================
       # HTTP (80)
@@ -108,7 +106,7 @@ services:
   storage:
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
+      - "traefik.docker.network=net_proxy"
     
       # ======================
       # HTTP (80)
@@ -139,3 +137,4 @@ services:
 
 networks:
   net_proxy:
+    external: true

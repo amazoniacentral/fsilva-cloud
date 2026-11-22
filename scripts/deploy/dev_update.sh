@@ -18,8 +18,8 @@ echo -e "${AZUL}====================================================${NC}"
 echo -e "${AZUL}      GESTOR AVANÇADO DOCKER (Desenvolvimento)      ${NC}"
 echo -e "${AZUL}====================================================${NC}"
 
-# Mapeia arquivos .dev que contenham .local, .cloudflare ou .tunnel no nome
-mapfile -t YAML_FILES < <(find "$CD_DIR" -maxdepth 1 -type f \( -name "*.dev*" \) \( -name "*.local*" -o -name "*.cloudflare*" -o -name "*.tunnel*" \) \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null)
+# Mapeia arquivos .yml ou .yaml que contenham .local, .cloudflare ou .tunnel no nome
+mapfile -t YAML_FILES < <(find "$CD_DIR" -maxdepth 1 -type f \( -name "*.local*" -o -name "*.cloudflare*" -o -name "*.tunnel*" \) \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null)
 
 # Verifica se a lista está vazia
 if [ ${#YAML_FILES[@]} -eq 0 ]; then
@@ -88,7 +88,7 @@ ACOES=(
 
 select ACAO in "${ACOES[@]}"; do
     case $REPLY in
-        1|2|3|4|5|9) # Ações que podem envolver serviços específicos (Up, Down, Down&Up, Restart, Build, Logs)
+        1|2|3|4|5|9) # Ações que envolvem serviços específicos (Up, Down, Down&Up, Restart, Build, Logs)
             mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
 
             if [ ${#SERVICES[@]} -eq 0 ]; then

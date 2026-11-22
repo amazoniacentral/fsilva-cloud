@@ -103,82 +103,112 @@ ACOES=(
 )
 
 select ACAO in "${ACOES[@]}"; do
+    # Entra na pasta correta antes de rodar os comandos do docker compose
+    cd "$CD_DIR"
+
     case $REPLY in
-        1) # Up
+        1|2|3|4|5|9) # Ações que podem envolver serviços específicos ou lote
             for FILE in "${SELECTED_FILES[@]}"; do
                 FILENAME=$(basename "$FILE")
-                echo -e "\n${AMARELO}Processando $FILENAME...${NC}"
-                mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
+                mapfile -t SERVICES < <(docker compose -f "$FILENAME" config --services 2>/dev/null)
 
                 if [ ${#SERVICES[@]} -eq 0 ]; then
-                    docker compose -f "$FILE" up -d --build
+                    echo -e "\n${AMARELO}Nenhum serviço detectado em $FILENAME. Executando em lote...${NC}"
+                    SERVICES_TO_RUN=()
                 else
-                    OPCOES_SERV=("TODOS OS SERVIÇOS" "${SERVICES[@]}")
-                    echo -e "${AZUL}Serviços para $FILENAME:${NC}"
-                    PS3="Escolha o serviço: "
-                    select SERV in "${OPCOES_SERV[@]}"; do
-                        if [ -n "$SERV" ]; then
-                            if [ "$SERV" == "TODOS OS SERVIÇOS" ]; then
-                                docker compose -f "$FILE" up -d --build
+                    echo -e "\n${AZUL}Serviços disponíveis em $FILENAME:${NC}"
+                    echo -e "0) ${VERDE}TODOS OS SERVIÇOS${NC}"
+                    for s_i in "${!SERVICES[@]}"; do
+                        echo -e "$((s_i+1))) ${VERDE}${SERVICES[$s_i]}${NC}"
+                    done
+
+                    echo -ne "\n${AMARELO}Escolha o(s) serviço(s) (ex: 0 ou 1 2 ou web db): ${NC}"
+                    read -u 3 SERV_INPUT
+                    SERV_INPUT=$(echo "$SERV_INPUT" | tr ',' ' ')
+
+                    SERVICES_TO_RUN=()
+                    if [[ ! " $SERV_INPUT " =~ " 0 " ]] && [ -n "$SERV_INPUT" ]; then
+                        for S_ITEM in $SERV_INPUT; do
+                            if [[ "$S_ITEM" =~ ^[0-9]+$ ]]; then
+                                S_INDEX=$((S_ITEM - 1))
+                                if [[ "$S_INDEX" -ge 0 && "$S_INDEX" -lt "${#SERVICES[@]}" ]]; then
+                                    SERVICES_TO_RUN+=("${SERVICES[$S_INDEX]}")
+                                fi
                             else
-                                docker compose -f "$FILE" up -d --build "$SERV"
+                                for SERV_NAME in "${SERVICES[@]}"; do
+                                    if [[ "${SERV_NAME,,}" == *"${S_ITEM,,}"* ]]; then
+                                        SERVICES_TO_RUN+=("$SERV_NAME")
+                                    fi
+                                done
                             fi
-                            break
-                        fi
-                    done </dev/tty
+                        done
+                    fi
                 fi
+
+                # Executa a ação escolhida para o arquivo atual
+                case $REPLY in
+                    1) # Up
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" up -d --build
+                        else
+                            docker compose -f "$FILENAME" up -d --build "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                    2) # Down
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" down --remove-orphans
+                        else
+                            docker compose -f "$FILENAME" down --remove-orphans "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                    3) # Down & Up
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" down --remove-orphans
+                            docker compose -f "$FILENAME" up -d --build
+                        else
+                            docker compose -f "$FILENAME" down --remove-orphans "${SERVICES_TO_RUN[@]}"
+                            docker compose -f "$FILENAME" up -d --build "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                    4) # Restart
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" restart
+                        else
+                            docker compose -f "$FILENAME" restart "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                    5) # Build
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" build --no-cache
+                        else
+                            docker compose -f "$FILENAME" build --no-cache "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                    9) # Logs
+                        if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
+                            docker compose -f "$FILENAME" logs -f --tail=50
+                        else
+                            docker compose -f "$FILENAME" logs -f --tail=50 "${SERVICES_TO_RUN[@]}"
+                        fi
+                        ;;
+                esac
             done
             break
             ;;
             
-        2) # Down
-            for FILE in "${SELECTED_FILES[@]}"; do
-                FILENAME=$(basename "$FILE")
-                echo -e "\n${AMARELO}Derrubando $FILENAME...${NC}"
-                docker compose -f "$FILE" down --remove-orphans
-            done
-            break
-            ;;
-
-        3) # Down & Up
-            for FILE in "${SELECTED_FILES[@]}"; do
-                FILENAME=$(basename "$FILE")
-                echo -e "\n${AMARELO}Reiniciando do zero (Down & Up) em $FILENAME...${NC}"
-                docker compose -f "$FILE" down --remove-orphans
-                docker compose -f "$FILE" up -d --build
-            done
-            break
-            ;;
-
-        4) # Restart
-            for FILE in "${SELECTED_FILES[@]}"; do
-                FILENAME=$(basename "$FILE")
-                echo -e "\n${AMARELO}Reiniciando serviços em $FILENAME...${NC}"
-                docker compose -f "$FILE" restart
-            done
-            break
-            ;;
-            
-        5) # Build
-            for FILE in "${SELECTED_FILES[@]}"; do
-                FILENAME=$(basename "$FILE")
-                echo -e "\n${AMARELO}Buildando $FILENAME...${NC}"
-                docker compose -f "$FILE" build --no-cache
-            done
-            break
-            ;;
-
         6) # Images
             for FILE in "${SELECTED_FILES[@]}"; do
-                echo -e "\n${AZUL}Imagens para $(basename "$FILE"):${NC}"
-                docker compose -f "$FILE" images
+                FILENAME=$(basename "$FILE")
+                echo -e "\n${AZUL}Imagens para $FILENAME:${NC}"
+                docker compose -f "$FILENAME" images
             done
             break
             ;;
         7) # Networks
             for FILE in "${SELECTED_FILES[@]}"; do
-                echo -e "\n${AZUL}Redes para $(basename "$FILE"):${NC}"
-                docker compose -f "$FILE" config | grep -A 5 "networks:"
+                FILENAME=$(basename "$FILE")
+                echo -e "\n${AZUL}Redes para $FILENAME:${NC}"
+                docker compose -f "$FILENAME" config | grep -A 5 "networks:"
             done
             break
             ;;
@@ -187,17 +217,11 @@ select ACAO in "${ACOES[@]}"; do
             docker image prune -f
             break
             ;;
-        9) # Logs
-            for FILE in "${SELECTED_FILES[@]}"; do
-                echo -e "\n${AZUL}Logs de $(basename "$FILE") (Ctrl+C para sair):${NC}"
-                docker compose -f "$FILE" logs -f --tail=50
-            done
-            break
-            ;;
         10) # Status
             for FILE in "${SELECTED_FILES[@]}"; do
-                echo -e "\n${AZUL}Status de $(basename "$FILE"):${NC}"
-                docker compose -f "$FILE" ps
+                FILENAME=$(basename "$FILE")
+                echo -e "\n${AZUL}Status de $FILENAME:${NC}"
+                docker compose -f "$FILENAME" ps
             done
             break
             ;;

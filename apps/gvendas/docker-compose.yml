@@ -21,6 +21,9 @@ services:
       - ./entrypoint.sh:/entrypoint.sh:ro
       
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    
+    networks:
+      - default
       
     deploy:
       resources:
@@ -30,3 +33,11 @@ services:
         reservations:
           cpus: '0.02'
           memory: 64M
+
+networks:
+  default:
+
+volumes:
+  gvendas_data:
+  certificados_data:
+    external: true

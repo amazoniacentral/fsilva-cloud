@@ -8,39 +8,62 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./scripts
+├── backup
+│   ├── gdrive
+│   │   ├── download-catalogo-bruto.sh
+│   │   ├── download-treinamento.sh
+│   │   └── envio-catalogo-compress.sh
+│   └── r2
+│       ├── backup-configs-encrypted.sh
+│       ├── backup-db-encrypted.sh
+│       ├── backup-volumes-encrypted.sh
+│       ├── restore-configs-decrypted.sh
+│       ├── restore-db-decrypted.sh
+│       └── restore-volumes-decrypted.sh
+├── database
+│   ├── database.sh
+│   ├── extensao_vetor.sh
+│   ├── indicesn8n.sh
+│   └── restaurar.sh
 ├── deploy
-│   ├── README.md
 │   ├── dev_update.sh
 │   ├── prod_update.sh
+│   ├── README.md
 │   └── setup.sh
 ├── documentacao
-│   ├── README.md
 │   ├── blocos.sh
 │   ├── cabecalho.sh
 │   ├── estrutura.sh
+│   ├── README.md
 │   ├── rodape.sh
 │   ├── setup.sh
 │   └── variaveis.sh
-├── .env.example
-├── README.md
+├── git
+│   ├── commit.sh
+│   ├── setup.sh
+│   ├── submodule_adicionar.sh
+│   ├── submodule_branch.sh
+│   ├── submodule_listar.sh
+│   ├── submodule_remover.sh
+│   └── tags.sh
 ├── alias.sh
-├── backup_db.sh
-├── backup_rclone.sh
+├── clean.sh
 ├── containers.sh
+├── copy.sh
 ├── crontab.sh
-├── database.sh
-├── db_baixar.sh
-├── gitmodules.sh
+├── .env.example
 ├── haskey.sh
+├── ia.sh
 ├── install.sh
+├── ipv6.sh
 ├── limpar_traefik.sh
 ├── otimizar_rede.sh
+├── README.md
 ├── reset.sh
 ├── setup_reclone.sh
-├── status.sh
-└── sync_rclone.sh
+└── status.sh
 
-3 directories, 29 files
+8 directories, 47 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -65,5 +88,5 @@ DESTINO_PATH_BANCO=/caminho/local/do/backup.backup
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

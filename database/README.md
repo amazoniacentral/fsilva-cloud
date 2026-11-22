@@ -11,11 +11,14 @@ Configuração inicial
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-#Credenciais Administrativas do Banco de Dados
+# pgAdmin Settings
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=AdminSecure2026##
 
+# PostgreSQL Settings (necessário para o healthcheck e inicialização do banco)
 POSTGRES_USER=postgres
-#POSTGRES_PASSWORD=sua_senha_segura
-POSTGRES_DB=postgres 
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=app_db
 ```
 
 
@@ -49,5 +52,5 @@ Se você não criar um usuário novo, usará o usuário padrão (POSTGRES_USER) 
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

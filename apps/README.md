@@ -11,6 +11,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 <!-- START_ID:bloco_variaveis -->
 ```bash
 ./apps
+├── cliente
+│   └── .env.example
 ├── gvendas
 │   └── .env.example
 ├── media
@@ -19,15 +21,18 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   └── .env.example
 ├── netdata
 │   └── .env.example
+├── sftp
+│   └── .env.example
 ├── sgn
 │   └── .env.example
 ├── storage
 │   └── .env.example
-├── whatsapp
+├── videos
 │   └── .env.example
-└── .env.example
+└── whatsapp
+    └── .env.example
 
-8 directories, 8 files
+11 directories, 10 files
 ```
 <!-- END_ID:bloco_variaveis -->
 
@@ -35,48 +40,77 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps
+├── cliente
+│   ├── docker-compose.yml
+│   ├── .env
+│   └── .env.example
+├── contabilidade
+│   ├── docker-compose.yml
+│   └── .env
 ├── gvendas
-│   ├── .env.example
+│   ├── docker-compose.yml
 │   ├── Dockerfile
-│   ├── README.md
-│   ├── docker-compose.gvendas.yml
-│   └── nginx.conf
-├── media
+│   ├── entrypoint.sh
+│   ├── .env
 │   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.media.yml
-│   └── nginx.conf
-├── n8n
-│   ├── .env.example
-│   ├── README.md
-│   └── docker-compose.n8n.yml
-├── netdata
-│   ├── .env.example
-│   ├── README.md
-│   └── docker-compose.netdata.yml
-├── sgn
-│   ├── .env.example
-│   ├── Dockerfile
-│   ├── README.md
-│   ├── docker-compose.sgn.yml
-│   └── nginx.conf
-├── storage
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.storage.yml
 │   ├── nginx.conf
-│   └── nginx2.conf
-├── whatsapp
+│   └── README.md
+├── media
+│   ├── docker-compose.yml
+│   ├── .env
 │   ├── .env.example
+│   ├── nginx.conf
+│   └── README.md
+├── n8n
+│   ├── docker-compose.yml
+│   ├── .env.example
+│   └── README.md
+├── netdata
+│   ├── docker-compose.yml
+│   ├── .env
+│   ├── .env.example
+│   └── README.md
+├── pdf
+│   ├── src
+│   │   ├── templates
+│   │   ├── pdf.js
+│   │   └── server.js
+│   ├── docker-compose.yml
 │   ├── Dockerfile
-│   ├── README.md
-│   └── docker-compose.whatsapp.yml
-├── .env.example
-├── README.md
+│   ├── .env
+│   ├── package.json
+│   └── package-lock.json
+├── sftp
+│   ├── docker-compose.yml
+│   ├── .env
+│   ├── .env.example
+│   └── README.md
+├── sgn
+│   ├── docker-compose.yml
+│   ├── .env
+│   ├── .env.example
+│   ├── nginx.conf
+│   └── README.md
+├── storage
+│   ├── docker-compose.yml
+│   ├── .env.example
+│   ├── nginx.conf
+│   └── README.md
+├── videos
+│   ├── docker-compose.yml
+│   ├── .env
+│   └── .env.example
+├── whatsapp
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── .env
+│   ├── .env.example
+│   └── README.md
 ├── auth-nginx.conf
-└── docker-compose.apps.yml
+├── docker-compose.yml
+└── README.md
 
-8 directories, 33 files
+15 directories, 55 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -98,5 +132,5 @@ WHATSAPP_CONTAINER_PORT=3000
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

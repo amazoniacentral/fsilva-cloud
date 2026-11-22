@@ -8,11 +8,11 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/sgn
+├── docker-compose.yml
+├── .env
 ├── .env.example
-├── Dockerfile
-├── README.md
-├── docker-compose.sgn.yml
-└── nginx.conf
+├── nginx.conf
+└── README.md
 
 1 directory, 5 files
 ```
@@ -118,5 +118,5 @@ META_APP_SECRET=
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

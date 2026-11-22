@@ -8,10 +8,10 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./scripts/documentacao
-├── README.md
 ├── blocos.sh
 ├── cabecalho.sh
 ├── estrutura.sh
+├── README.md
 ├── rodape.sh
 ├── setup.sh
 └── variaveis.sh
@@ -25,5 +25,5 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

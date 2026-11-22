@@ -8,13 +8,12 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/storage
+├── docker-compose.yml
 ├── .env.example
-├── README.md
-├── docker-compose.storage.yml
 ├── nginx.conf
-└── nginx2.conf
+└── README.md
 
-1 directory, 5 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -23,12 +22,12 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ```.env <!-- ID: .env.example -->
 #Dominio da STORAGE_DOMAIN
 
-#STORAGE_DOMAIN=storage.gvendas.app.br
+STORAGE_DOMAIN=storage.gvendas.app.br
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

@@ -8,13 +8,15 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/gvendas
-├── .env.example
+├── docker-compose.yml
 ├── Dockerfile
-├── README.md
-├── docker-compose.gvendas.yml
-└── nginx.conf
+├── entrypoint.sh
+├── .env
+├── .env.example
+├── nginx.conf
+└── README.md
 
-1 directory, 5 files
+1 directory, 7 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -22,9 +24,8 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
 #Dominio da API
-#Este pwa é multi dominio então os somínios são inseeidos aitomaticamente pela Api
+API_DOMAIN=api.seu-dominio.com
 
-API_DOMAIN=dominio_da_api
 
 #WHATSAPP META Api Oficial
 META_APP_ID=sua_chave_meta_app_id
@@ -35,5 +36,5 @@ CONFIG_ID=sua_chave_meta_config
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

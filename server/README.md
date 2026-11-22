@@ -28,23 +28,20 @@ Aqui é a estrutura de prod/dev
 ```bash
 ./server
 ├── dev
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.dev.yml
-│   ├── host.dev.yml
-│   ├── traefik.dev.yml
-│   └── tunnel.dev.yml
+│   ├── docker-compose.cloudflare.yml
+│   ├── docker-compose.local.yml
+│   ├── docker-compose.tunnel.yml
+│   ├── docker-compose.yml
+│   └── .env.example
 ├── prod
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.prod.yml
-│   ├── host.prod.yml
-│   ├── traefik.prod.yml
-│   └── tunnel.prod.yml
-├── README.md
-└── docker-compose.server.yml
+│   ├── docker-compose.cloudflare.yml
+│   ├── docker-compose.local.yml
+│   ├── docker-compose.tunnel.yml
+│   ├── docker-compose.yml
+│   └── .env.example
+└── README.md
 
-3 directories, 14 files
+3 directories, 11 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -52,5 +49,5 @@ Aqui é a estrutura de prod/dev
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

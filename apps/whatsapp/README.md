@@ -8,35 +8,33 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/whatsapp
-├── .env.example
+├── docker-compose.yml
 ├── Dockerfile
-├── README.md
-└── docker-compose.whatsapp.yml
+├── .env
+├── .env.example
+└── README.md
 
-1 directory, 4 files
+1 directory, 5 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-# Aplicação
-HOST=0.0.0.0
-PORT=3000
+#Url da API principal Django
+API_HOST=api.seu-dominio.com
 
-# Servidor Api
-API_HOST=django-srv
-API_PORT=8000
 
-# Origens permitidas (separadas por vírgula)
-ALLOWED_ORIGINS=*
-
-SECRET_KEY=<seu token de identificação com o sevidor Api>
+#Whatsapp Api
+FB_CLIENT_ID=
+FB_CLIENT_SECRET=
+FB_REDIRECT_URI=
+FB_CONFIG_ID=
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

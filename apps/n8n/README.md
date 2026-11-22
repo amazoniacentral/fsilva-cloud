@@ -52,9 +52,9 @@ Um workflow no n8n funciona assim:
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/n8n
+├── docker-compose.yml
 ├── .env.example
-├── README.md
-└── docker-compose.n8n.yml
+└── README.md
 
 1 directory, 3 files
 ```
@@ -63,9 +63,46 @@ Um workflow no n8n funciona assim:
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-# n8n pra ser acessado apenas pelo localhost
-HOST=127.0.0.1
-PORT_N8N=5678
+# Configurações do Projeto e Domínio
+COMPOSE_PROJECT_NAME=n8n
+DEFAULT_DOMAIN=francsilva.com.br
+
+# Configurações de Email (SMTP)
+N8N_EMAIL_MODE=smtp
+N8N_SMTP_HOST=smtp.gmail.com
+N8N_SMTP_PORT=587
+N8N_SMTP_USER=franciscosilva.executivo@gmail.com
+N8N_SMTP_PASS=izkn qjrs lohz jwze
+N8N_SMTP_SENDER=N8N <no-reply@gvendas.app.br>
+
+# Timezone e Segurança
+TZ=America/Sao_Paulo
+GENERIC_TIMEZONE=America/Sao_Paulo
+N8N_ENCRYPTION_KEY=8935f4803dfbf1ec12c28d283a736d43cb6eef07b4138c143115e1db5239adc6
+
+# Banco de Dados PostgreSQL
+DB_TYPE=postgresdb
+DB_POSTGRESDB_DATABASE=n8n
+DB_POSTGRESDB_USER=n8n
+DB_POSTGRESDB_PASSWORD=n8n
+DB_POSTGRESDB_SCHEMA=public
+
+# Configurações de Execução e Arquivos do n8n
+N8N_EMAIL_MARCA_DAGUA=false
+N8N_PROTOCOL=https
+N8N_PROXY_TRUST=true
+N8N_HOST=n8n.francsilva.com.br
+N8N_WEBHOOK_URL=https://webhook.francsilva.com.br/
+N8N_EDITOR_BASE_URL=https://n8n.francsilva.com.br/
+EXECUTIONS_DATA_SAVE_ON_ERROR=all
+N8N_RESTRICT_FILE_ACCESS_TO="/home/node/files/"
+EXECUTIONS_MODE=queue
+QUEUE_BULL_REDIS_HOST=redis
+QUEUE_BULL_REDIS_PORT=6379
+OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+EXECUTIONS_DATA_MAX_AGE=24
+N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 ```
 Para acessar são duas urls
 Editor - https://n8n.seu-dominio.com
@@ -75,5 +112,5 @@ Webrooks - https://webhook.seu-dominio.com
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

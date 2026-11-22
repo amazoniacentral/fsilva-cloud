@@ -39,6 +39,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ```bash
 .
 ├── apps
+│   ├── cliente
+│   │   └── .env.example
 │   ├── gvendas
 │   │   └── .env.example
 │   ├── media
@@ -47,19 +49,22 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   │   └── .env.example
 │   ├── netdata
 │   │   └── .env.example
+│   ├── sftp
+│   │   └── .env.example
 │   ├── sgn
 │   │   └── .env.example
 │   ├── storage
 │   │   └── .env.example
-│   ├── whatsapp
+│   ├── videos
 │   │   └── .env.example
-│   └── .env.example
+│   └── whatsapp
+│       └── .env.example
 ├── database
 │   └── .env.example
 ├── proxy
-│   ├── traefik
+│   ├── cloudflare
 │   │   └── .env.example
-│   └── tunnel
+│   └── local
 │       └── .env.example
 ├── scripts
 │   └── .env.example
@@ -69,7 +74,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
     └── prod
         └── .env.example
 
-17 directories, 14 files
+20 directories, 16 files
 ```
 <!-- END_ID:bloco_variaveis -->
 
@@ -86,140 +91,167 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ```bash
 .
 ├── apps
+│   ├── cliente
+│   │   ├── docker-compose.yml
+│   │   ├── .env
+│   │   └── .env.example
+│   ├── contabilidade
+│   │   ├── docker-compose.yml
+│   │   └── .env
 │   ├── gvendas
-│   │   ├── .env.example
+│   │   ├── docker-compose.yml
 │   │   ├── Dockerfile
-│   │   ├── README.md
-│   │   ├── docker-compose.gvendas.yml
-│   │   └── nginx.conf
-│   ├── media
+│   │   ├── entrypoint.sh
+│   │   ├── .env
 │   │   ├── .env.example
-│   │   ├── README.md
-│   │   ├── docker-compose.media.yml
-│   │   └── nginx.conf
-│   ├── n8n
-│   │   ├── .env.example
-│   │   ├── README.md
-│   │   └── docker-compose.n8n.yml
-│   ├── netdata
-│   │   ├── .env.example
-│   │   ├── README.md
-│   │   └── docker-compose.netdata.yml
-│   ├── sgn
-│   │   ├── .env.example
-│   │   ├── Dockerfile
-│   │   ├── README.md
-│   │   ├── docker-compose.sgn.yml
-│   │   └── nginx.conf
-│   ├── storage
-│   │   ├── .env.example
-│   │   ├── README.md
-│   │   ├── docker-compose.storage.yml
 │   │   ├── nginx.conf
-│   │   └── nginx2.conf
-│   ├── whatsapp
+│   │   └── README.md
+│   ├── media
+│   │   ├── docker-compose.yml
+│   │   ├── .env
 │   │   ├── .env.example
+│   │   ├── nginx.conf
+│   │   └── README.md
+│   ├── n8n
+│   │   ├── docker-compose.yml
+│   │   ├── .env.example
+│   │   └── README.md
+│   ├── netdata
+│   │   ├── docker-compose.yml
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   └── README.md
+│   ├── pdf
+│   │   ├── src
+│   │   ├── docker-compose.yml
 │   │   ├── Dockerfile
-│   │   ├── README.md
-│   │   └── docker-compose.whatsapp.yml
-│   ├── .env.example
-│   ├── README.md
+│   │   ├── .env
+│   │   ├── package.json
+│   │   └── package-lock.json
+│   ├── sftp
+│   │   ├── docker-compose.yml
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   └── README.md
+│   ├── sgn
+│   │   ├── docker-compose.yml
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   ├── nginx.conf
+│   │   └── README.md
+│   ├── storage
+│   │   ├── docker-compose.yml
+│   │   ├── .env.example
+│   │   ├── nginx.conf
+│   │   └── README.md
+│   ├── videos
+│   │   ├── docker-compose.yml
+│   │   ├── .env
+│   │   └── .env.example
+│   ├── whatsapp
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── auth-nginx.conf
-│   └── docker-compose.apps.yml
+│   ├── docker-compose.yml
+│   └── README.md
 ├── database
-│   ├── .env.example
-│   ├── README.md
-│   ├── docker-compose.database.yml
+│   ├── docker-compose.pgadmin.yml
 │   ├── docker-compose.postgres.yml
-│   └── docker-compose.redis.yml
-├── middleware
+│   ├── docker-compose.redis.yml
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── .env.example
+│   └── README.md
+├── proxy
+│   ├── cloudflare
+│   │   ├── docker-compose.yml
+│   │   └── .env.example
 │   ├── errors
 │   │   ├── html
-│   │   ├── README.md
-│   │   ├── docker-compose.errors.yml
-│   │   └── nginx.conf
-│   ├── README.md
-│   └── docker-compose.middleware.yml
-├── proxy
-│   ├── traefik
-│   │   ├── .env.example
-│   │   ├── README.md
+│   │   ├── docker-compose.yml
+│   │   ├── nginx.conf
+│   │   └── README.md
+│   ├── local
+│   │   ├── docker-compose.yml
+│   │   └── .env.example
+│   ├── services
 │   │   ├── docker-compose.traefik.yml
-│   │   └── servicos.yml
-│   ├── tunnel
-│   │   ├── .env.example
-│   │   ├── README.md
 │   │   ├── docker-compose.tunnel.yml
-│   │   └── servicos.yml
-│   └── README.md
-├── repos
-│   ├── docker-vps
-│   ├── gvendas
-│   ├── push
-│   ├── sgn
+│   │   └── .env
+│   ├── tunnel
+│   │   ├── docker-compose.traefik.yml
+│   │   ├── docker-compose.yml
+│   │   └── .env
 │   └── README.md
 ├── scripts
+│   ├── backup
+│   │   ├── gdrive
+│   │   └── r2
+│   ├── database
+│   │   ├── database.sh
+│   │   ├── extensao_vetor.sh
+│   │   ├── indicesn8n.sh
+│   │   └── restaurar.sh
 │   ├── deploy
-│   │   ├── README.md
 │   │   ├── dev_update.sh
 │   │   ├── prod_update.sh
+│   │   ├── README.md
 │   │   └── setup.sh
 │   ├── documentacao
-│   │   ├── README.md
 │   │   ├── blocos.sh
 │   │   ├── cabecalho.sh
 │   │   ├── estrutura.sh
+│   │   ├── README.md
 │   │   ├── rodape.sh
 │   │   ├── setup.sh
 │   │   └── variaveis.sh
-│   ├── .env.example
-│   ├── README.md
+│   ├── git
+│   │   ├── commit.sh
+│   │   ├── setup.sh
+│   │   ├── submodule_adicionar.sh
+│   │   ├── submodule_branch.sh
+│   │   ├── submodule_listar.sh
+│   │   ├── submodule_remover.sh
+│   │   └── tags.sh
 │   ├── alias.sh
-│   ├── backup_db.sh
-│   ├── backup_rclone.sh
+│   ├── clean.sh
 │   ├── containers.sh
+│   ├── copy.sh
 │   ├── crontab.sh
-│   ├── database.sh
-│   ├── db_baixar.sh
-│   ├── gitmodules.sh
+│   ├── .env.example
 │   ├── haskey.sh
+│   ├── ia.sh
 │   ├── install.sh
+│   ├── ipv6.sh
 │   ├── limpar_traefik.sh
 │   ├── otimizar_rede.sh
+│   ├── README.md
 │   ├── reset.sh
 │   ├── setup_reclone.sh
-│   ├── status.sh
-│   └── sync_rclone.sh
+│   └── status.sh
 ├── server
 │   ├── dev
-│   │   ├── .env.example
-│   │   ├── README.md
-│   │   ├── docker-compose.dev.yml
-│   │   ├── host.dev.yml
-│   │   ├── traefik.dev.yml
-│   │   └── tunnel.dev.yml
+│   │   ├── docker-compose.cloudflare.yml
+│   │   ├── docker-compose.local.yml
+│   │   ├── docker-compose.tunnel.yml
+│   │   ├── docker-compose.yml
+│   │   └── .env.example
 │   ├── prod
-│   │   ├── .env.example
-│   │   ├── README.md
-│   │   ├── docker-compose.prod.yml
-│   │   ├── host.prod.yml
-│   │   ├── traefik.prod.yml
-│   │   └── tunnel.prod.yml
-│   ├── README.md
-│   └── docker-compose.server.yml
-├── .gitignore
-├── .gitmodules
-├── README.md
-├── colocarnosfilhos.yml.info
+│   │   ├── docker-compose.cloudflare.yml
+│   │   ├── docker-compose.local.yml
+│   │   ├── docker-compose.tunnel.yml
+│   │   ├── docker-compose.yml
+│   │   └── .env.example
+│   └── README.md
 ├── dump.rdb
-├── host.dev.yml
-├── host.prod.yml
-├── traefik.dev.yml
-├── traefik.prod.yml
-├── tunnel.dev.yml
-└── tunnel.prod.yml
+├── .gitignore
+├── README.md
+└── setup.sh
 
-27 directories, 107 files
+34 directories, 127 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -236,5 +268,5 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

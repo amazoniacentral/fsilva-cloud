@@ -45,25 +45,27 @@ O Netdata funciona assim:
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/netdata
+├── docker-compose.yml
+├── .env
 ├── .env.example
-├── README.md
-└── docker-compose.netdata.yml
+└── README.md
 
-1 directory, 3 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-# Configurações de Domínio
-HOST=127.0.0.1
-PORT_NETDATA=1999
+# Configurações de Atualização e Banco de Dados do Netdata
+NETDATA_CHECK_FOR_UPDATES=yes
+NETDATA_ARGUMENTS=-W set global "update every" 10
+NETDATA_CONFIG_GLOBAL_DBENGINE_DISK_SPACE=2048
 ```
 
 <!-- START_ID:bloco_final -->
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

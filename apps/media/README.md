@@ -8,12 +8,13 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./apps/media
+├── docker-compose.yml
+├── .env
 ├── .env.example
-├── README.md
-├── docker-compose.media.yml
-└── nginx.conf
+├── nginx.conf
+└── README.md
 
-1 directory, 4 files
+1 directory, 5 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -29,5 +30,5 @@ MEDIA_DOMAIN=seu_dominio_media
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 14/06/2026_
+_Atualizado em: 22/11/2026_
 <!-- END_ID:bloco_final -->

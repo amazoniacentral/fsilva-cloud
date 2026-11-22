@@ -30,7 +30,6 @@ services:
 networks:
   default:
   net_db:
-    external: true
 
 volumes:
   redis_data:

@@ -30,11 +30,6 @@ services:
 networks:
   default:
   net_db:
-    external: true
-  net_proxy:
-    external: true
-  net_tunnel:
-    external: true
 
 volumes:
   pgadmin_data:

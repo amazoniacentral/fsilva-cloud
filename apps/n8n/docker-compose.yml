@@ -86,7 +86,6 @@ networks:
   default:
   net_n8n:
   net_db:
-    external: true
 
 volumes:
   n8n_data:

@@ -1,4 +1,4 @@
-# /server/dev/docker-compose.yml
+# /server/prod/docker-compose.yml
 services:
   django-nginx:
     env_file:

@@ -1,4 +1,4 @@
-# /server/dev/docker-compose.tunnel.yml
+# /server/prod/docker-compose.tunnel.yml
 include:
   - ../proxy/tunnel/docker-compose.yml
   - ./docker-compose.yml

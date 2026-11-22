@@ -1,4 +1,4 @@
-# /server/dev/docker-compose.local.yml
+# /server/prod/docker-compose.local.yml
 include:
   - ../proxy/local/docker-compose.yml
   - ./docker-compose.yml

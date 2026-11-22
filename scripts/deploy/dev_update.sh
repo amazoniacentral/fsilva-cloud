@@ -90,8 +90,10 @@ select ACAO in "${ACOES[@]}"; do
     case $REPLY in
         1|2|3|4|5|9) # Ações que envolvem serviços específicos (Up, Down, Down&Up, Restart, Build, Logs)
             
-            # Lê os serviços usando o diretório do projeto como base de contexto
-            mapfile -t SERVICES < <(docker compose --project-directory "$CD_DIR" -f "$FILE" config --services 2>/dev/null)
+            # Entra na pasta do projeto para o Docker resolver os caminhos relativos corretamente
+            cd "$CD_DIR"
+
+            mapfile -t SERVICES < <(docker compose -f "$FILENAME" config --services 2>/dev/null)
 
             if [ ${#SERVICES[@]} -eq 0 ]; then
                 echo -e "${VERMELHO}Nenhum serviço encontrado via docker compose config. Executando para tudo...${NC}"
@@ -127,50 +129,50 @@ select ACAO in "${ACOES[@]}"; do
                 fi
             fi
 
-            # Executa a ação utilizando --project-directory e o arquivo exato selecionado
+            # Executa a ação já posicionado no diretório correto usando o arquivo selecionado ($FILENAME)
             case $REPLY in
                 1) # Up
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" up -d --build
+                        docker compose -f "$FILENAME" up -d --build
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" up -d --build "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" up -d --build "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
                 2) # Down
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" down --remove-orphans
+                        docker compose -f "$FILENAME" down --remove-orphans
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" down --remove-orphans "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" down --remove-orphans "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
                 3) # Down & Up
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" down --remove-orphans
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" up -d --build
+                        docker compose -f "$FILENAME" down --remove-orphans
+                        docker compose -f "$FILENAME" up -d --build
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" down --remove-orphans "${SERVICES_TO_RUN[@]}"
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" up -d --build "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" down --remove-orphans "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" up -d --build "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
                 4) # Restart
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" restart
+                        docker compose -f "$FILENAME" restart
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" restart "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" restart "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
                 5) # Build
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" build --no-cache
+                        docker compose -f "$FILENAME" build --no-cache
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" build --no-cache "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" build --no-cache "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
                 9) # Logs
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" logs -f --tail=50
+                        docker compose -f "$FILENAME" logs -f --tail=50
                     else
-                        docker compose --project-directory "$CD_DIR" -f "$FILE" logs -f --tail=50 "${SERVICES_TO_RUN[@]}"
+                        docker compose -f "$FILENAME" logs -f --tail=50 "${SERVICES_TO_RUN[@]}"
                     fi
                     ;;
             esac
@@ -178,11 +180,13 @@ select ACAO in "${ACOES[@]}"; do
             ;;
             
         6) # Images
-            docker compose --project-directory "$CD_DIR" -f "$FILE" images
+            cd "$CD_DIR"
+            docker compose -f "$FILENAME" images
             break
             ;;
         7) # Networks
-            docker compose --project-directory "$CD_DIR" -f "$FILE" config | grep -A 5 "networks:"
+            cd "$CD_DIR"
+            docker compose -f "$FILENAME" config | grep -A 5 "networks:"
             break
             ;;
         8) # Prune
@@ -190,7 +194,8 @@ select ACAO in "${ACOES[@]}"; do
             break
             ;;
         10) # Status (PS)
-            docker compose --project-directory "$CD_DIR" -f "$FILE" ps
+            cd "$CD_DIR"
+            docker compose -f "$FILENAME" ps
             break
             ;;
         11)

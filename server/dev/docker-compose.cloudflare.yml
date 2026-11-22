@@ -1,0 +1,4 @@
+# /server/dev/docker-compose.cloudflare.yml
+include:
+  - ../proxy/cloudflare/docker-compose.yml
+  - ./docker-compose.yml

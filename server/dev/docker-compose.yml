@@ -1,8 +1,4 @@
-
-include:
-  - ../../apps/docker-compose.yml
-  - ../../database/docker-compose.yml
-
+# /server/dev/docker-compose.yml
 services:
   django-nginx:
     env_file:

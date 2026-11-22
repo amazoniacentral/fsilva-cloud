@@ -1,0 +1,23 @@
+services:
+
+  django-nginx:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN:-?api.seu-dominio.com}`)"
+      - "traefik.http.routers.django-nginx.rule=Host(`${API_DOMAIN:?api.seu-dominio.com}`)"
+      
+  media:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.media-http.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
+      - "traefik.http.routers.media.rule=Host(`${MEDIA_DOMAIN:?Erro: MEDIA_DOMAIN não definido no .env}`)"
+      
+  storage:
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.storage-http.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN:?storage.seu-dominio.com}`)"
+  

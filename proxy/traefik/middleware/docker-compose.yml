@@ -1,2 +1,2 @@
 include:
-  - ./errors/docker-compose.errors.yml
+  - ./errors/docker-compose.yml

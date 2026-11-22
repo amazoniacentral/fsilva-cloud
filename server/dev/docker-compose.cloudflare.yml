@@ -2,5 +2,5 @@
 name: fsilva-cloud-dev
 
 include:
-  - ../proxy/cloudflare/docker-compose.yml
+  - ../../proxy/cloudflare/docker-compose.yml
   - ./docker-compose.yml

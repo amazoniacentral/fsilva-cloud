@@ -1,6 +1,4 @@
-include:
-  - ./docker-compose.traefik.yml
-  
+# /proxy/services/docker-compose.tunnel.yml
 services:
   gvendas:
     networks:

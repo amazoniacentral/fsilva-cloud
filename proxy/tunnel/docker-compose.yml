@@ -27,3 +27,4 @@ networks:
   
 include:
   - ./docker-compose.traefik.yml
+  - ../services/docker-compose.tunnel

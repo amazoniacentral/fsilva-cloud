@@ -2,32 +2,38 @@
 services:
   django-nginx:
     env_file:
-      - .env
+      - path: .env
+        required: false
   gvendas:
     environment:
-      - API_DOMAIN=${API_DOMAIN}
+      - API_DOMAIN=${API_DOMAIN:-}  # Também previne erro caso a variável não exista
   media:
     env_file:
-      - .env
+      - path: .env
+        required: false
   storage:
     env_file:
-      - .env
+      - path: .env
+        required: false
   django:
     env_file:
-      - .env
+      - path: .env
+        required: false
   django-celery-worker:
     env_file:
-      - .env
+      - path: .env
+        required: false
   django-celery-beat:
     env_file:
-      - .env
+      - path: .env
+        required: false
   whatsapp:
     env_file:
-      - .env
+      - path: .env
+        required: false
   
   n8n:
     environment:
       - DB_POSTGRESDB_DATABASE=n8n
       - DB_POSTGRESDB_USER=n8n
       - DB_POSTGRESDB_PASSWORD=n8n
-      

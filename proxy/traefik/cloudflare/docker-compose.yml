@@ -1,4 +1,4 @@
-# /proxy/traefik/docker-compose.traefik.cloudflare.yml
+# /proxy/traefik/cloudflare/docker-compose.yml
 services:
   traefik:
     image: traefik:v3.0

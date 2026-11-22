@@ -1,6 +1,4 @@
 networks:
-  net_proxy:
-    external: true
   net_db:
     external: true
 

@@ -143,7 +143,6 @@ networks:
   net_n8n:
     external: true
   net_db:
-    external: true
 
 volumes:
   sgn_data:

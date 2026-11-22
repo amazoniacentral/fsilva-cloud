@@ -4,13 +4,14 @@ services:
     hostname: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: 'franciscosilva.executivo@gmail.com'
-      PGADMIN_DEFAULT_PASSWORD: 'Samsung123##'
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-AdminSecure2026##}
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     expose:
       - "80"
     networks:
+      - default
       - net_db   
       - net_proxy
       - net_tunnel   
@@ -25,3 +26,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+networks:
+  default:
+  net_db:
+    external: true
+  net_proxy:
+    external: true
+  net_tunnel:
+    external: true
+
+volumes:
+  pgadmin_data:

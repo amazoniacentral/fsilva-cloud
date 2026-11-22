@@ -2,23 +2,6 @@ include:
   - ./docker-compose.traefik.yml
   
 services:
-  # traefik:
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_net_proxy"
-    
-  #     # =========================
-  #     # HTTPS ONLY (RECOMENDADO)
-  #     # =========================
-  #     - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)"
-  #     - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-  #     - "traefik.http.routers.traefik-dashboard.tls=true"
-  #     - "traefik.http.routers.traefik-dashboard.service=api@internal"
-    
-  #     # BASIC AUTH
-  #     - "traefik.http.routers.traefik-dashboard.middlewares=auth-painel"
-  #     - "traefik.http.middlewares.auth-painel.basicauth.usersfile=/etc/traefik/.htpasswd"
-
   gvendas:
     networks:
       - net_proxy
@@ -153,4 +136,6 @@ services:
 
     networks:
       - net_proxy
-  
+
+networks:
+  net_proxy:

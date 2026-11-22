@@ -7,14 +7,13 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
+./proxy/tunnel
+├── docker-compose.traefik.yml
 ├── docker-compose.yml
 ├── .env
-├── .env.example
-├── nginx.conf
 └── README.md
 
-1 directory, 5 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

@@ -32,16 +32,18 @@ Aqui é a estrutura de prod/dev
 │   ├── docker-compose.local.yml
 │   ├── docker-compose.tunnel.yml
 │   ├── docker-compose.yml
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 ├── prod
 │   ├── docker-compose.cloudflare.yml
 │   ├── docker-compose.local.yml
 │   ├── docker-compose.tunnel.yml
 │   ├── docker-compose.yml
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 └── README.md
 
-3 directories, 11 files
+3 directories, 13 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

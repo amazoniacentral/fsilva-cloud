@@ -7,14 +7,21 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
-├── docker-compose.yml
-├── .env
-├── .env.example
-├── nginx.conf
+./scripts/backup
+├── gdrive
+│   ├── download-catalogo-bruto.sh
+│   ├── download-treinamento.sh
+│   └── envio-catalogo-compress.sh
+├── r2
+│   ├── backup-configs-encrypted.sh
+│   ├── backup-db-encrypted.sh
+│   ├── backup-volumes-encrypted.sh
+│   ├── restore-configs-decrypted.sh
+│   ├── restore-db-decrypted.sh
+│   └── restore-volumes-decrypted.sh
 └── README.md
 
-1 directory, 5 files
+3 directories, 10 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

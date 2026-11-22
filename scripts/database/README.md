@@ -7,12 +7,12 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
-├── docker-compose.yml
-├── .env
-├── .env.example
-├── nginx.conf
-└── README.md
+./scripts/database
+├── database.sh
+├── extensao_vetor.sh
+├── indicesn8n.sh
+├── README.md
+└── restaurar.sh
 
 1 directory, 5 files
 ```

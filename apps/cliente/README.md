@@ -7,23 +7,29 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
+./apps/cliente
 ├── docker-compose.yml
 ├── .env
 ├── .env.example
-├── nginx.conf
 └── README.md
 
-1 directory, 5 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-#Dominio das Midias
+# URL da API e do Site (necessárias no Build para o Next.js injetar nas páginas)
+NEXT_PUBLIC_API_URL=https://api.francsilva.com.br
+NEXT_PUBLIC_SITE_URL=https://francsilva.com.br
 
-MEDIA_DOMAIN=seu_dominio_media
+# Porta e Host de Execução do Servidor Node (opcionais, o Dockerfile já tem padrões)
+PORT=3000
+HOSTNAME=0.0.0.0
+
+# Se o seu servidor precisar de variáveis secretas adicionais em tempo de execução, adicione abaixo:
+# CHAVE_SECRETA_API=sua_chave_aqui
 ```
 
 <!-- START_ID:bloco_final -->

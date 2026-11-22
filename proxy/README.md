@@ -26,7 +26,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ./proxy
 ├── cloudflare
 │   ├── docker-compose.yml
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 ├── errors
 │   ├── html
 │   │   ├── 404.html
@@ -36,18 +37,21 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   └── README.md
 ├── local
 │   ├── docker-compose.yml
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 ├── services
 │   ├── docker-compose.traefik.yml
 │   ├── docker-compose.tunnel.yml
-│   └── .env
+│   ├── .env
+│   └── README.md
 ├── tunnel
 │   ├── docker-compose.traefik.yml
 │   ├── docker-compose.yml
-│   └── .env
+│   ├── .env
+│   └── README.md
 └── README.md
 
-7 directories, 16 files
+7 directories, 20 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

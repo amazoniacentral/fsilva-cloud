@@ -7,14 +7,23 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
+./apps/pdf
+├── src
+│   ├── templates
+│   │   ├── contabilidade.html
+│   │   ├── header-principal.html
+│   │   ├── lancamentos.html
+│   │   └── report.html
+│   ├── pdf.js
+│   └── server.js
 ├── docker-compose.yml
+├── Dockerfile
 ├── .env
-├── .env.example
-├── nginx.conf
+├── package.json
+├── package-lock.json
 └── README.md
 
-1 directory, 5 files
+3 directories, 12 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

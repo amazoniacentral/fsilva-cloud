@@ -7,23 +7,24 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
+./proxy/cloudflare
 ├── docker-compose.yml
-├── .env
 ├── .env.example
-├── nginx.conf
 └── README.md
 
-1 directory, 5 files
+1 directory, 3 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-#Dominio das Midias
+# E-mail para registro do certificado Let's Encrypt
+ACME_EMAIL=seu_email@dominio.com
 
-MEDIA_DOMAIN=seu_dominio_media
+# Credenciais da API da Cloudflare para o DNS Challenge
+CF_API_EMAIL=seu_email@dominio.com
+CF_API_KEY=sua_global_api_key_da_cloudflare_aqui
 ```
 
 <!-- START_ID:bloco_final -->

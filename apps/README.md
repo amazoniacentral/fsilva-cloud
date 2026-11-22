@@ -43,10 +43,12 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ├── cliente
 │   ├── docker-compose.yml
 │   ├── .env
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 ├── contabilidade
 │   ├── docker-compose.yml
-│   └── .env
+│   ├── .env
+│   └── README.md
 ├── gvendas
 │   ├── docker-compose.yml
 │   ├── Dockerfile
@@ -79,7 +81,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   ├── Dockerfile
 │   ├── .env
 │   ├── package.json
-│   └── package-lock.json
+│   ├── package-lock.json
+│   └── README.md
 ├── sftp
 │   ├── docker-compose.yml
 │   ├── .env
@@ -99,7 +102,8 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ├── videos
 │   ├── docker-compose.yml
 │   ├── .env
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 ├── whatsapp
 │   ├── docker-compose.yml
 │   ├── Dockerfile
@@ -110,7 +114,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ├── docker-compose.yml
 └── README.md
 
-15 directories, 55 files
+15 directories, 59 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

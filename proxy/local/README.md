@@ -7,23 +7,19 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 
 <!-- START_ID:bloco_estrutura -->
 ```bash
-./apps/media
+./proxy/local
 ├── docker-compose.yml
-├── .env
 ├── .env.example
-├── nginx.conf
 └── README.md
 
-1 directory, 5 files
+1 directory, 3 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
 
 ### Configurações de variáveis .env
 ```.env <!-- ID: .env.example -->
-#Dominio das Midias
-
-MEDIA_DOMAIN=seu_dominio_media
+ACME_EMAIL=seu_email@dominio.com
 ```
 
 <!-- START_ID:bloco_final -->

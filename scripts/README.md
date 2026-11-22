@@ -13,17 +13,19 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 │   │   ├── download-catalogo-bruto.sh
 │   │   ├── download-treinamento.sh
 │   │   └── envio-catalogo-compress.sh
-│   └── r2
-│       ├── backup-configs-encrypted.sh
-│       ├── backup-db-encrypted.sh
-│       ├── backup-volumes-encrypted.sh
-│       ├── restore-configs-decrypted.sh
-│       ├── restore-db-decrypted.sh
-│       └── restore-volumes-decrypted.sh
+│   ├── r2
+│   │   ├── backup-configs-encrypted.sh
+│   │   ├── backup-db-encrypted.sh
+│   │   ├── backup-volumes-encrypted.sh
+│   │   ├── restore-configs-decrypted.sh
+│   │   ├── restore-db-decrypted.sh
+│   │   └── restore-volumes-decrypted.sh
+│   └── README.md
 ├── database
 │   ├── database.sh
 │   ├── extensao_vetor.sh
 │   ├── indicesn8n.sh
+│   ├── README.md
 │   └── restaurar.sh
 ├── deploy
 │   ├── dev_update.sh
@@ -40,6 +42,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 │   └── variaveis.sh
 ├── git
 │   ├── commit.sh
+│   ├── README.md
 │   ├── setup.sh
 │   ├── submodule_adicionar.sh
 │   ├── submodule_branch.sh
@@ -63,7 +66,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── setup_reclone.sh
 └── status.sh
 
-8 directories, 47 files
+8 directories, 50 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

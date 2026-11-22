@@ -94,10 +94,12 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── cliente
 │   │   ├── docker-compose.yml
 │   │   ├── .env
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── contabilidade
 │   │   ├── docker-compose.yml
-│   │   └── .env
+│   │   ├── .env
+│   │   └── README.md
 │   ├── gvendas
 │   │   ├── docker-compose.yml
 │   │   ├── Dockerfile
@@ -127,7 +129,8 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── Dockerfile
 │   │   ├── .env
 │   │   ├── package.json
-│   │   └── package-lock.json
+│   │   ├── package-lock.json
+│   │   └── README.md
 │   ├── sftp
 │   │   ├── docker-compose.yml
 │   │   ├── .env
@@ -147,7 +150,8 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── videos
 │   │   ├── docker-compose.yml
 │   │   ├── .env
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── whatsapp
 │   │   ├── docker-compose.yml
 │   │   ├── Dockerfile
@@ -168,7 +172,8 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── proxy
 │   ├── cloudflare
 │   │   ├── docker-compose.yml
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── errors
 │   │   ├── html
 │   │   ├── docker-compose.yml
@@ -176,24 +181,29 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   └── README.md
 │   ├── local
 │   │   ├── docker-compose.yml
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── services
 │   │   ├── docker-compose.traefik.yml
 │   │   ├── docker-compose.tunnel.yml
-│   │   └── .env
+│   │   ├── .env
+│   │   └── README.md
 │   ├── tunnel
 │   │   ├── docker-compose.traefik.yml
 │   │   ├── docker-compose.yml
-│   │   └── .env
+│   │   ├── .env
+│   │   └── README.md
 │   └── README.md
 ├── scripts
 │   ├── backup
 │   │   ├── gdrive
-│   │   └── r2
+│   │   ├── r2
+│   │   └── README.md
 │   ├── database
 │   │   ├── database.sh
 │   │   ├── extensao_vetor.sh
 │   │   ├── indicesn8n.sh
+│   │   ├── README.md
 │   │   └── restaurar.sh
 │   ├── deploy
 │   │   ├── dev_update.sh
@@ -210,6 +220,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   └── variaveis.sh
 │   ├── git
 │   │   ├── commit.sh
+│   │   ├── README.md
 │   │   ├── setup.sh
 │   │   ├── submodule_adicionar.sh
 │   │   ├── submodule_branch.sh
@@ -238,20 +249,22 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── docker-compose.local.yml
 │   │   ├── docker-compose.tunnel.yml
 │   │   ├── docker-compose.yml
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   ├── prod
 │   │   ├── docker-compose.cloudflare.yml
 │   │   ├── docker-compose.local.yml
 │   │   ├── docker-compose.tunnel.yml
 │   │   ├── docker-compose.yml
-│   │   └── .env.example
+│   │   ├── .env.example
+│   │   └── README.md
 │   └── README.md
 ├── dump.rdb
 ├── .gitignore
 ├── README.md
 └── setup.sh
 
-34 directories, 127 files
+34 directories, 140 files
 ```
 <!-- END_ID:bloco_estrutura -->
 

@@ -24,4 +24,13 @@ services:
       - redis_data:/data
 
     networks:
+      - default
       - net_db
+
+networks:
+  default:
+  net_db:
+    external: true
+
+volumes:
+  redis_data:

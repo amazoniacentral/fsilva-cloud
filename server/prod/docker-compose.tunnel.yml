@@ -1,4 +1,6 @@
 # /server/prod/docker-compose.tunnel.yml
+name: fsilva-cloud-prod
+
 include:
   - ../proxy/tunnel/docker-compose.yml
   - ./docker-compose.yml

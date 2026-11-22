@@ -1,4 +1,6 @@
 # /server/prod/docker-compose.cloudflare.yml
+name: fsilva-cloud-prod
+
 include:
   - ../proxy/cloudflare/docker-compose.yml
   - ./docker-compose.yml

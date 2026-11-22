@@ -1,0 +1,88 @@
+# /proxy/traefik/local/docker-compose.yml
+services:
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    env_file: 
+      - .env
+    hostname: traefik-edge
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    networks:
+      - net_proxy
+      - default
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 128M
+        reservations:
+          cpus: '0.01'
+          memory: 64M
+    expose:
+      - "8080"
+    command:
+      # =====================
+      # API / DASHBOARD
+      # =====================
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--entrypoints.traefik.address=:8080"
+    
+      # =====================
+      # ENTRYPOINTS HTTP/HTTPS
+      # =====================
+      - "--entrypoints.web.address=:80"
+      # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      # - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    
+      - "--entrypoints.websecure.address=:443"
+    
+      # =====================
+      # LOGS
+      # =====================
+      - "--log.level=INFO"
+      - "--accesslog=true"
+    
+      # =====================
+      # PROVIDERS
+      # =====================
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+    
+      # =====================
+      # TLS / LET'S ENCRYPT (HTTP CHALLENGE LOCAL)
+      # =====================
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    
+      # =====================
+      # MÉTRICAS
+      # =====================
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_dynamics:/etc/traefik/dynamic
+      - traefik_acme:/etc/traefik/acme
+      - ../.htpasswd:/etc/traefik/.htpasswd:ro
+    working_dir: /etc/traefik/dynamic
+
+networks:
+  net_proxy:
+  default:
+
+volumes:
+  traefik_dynamics:
+  traefik_acme:
+
+include:
+  - ../errors/docker-compose.yml
+  - ../services/docker-compose.servives.yml

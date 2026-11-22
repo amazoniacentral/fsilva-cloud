@@ -1,3 +1,4 @@
+# /proxy/tunnel/docker-compose.cloudflare.yml
 services:
   tunnel:
     image: cloudflare/cloudflared:latest
@@ -25,4 +26,4 @@ networks:
   default:
   
 include:
-  - ../traefik/tunnel/docker-compose.yml
+  - ./docker-compose.traefik.yml

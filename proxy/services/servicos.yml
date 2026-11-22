@@ -1,0 +1,40 @@
+include:
+  - ./docker-compose.tunnel.yml
+  
+services:
+  gvendas:
+    networks:
+      - net_tunnel
+  cliente:
+    networks:
+      - net_tunnel
+  whatsapp:
+    networks:
+      - net_tunnel
+  django-nginx:
+    networks:
+      - net_tunnel
+  django:
+    networks:
+      - net_tunnel
+  django-celery-worker:
+    networks:
+      - net_tunnel
+  media:
+    networks:
+      - net_tunnel
+  storage:
+    networks:
+      - net_tunnel
+  videos:
+    networks:
+      - net_tunnel
+  pdf-service:
+    networks:
+      - net_tunnel
+  n8n:
+    networks:
+      - net_tunnel
+  netdata:
+    networks:
+      - net_tunnel

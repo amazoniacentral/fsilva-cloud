@@ -1,0 +1,49 @@
+# /proxy/traefik/errors/docker-compose.yml
+services:
+  error-handler:
+    image: nginx:alpine
+    restart: always
+    hostname: error-handler
+    networks:
+      - net_proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./html:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      # SERVIÇO
+      - "traefik.http.services.error-service.loadbalancer.server.port=80"
+      
+      # MIDDLEWARE
+      - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
+      - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
+      - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
+
+      # ROTEADOR HTTP CATCH-ALL
+      - "traefik.http.routers.catch-all-http.rule=HostRegexp(`^.+$`) && !PathPrefix(`/.well-known/`)"
+      - "traefik.http.routers.catch-all-http.entrypoints=web"
+      - "traefik.http.routers.catch-all-http.priority=1"
+      - "traefik.http.routers.catch-all-http.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all-http.service=error-service"
+
+      # ROTEADOR HTTPS CATCH-ALL (Opcional: ativo apenas se usar HTTPS/Websecure)
+      - "traefik.http.routers.catch-all-https.rule=HostRegexp(`^.+$`)"
+      - "traefik.http.routers.catch-all-https.entrypoints=websecure"
+      - "traefik.http.routers.catch-all-https.tls=true"
+      - "traefik.http.routers.catch-all-https.priority=1"
+      - "traefik.http.routers.catch-all-https.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all-https.service=error-service"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 64M
+        reservations:
+          cpus: '0.01'
+          memory: 32M
+
+networks:
+  net_proxy:
+    external: true

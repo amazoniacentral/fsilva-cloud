@@ -140,5 +140,5 @@ networks:
     external: true
     
 include:
-  - ../../apps/docker-compose.yml
   - ../../database/docker-compose.yml
+  - ../../apps/docker-compose.yml

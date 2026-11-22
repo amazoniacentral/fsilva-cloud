@@ -9,6 +9,7 @@ services:
       - 8.8.8.8
     networks:
       - net_proxy
+      - default
     deploy:
       resources:
         limits:
@@ -62,6 +63,7 @@ services:
 
 networks:
   net_proxy:
+  default:
 
 volumes:
   traefik_dynamics:

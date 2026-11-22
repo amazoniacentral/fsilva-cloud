@@ -2,7 +2,7 @@ services:
   videos:
     image: ghcr.io/amazoniacentral/videos/videos:v1.0.92
     expose:
-      - "${VIDEOS_PORT:-3000}"
+      - "3000"
     restart: always
     env_file:
       - .env

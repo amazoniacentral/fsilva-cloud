@@ -1,16 +1,16 @@
 include:
-  - ./sgn/docker-compose.sgn.yml
-  - ./gvendas/docker-compose.gvendas.yml
-  - ./whatsapp/docker-compose.whatsapp.yml
-  - ./media/docker-compose.media.yml
-  - ./storage/docker-compose.storage.yml
-  - ./netdata/docker-compose.netdata.yml
-  - ./sftp/docker-compose.sftp.yml
-  - ./pdf/docker-compose.pdf.yml
-  - ./n8n/docker-compose.n8n.yml
-  - ./videos/docker-compose.videos.yml
-  - ./cliente/docker-compose.cliente.yml
-  - ./contabilidade/docker-compose.contabilidade.yml
+  - ./gvendas/docker-compose.yml
+  - ./sgn/docker-compose.yml
+  - ./whatsapp/docker-compose.yml
+  - ./media/docker-compose.yml
+  - ./storage/docker-compose.yml
+  - ./netdata/docker-compose.yml
+  - ./sftp/docker-compose.yml
+  - ./pdf/docker-compose.yml
+  - ./n8n/docker-compose.yml
+  - ./videos/docker-compose.yml
+  - ./cliente/docker-compose.yml
+  - ./contabilidade/docker-compose.yml
 
   
   

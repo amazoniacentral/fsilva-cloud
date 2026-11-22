@@ -26,7 +26,6 @@ networks:
 
 volumes:
   media_data:
-    external: true
   catalogos_json_data:
     external: true
   catalogos_pdf_compress_data:

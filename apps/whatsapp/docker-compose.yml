@@ -14,13 +14,13 @@ services:
       - whatsapp_database:/code/src/database
       - whatsapp_logs:/code/src/logs
     networks:
+      default:
       net_boot:
         aliases:
           - whatsapp-srv
       net_n8n:
-      net_web_only:
     expose:
-      - ${PORT:-3000}
+      - 3000
     deploy:
       resources:
         limits:
@@ -30,3 +30,14 @@ services:
           cpus: '0.05'
           memory: 64M
 
+networks:
+  default:
+  net_boot:
+    external: true
+  net_n8n:
+    external: true
+
+volumes:
+  whatsapp_sessions:
+  whatsapp_database:
+  whatsapp_logs:

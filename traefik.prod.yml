@@ -1,5 +1,0 @@
-name: fsilva-cloud-prod
-include:
-  - ./server/prod/traefik.prod.yml
-  - ./server/prod/docker-compose.prod.yml
-  - ./proxy/traefik/host.traefik.yml

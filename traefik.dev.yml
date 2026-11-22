@@ -1,7 +1,0 @@
-name: fsilva-cloud-dev
-include:
-  - ./server/dev/traefik.dev.yml
-  - ./server/dev/docker-compose.dev.yml
-  - ./proxy/traefik/host.traefik.yml
-
-

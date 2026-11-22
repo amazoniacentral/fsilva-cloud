@@ -1,9 +1,7 @@
 
 include:
-  - ../../apps/docker-compose.apps.yml
-  - ../../database/docker-compose.database.yml
-  - ../../middleware/docker-compose.middleware.yml
-  - ../docker-compose.server.yml
+  - ../../apps/docker-compose.yml
+  - ../../database/docker-compose.yml
 
 services:
   django-nginx:

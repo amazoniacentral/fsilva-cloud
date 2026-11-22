@@ -2,13 +2,13 @@ services:
   videos:
     image: ghcr.io/amazoniacentral/videos/videos:v1.0.92
     expose:
-      - "3000"
+      - "${VIDEOS_PORT:-3000}"
     restart: always
     env_file:
       - .env
     environment:
-      - NODE_ENV=production
-      - AUTH_TRUST_HOST=true
+      - NODE_ENV=${VIDEOS_NODE_ENV:-production}
+      - AUTH_TRUST_HOST=${VIDEOS_AUTH_TRUST_HOST:-true}
     volumes:
       - videos_data:/app/data  
       - videos_files:/var/www/videos
@@ -16,7 +16,7 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - net_web_only
+      - default
     deploy:
       resources:
         limits:
@@ -26,3 +26,9 @@ services:
           cpus: '0.05'
           memory: 100M
 
+networks:
+  default:
+
+volumes:
+  videos_data:
+  videos_files:

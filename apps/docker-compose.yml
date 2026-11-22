@@ -1,3 +1,9 @@
+networks:
+  net_proxy:
+    external: true
+  net_db:
+    external: true
+
 include:
   - ./gvendas/docker-compose.yml
   - ./sgn/docker-compose.yml

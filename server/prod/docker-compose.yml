@@ -1,0 +1,33 @@
+# /server/dev/docker-compose.yml
+services:
+  django-nginx:
+    env_file:
+      - .env
+  gvendas:
+    environment:
+      - API_DOMAIN=${API_DOMAIN}
+  media:
+    env_file:
+      - .env
+  storage:
+    env_file:
+      - .env
+  django:
+    env_file:
+      - .env
+  django-celery-worker:
+    env_file:
+      - .env
+  django-celery-beat:
+    env_file:
+      - .env
+  whatsapp:
+    env_file:
+      - .env
+  
+  n8n:
+    environment:
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8n
+      

@@ -1,0 +1,67 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    env_file: 
+      - .env
+    hostname: traefik-edge
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    networks:
+      - net_proxy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 128M
+        reservations:
+          cpus: '0.01'
+          memory: 64M
+    expose:
+      - "8080"
+    command:
+      # =====================
+      # API / DASHBOARD
+      # =====================
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--entrypoints.traefik.address=:8080"
+    
+      # =====================
+      # ENTRYPOINTS HTTP (Vindo do Túnel)
+      # =====================
+      - "--entrypoints.web.address=:80"
+    
+      # =====================
+      # LOGS
+      # =====================
+      - "--log.level=INFO"
+      - "--accesslog=true"
+    
+      # =====================
+      # PROVIDERS
+      # =====================
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+    
+      # =====================
+      # MÉTRICAS
+      # =====================
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_dynamics:/etc/traefik/dynamic
+      - ./.htpasswd:/etc/traefik/.htpasswd:ro
+    working_dir: /etc/traefik/dynamic
+
+networks:
+  net_proxy:
+
+volumes:
+  traefik_dynamics:

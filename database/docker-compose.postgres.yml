@@ -1,6 +1,5 @@
 services:
   postgres:
-    # image: postgres:15-alpine
     build:
       context: .
       dockerfile: Dockerfile

@@ -36,3 +36,6 @@ services:
   netdata:
     networks:
       - net_tunnel
+
+import:
+  - ./docker-compose.traefik.yml

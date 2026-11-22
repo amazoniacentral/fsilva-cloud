@@ -76,7 +76,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_dynamics:/etc/traefik/dynamic
-      - ../certificados:/etc/traefik/acme
+      - traefik_acme:/etc/traefik/acme
       - ../.htpasswd:/etc/traefik/.htpasswd:ro
     working_dir: /etc/traefik/dynamic
 
@@ -85,6 +85,7 @@ networks:
 
 volumes:
   traefik_dynamics:
+  traefik_acme:
   
 include:
   - ../errors/docker-compose.yml

@@ -10,7 +10,7 @@ services:
       - 8.8.8.8
     networks:
       - net_tunnel
-      - web_tunnel
+      - default
     deploy:
       resources:
         limits:
@@ -19,7 +19,10 @@ services:
         reservations:
           cpus: '0.01'
           memory: 64M
-          
-          
-      
-          
+
+networks:
+  net_tunnel:
+  default:
+  
+include:
+  - ../traefik/tunnel/docker-compose.yml

@@ -1,4 +1,6 @@
 # /server/dev/docker-compose.local.yml
+name: fsilva-cloud-dev
+
 include:
   - ../proxy/local/docker-compose.yml
   - ./docker-compose.yml

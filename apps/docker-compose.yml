@@ -1,4 +1,7 @@
 include:
+  - ./contabilidade/docker-compose.yml
+  - ./cliente/docker-compose.yml
+  - ./videos/docker-compose.yml
   - ./gvendas/docker-compose.yml
   - ./sgn/docker-compose.yml
   - ./whatsapp/docker-compose.yml
@@ -6,11 +9,8 @@ include:
   - ./storage/docker-compose.yml
   - ./netdata/docker-compose.yml
   - ./sftp/docker-compose.yml
-  - ./pdf/docker-compose.yml
   - ./n8n/docker-compose.yml
-  - ./videos/docker-compose.yml
-  - ./cliente/docker-compose.yml
-  - ./contabilidade/docker-compose.yml
+  - ./pdf/docker-compose.yml
 
   
   

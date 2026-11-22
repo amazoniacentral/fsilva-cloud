@@ -89,6 +89,7 @@ ACOES=(
 select ACAO in "${ACOES[@]}"; do
     case $REPLY in
         1|2|3|4|5|9) # Ações que envolvem serviços específicos (Up, Down, Down&Up, Restart, Build, Logs)
+            
             mapfile -t SERVICES < <(docker compose -f "$FILE" config --services 2>/dev/null)
 
             if [ ${#SERVICES[@]} -eq 0 ]; then
@@ -125,7 +126,7 @@ select ACAO in "${ACOES[@]}"; do
                 fi
             fi
 
-            # Executa a ação escolhida com base no REPLY
+            # Executa a ação informando explicitamente o caminho absoluto do arquivo selecionado ($FILE)
             case $REPLY in
                 1) # Up
                     if [ ${#SERVICES_TO_RUN[@]} -eq 0 ]; then

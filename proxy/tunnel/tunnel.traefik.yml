@@ -1,9 +1,0 @@
-include:
-  - ../traefik/servicos.yml
-  - ./servicos.yml
-  
-services:
-  traefik:
-    networks:
-      - net_tunnel
-      

@@ -8,9 +8,9 @@ services:
       - 8.8.8.8
     working_dir: /code
     networks:
-      net_web_only:
+      - default
     expose:
-      - ${PORT:-3000}
+      - "3000"
     deploy:
       resources:
         limits:
@@ -20,3 +20,5 @@ services:
           cpus: '0.05'
           memory: 64M
 
+networks:
+  default:

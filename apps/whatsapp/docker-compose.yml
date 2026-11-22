@@ -33,9 +33,7 @@ services:
 networks:
   default:
   net_boot:
-    external: true
   net_n8n:
-    external: true
 
 volumes:
   whatsapp_sessions:

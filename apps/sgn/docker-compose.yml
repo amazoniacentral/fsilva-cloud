@@ -139,9 +139,7 @@ services:
 networks:
   default:
   net_boot:
-    external: true
   net_n8n:
-    external: true
   net_db:
 
 volumes:

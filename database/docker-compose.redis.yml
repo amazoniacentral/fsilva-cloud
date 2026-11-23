@@ -21,8 +21,6 @@ services:
           memory: 128M
     volumes:
       - redis_data:/data
-    sysctls:
-      - vm.overcommit_memory=1      
     networks:
       - default
       - net_db

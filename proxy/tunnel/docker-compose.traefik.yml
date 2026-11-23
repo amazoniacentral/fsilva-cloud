@@ -1,7 +1,7 @@
 # /proxy/tunnel/docker-compose.traefik.yml
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.3
     restart: unless-stopped
     env_file:
       - .env

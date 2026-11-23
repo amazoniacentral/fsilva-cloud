@@ -10,6 +10,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./html:/usr/share/nginx/html:ro
+      - traefik_dynamics:/etc/traefik/dynamic
+      - ./errors-global.yml:/etc/traefik/dynamic/errors-global.yml:ro
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=net_proxy"
@@ -44,6 +46,9 @@ services:
         reservations:
           cpus: '0.01'
           memory: 32M
+
+volumes:
+  traefik_dynamics:
 
 networks:
   default:

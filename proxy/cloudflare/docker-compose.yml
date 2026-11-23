@@ -10,8 +10,8 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - net_proxy
       - default
+      - net_proxy
     deploy:
       resources:
         limits:
@@ -82,8 +82,8 @@ services:
     working_dir: /etc/traefik/dynamic
 
 networks:
-  net_proxy:
   default:
+  net_proxy:
 
 volumes:
   traefik_dynamics:

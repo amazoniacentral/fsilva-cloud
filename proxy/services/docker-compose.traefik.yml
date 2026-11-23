@@ -137,7 +137,6 @@ services:
 
 networks:
   net_proxy:
-    external: true
     
 include:
   - ../../database/docker-compose.yml

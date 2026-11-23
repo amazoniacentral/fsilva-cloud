@@ -1,50 +1,58 @@
 #!/bin/bash
+set -e
 
-# Pega o diretório onde o script está localizado
-SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-# Caminho do seu diretório de deploy
-CD_DIR=$(readlink -f "$SCRIPT_DIR/..")
-ACME_FILE="$CD_DIR/proxy/traefik/certificados/acme.json"
+echo "================================================================"
+echo "    LIMPEZA GLOBAL DE CERTIFICADOS ACME (TODOS OS TRAEFIKS)     "
+echo "================================================================"
 
-echo "Iniciando limpeza de certificados órfãos..."
+# Mapeia todos os containers em execução que possuem 'traefik' no nome
+mapfile -t CONTAINERS < <(docker ps --format "{{.Names}}" | grep -i "traefik")
 
-# 1. Backup de segurança
-BACKUP_DIR="$CD_DIR/proxy/traefik/certificados/backups"
-mkdir -p "$BACKUP_DIR"
-
-
-# Limpeza de backups antigos
-find "$BACKUP_DIR" -name "*.bak" -type f -mtime +15 -delete
-
-# --- VERIFICAÇÃO VIA DOCKER PS ---
-# Verifica se existe qualquer container com "traefik" no nome (independente do status)
-TRAEFIK_CONTAINER=$(docker ps -a --filter "name=traefik" --format "{{.Names}}" | head -n 1)
-
-# Verifica se ele está atualmente em execução
-IS_RUNNING=$(docker inspect -f '{{.State.Running}}' "$TRAEFIK_CONTAINER" 2>/dev/null)
-
-# Entra no diretório para poder usar o docker compose caso o container exista
-cd "$CD_DIR" || exit
-
-# 2. Para o Traefik somente se o container existir e estiver rodando
-if [ "$IS_RUNNING" == "true" ]; then
-    docker stop $TRAEFIK_CONTAINER
+if [ ${#CONTAINERS[@]} -eq 0 ]; then
+    echo "AVISO: Nenhum container Traefik em execução encontrado."
+    exit 0
 fi
 
-# 3. Limpeza do arquivo ACME
-if [ -f "$ACME_FILE" ]; then
-    cp "$ACME_FILE" "$BACKUP_DIR/acme_$(date +%Y%m%d_%H%M%S).json.bak"
-fi
-rm -f "$ACME_FILE"
-touch "$ACME_FILE"
-chmod 600 "$ACME_FILE"
+echo "Foram encontrados ${#CONTAINERS[@]} container(s) Traefik ativos."
+echo "----------------------------------------------------------------"
 
-# 4. Reinicia o Traefik somente se ele estava rodando antes
-if [ "$IS_RUNNING" == "true" ]; then
-    docker start $TRAEFIK_CONTAINER
-fi
+BACKUP_TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# Retorna ao diretório de scripts
-cd "$SCRIPT_DIR" || exit
+# Loop por cada container Traefik encontrado
+for TRAEFIK_CONTAINER in "${CONTAINERS[@]}"; do
+    echo "Processando container: $TRAEFIK_CONTAINER"
 
-echo "Limpeza concluída. O Traefik está gerando novos certificados apenas para lojas ativas."
+    # Descobre o volume ACME montado em /etc/traefik/acme
+    ACME_VOLUME=$(docker inspect "$TRAEFIK_CONTAINER" --format '{{range .Mounts}}{{if eq .Destination "/etc/traefik/acme"}}{{.Name}}{{end}}{{end}}')
+
+    if [ -z "$ACME_VOLUME" ]; then
+        echo "  -> AVISO: Volume /etc/traefik/acme não encontrado em $TRAEFIK_CONTAINER. Pulando..."
+        continue
+    fi
+
+    echo "  -> Volume ACME identificado: $ACME_VOLUME"
+    echo "  -> Criando backup e limpando acme.json..."
+
+    # Executa container Alpine temporário para gerenciar o volume de forma isolada e segura
+    docker run --rm -v "$ACME_VOLUME:/acme_data" alpine sh -c "
+        mkdir -p /acme_data/backups
+        if [ -f /acme_data/acme.json ]; then
+            cp /acme_data/acme.json /acme_data/backups/acme_$BACKUP_TIMESTAMP.json.bak
+            # Mantém apenas os últimos 15 backups
+            ls -t /acme_data/backups/*.bak | tail -n +16 | xargs -r rm
+        fi
+        # Reseta o arquivo acme.json com permissões restritas (600)
+        echo '{}' > /acme_data/acme.json
+        chmod 600 /acme_data/acme.json
+    "
+
+    echo "  -> Reiniciando $TRAEFIK_CONTAINER..."
+    docker restart "$TRAEFIK_CONTAINER"
+    echo "  -> Concluído para $TRAEFIK_CONTAINER."
+    echo "----------------------------------------------------------------"
+done
+
+echo "================================================================"
+echo "  PROCESSO GLOBAL CONCLUÍDO COM SUCESSO!"
+echo "  Todos os containers Traefik ativos tiveram seus acme.json limpos."
+echo "================================================================"

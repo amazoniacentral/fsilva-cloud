@@ -2,7 +2,7 @@
 
 # Caminho absoluto para o arquivo de credenciais do Traefik
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-CAMINHO_HTPASSWD="$SCRIPT_DIR/../proxy/traefik/.htpasswd"
+CAMINHO_HTPASSWD="$SCRIPT_DIR/../proxy/.htpasswd"
 
 # Verifica se o utilitário htpasswd está instalado
 if ! command -v htpasswd &> /dev/null; then
@@ -43,7 +43,6 @@ if [ $? -eq 0 ]; then
     echo "------------------------------------------------"
     echo "Aplicando docker compose up -d"
     cd $SCRIPT_DIR
-    docker compose -f "$SCRIPT_DIR/../docker-compose.prod.yml" up -d traefik
     echo "Finalizado"
 else
     echo "Erro ao gerar o arquivo de credenciais."

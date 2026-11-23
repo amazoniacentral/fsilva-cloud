@@ -36,6 +36,8 @@ services:
       # =====================
       # API / DASHBOARD (Ativado via labels, mantendo apenas a porta)
       # =====================
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--entrypoints.traefik.address=:8080"
     
       # =====================
@@ -78,4 +80,3 @@ networks:
 volumes:
   traefik_dynamics:
   traefik_acme:
-

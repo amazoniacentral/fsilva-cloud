@@ -27,6 +27,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - sgn_data:/code/staticfiles:ro
     working_dir: /volumes
+    command: [nginx, '-g', 'daemon off;']
     networks:
       - default
     deploy:

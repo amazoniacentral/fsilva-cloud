@@ -1,7 +1,7 @@
 # /proxy/tunnel/docker-compose.traefik.yml
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.3.7
     restart: unless-stopped
     env_file:
       - .env
@@ -53,7 +53,7 @@ services:
       # PROVIDERS
       # =====================
       - "--providers.docker=true"
-      - "--providers.docker.endpoint=unix:///var/run/docker.sock?version=1.40"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
     
       - "--providers.file.directory=/etc/traefik/dynamic"

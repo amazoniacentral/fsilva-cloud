@@ -61,8 +61,6 @@ services:
       - certificados_data:/code/volumes/certificados
       - traefik_dynamics:/code/volumes/dynamic
       - backups:/code/volumes/backups
-      - ~/.ssh:/root/.ssh:ro
-      - ~/.ssh/id_rsa_oidc:/code/.oidc.key:ro
     deploy:
       resources:
         limits:

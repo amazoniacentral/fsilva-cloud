@@ -78,5 +78,3 @@ volumes:
   traefik_dynamics:
   traefik_acme:
 
-include:
-  - ../services/docker-compose.traefik.yml

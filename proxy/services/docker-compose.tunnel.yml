@@ -40,5 +40,3 @@ services:
 networks:
   net_tunnel:
 
-include:
-  - ./docker-compose.traefik.yml

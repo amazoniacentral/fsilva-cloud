@@ -25,5 +25,5 @@ _Uma estrutura h√≠brida para garantir que seus aplicativos Docker estejam acess√
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

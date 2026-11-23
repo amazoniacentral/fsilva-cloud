@@ -22,6 +22,9 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 │   │   └── restore-volumes-decrypted.sh
 │   └── README.md
 ├── database
+│   ├── .db_conn
+│   │   ├── .env.n8n
+│   │   └── .env.sgn
 │   ├── database.sh
 │   ├── extensao_vetor.sh
 │   ├── indicesn8n.sh
@@ -55,6 +58,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── copy.sh
 ├── crontab.sh
 ├── .env.example
+├── gera_auth.sh
 ├── haskey.sh
 ├── ia.sh
 ├── install.sh
@@ -66,7 +70,7 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── setup_reclone.sh
 └── status.sh
 
-8 directories, 50 files
+9 directories, 53 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -91,5 +95,5 @@ DESTINO_PATH_BANCO=/caminho/local/do/backup.backup
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

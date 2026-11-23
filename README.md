@@ -64,7 +64,9 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ├── proxy
 │   ├── cloudflare
 │   │   └── .env.example
-│   └── local
+│   ├── local
+│   │   └── .env.example
+│   └── tunnel
 │       └── .env.example
 ├── scripts
 │   └── .env.example
@@ -74,7 +76,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
     └── prod
         └── .env.example
 
-20 directories, 16 files
+21 directories, 17 files
 ```
 <!-- END_ID:bloco_variaveis -->
 
@@ -116,6 +118,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   └── README.md
 │   ├── n8n
 │   │   ├── docker-compose.yml
+│   │   ├── .env
 │   │   ├── .env.example
 │   │   └── README.md
 │   ├── netdata
@@ -140,7 +143,6 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── docker-compose.yml
 │   │   ├── .env
 │   │   ├── .env.example
-│   │   ├── nginx.conf
 │   │   └── README.md
 │   ├── storage
 │   │   ├── docker-compose.yml
@@ -167,20 +169,25 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── docker-compose.redis.yml
 │   ├── docker-compose.yml
 │   ├── Dockerfile
+│   ├── .env
 │   ├── .env.example
 │   └── README.md
 ├── proxy
 │   ├── cloudflare
 │   │   ├── docker-compose.yml
+│   │   ├── .env
 │   │   ├── .env.example
 │   │   └── README.md
 │   ├── errors
 │   │   ├── html
 │   │   ├── docker-compose.yml
+│   │   ├── errors-global.yml
 │   │   ├── nginx.conf
 │   │   └── README.md
+│   ├── .htpasswd
 │   ├── local
 │   │   ├── docker-compose.yml
+│   │   ├── .env
 │   │   ├── .env.example
 │   │   └── README.md
 │   ├── services
@@ -192,6 +199,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── docker-compose.traefik.yml
 │   │   ├── docker-compose.yml
 │   │   ├── .env
+│   │   ├── .env.example
 │   │   └── README.md
 │   └── README.md
 ├── scripts
@@ -200,6 +208,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   │   ├── r2
 │   │   └── README.md
 │   ├── database
+│   │   ├── .db_conn
 │   │   ├── database.sh
 │   │   ├── extensao_vetor.sh
 │   │   ├── indicesn8n.sh
@@ -233,6 +242,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 │   ├── copy.sh
 │   ├── crontab.sh
 │   ├── .env.example
+│   ├── gera_auth.sh
 │   ├── haskey.sh
 │   ├── ia.sh
 │   ├── install.sh
@@ -264,7 +274,7 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ├── README.md
 └── setup.sh
 
-34 directories, 140 files
+36 directories, 146 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -281,5 +291,5 @@ Aqui está a estrutura de arquivos do projeto fsilva-cloud
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

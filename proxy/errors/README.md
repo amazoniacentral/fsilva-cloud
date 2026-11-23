@@ -9,13 +9,20 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ```bash
 ./proxy/errors
 ├── html
+│   ├── 400.html
+│   ├── 401.html
+│   ├── 403.html
 │   ├── 404.html
-│   └── 500.html
+│   ├── 500.html
+│   ├── 502.html
+│   ├── 503.html
+│   └── 504.html
 ├── docker-compose.yml
+├── errors-global.yml
 ├── nginx.conf
 └── README.md
 
-2 directories, 5 files
+2 directories, 12 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -24,5 +31,5 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

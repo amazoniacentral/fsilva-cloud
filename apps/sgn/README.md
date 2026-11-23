@@ -11,10 +11,9 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 ├── docker-compose.yml
 ├── .env
 ├── .env.example
-├── nginx.conf
 └── README.md
 
-1 directory, 5 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -118,5 +117,5 @@ META_APP_SECRET=
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

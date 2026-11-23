@@ -65,6 +65,7 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   └── README.md
 ├── n8n
 │   ├── docker-compose.yml
+│   ├── .env
 │   ├── .env.example
 │   └── README.md
 ├── netdata
@@ -92,7 +93,6 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 │   ├── docker-compose.yml
 │   ├── .env
 │   ├── .env.example
-│   ├── nginx.conf
 │   └── README.md
 ├── storage
 │   ├── docker-compose.yml
@@ -136,5 +136,5 @@ WHATSAPP_CONTAINER_PORT=3000
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

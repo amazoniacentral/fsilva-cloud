@@ -53,10 +53,11 @@ Um workflow no n8n funciona assim:
 ```bash
 ./apps/n8n
 ├── docker-compose.yml
+├── .env
 ├── .env.example
 └── README.md
 
-1 directory, 3 files
+1 directory, 4 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -112,5 +113,5 @@ Webrooks - https://webhook.seu-dominio.com
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

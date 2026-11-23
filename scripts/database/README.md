@@ -8,13 +8,16 @@ _Uma estrutura híbrida para garantir que seus aplicativos Docker estejam acess�
 <!-- START_ID:bloco_estrutura -->
 ```bash
 ./scripts/database
+├── .db_conn
+│   ├── .env.n8n
+│   └── .env.sgn
 ├── database.sh
 ├── extensao_vetor.sh
 ├── indicesn8n.sh
 ├── README.md
 └── restaurar.sh
 
-1 directory, 5 files
+2 directories, 7 files
 ```
 <!-- END_ID:bloco_estrutura -->
 
@@ -30,5 +33,5 @@ MEDIA_DOMAIN=seu_dominio_media
 ---
 **Desenvolvido por Francisco Silva (FSilva)**
 
-_Atualizado em: 22/11/2026_
+_Atualizado em: 23/11/2026_
 <!-- END_ID:bloco_final -->

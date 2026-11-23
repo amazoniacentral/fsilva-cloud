@@ -22,6 +22,16 @@ services:
           memory: 64M
     expose:
       - "8080"
+    labels:
+      - "traefik.enable=${TRAEFIK_DASHBOARD_ENABLE:-false}"
+      # Cria o middleware puxando a credencial do .env
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_AUTH}"
+      # Rota sem domínio (aceita qualquer IP na porta 8080)
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      
     command:
       # =====================
       # API / DASHBOARD
@@ -72,8 +82,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_dynamics:/etc/traefik/dynamic
       - traefik_acme:/etc/traefik/acme
-      - ../.htpasswd:/etc/traefik/.htpasswd:ro
     working_dir: /etc/traefik/dynamic
+    
+    
 
 networks:
   net_proxy:

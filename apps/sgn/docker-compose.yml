@@ -145,16 +145,11 @@ networks:
 volumes:
   sgn_data:
   media_data:
-    external: true
   catalogos_pdf_compress_data:
   catalogos_pdf_data:
   catalogos_json_data:
   gvendas_data:
-    external: true
   storage_data:
-    external: true
   certificados_data:
-    external: true
   traefik_dynamics:
-    external: true
   backups:

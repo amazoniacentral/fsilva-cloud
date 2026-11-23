@@ -30,6 +30,4 @@ networks:
 
 volumes:
   pdf_docs_data:
-    external: true
   catalogos_pdf_compress_data:
-    external: true

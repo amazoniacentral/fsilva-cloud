@@ -44,6 +44,7 @@ x-n8n-base: &n8n-base
     - "5678"
 
   working_dir: /home/node
+  user: "1000:1000"
 
   volumes:
     - n8n_data:/home/node/.n8n
@@ -90,8 +91,5 @@ networks:
 volumes:
   n8n_data:
   pdf_docs_data:
-    external: true
   treinamento_ia:
-    external: true
   backups:
-    external: true

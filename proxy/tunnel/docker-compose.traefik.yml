@@ -3,13 +3,15 @@ services:
   traefik:
     image: traefik:v3.0
     restart: unless-stopped
+    env_file:
+      - .env
     hostname: traefik-edge
     dns:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - net_proxy
       - default
+      - net_proxy
     deploy:
       resources:
         limits:
@@ -20,12 +22,18 @@ services:
           memory: 64M
     expose:
       - "8080"
+    labels:
+      - "traefik.enable=${TRAEFIK_DASHBOARD_ENABLE:-false}"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_AUTH}"
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      
     command:
       # =====================
-      # API / DASHBOARD
+      # API / DASHBOARD (Ativado via labels, mantendo apenas a porta)
       # =====================
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
       - "--entrypoints.traefik.address=:8080"
     
       # =====================

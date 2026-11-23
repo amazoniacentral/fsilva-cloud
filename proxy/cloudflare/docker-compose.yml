@@ -22,6 +22,16 @@ services:
           memory: 64M
     expose:
       - "8080"
+    labels:
+      - "traefik.enable=${TRAEFIK_DASHBOARD_ENABLE:-false}"
+      # Cria o middleware puxando a credencial do .env
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_AUTH}"
+      # Rota sem domínio (aceita qualquer IP na porta 8080)
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      
     environment:
       - CF_API_EMAIL=${CF_API_EMAIL}
       - CF_API_KEY=${CF_API_KEY}
@@ -29,10 +39,8 @@ services:
       # - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     command:
       # =====================
-      # API / DASHBOARD
+      # API / DASHBOARD (Ativado via labels, mantendo apenas o entrypoint)
       # =====================
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
       - "--entrypoints.traefik.address=:8080"
     
       # =====================

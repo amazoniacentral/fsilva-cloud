@@ -10,8 +10,8 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     networks:
-      - net_proxy
       - default
+      - net_proxy
     deploy:
       resources:
         limits:
@@ -20,8 +20,8 @@ services:
         reservations:
           cpus: '0.01'
           memory: 64M
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     labels:
       - "traefik.enable=${TRAEFIK_DASHBOARD_ENABLE:-false}"
       # Cria o middleware puxando a credencial do .env
@@ -34,10 +34,8 @@ services:
       
     command:
       # =====================
-      # API / DASHBOARD
+      # API / DASHBOARD (Ativado via labels, mantendo apenas o entrypoint)
       # =====================
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
       - "--entrypoints.traefik.address=:8080"
     
       # =====================
@@ -83,12 +81,10 @@ services:
       - traefik_dynamics:/etc/traefik/dynamic
       - traefik_acme:/etc/traefik/acme
     working_dir: /etc/traefik/dynamic
-    
-    
 
 networks:
-  net_proxy:
   default:
+  net_proxy:
 
 volumes:
   traefik_dynamics:

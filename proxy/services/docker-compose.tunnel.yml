@@ -40,3 +40,6 @@ services:
 networks:
   net_tunnel:
 
+include:
+  - ../../database/docker-compose.yml
+  - ../../apps/docker-compose.yml

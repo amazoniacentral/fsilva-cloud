@@ -106,16 +106,24 @@ select ACAO in "${ACOES[@]}"; do
                     echo -e "$((s_i+1))) ${VERDE}${SERVICES[$s_i]}${NC}"
                 done
 
-                echo -ne "\n${AMARELO}Escolha o(s) serviço(s) por número ou nome (ex: 0 para todos ou 1 2): ${NC}"
-                read -u 3 SERV_INPUT
-                SERV_INPUT=$(echo "$SERV_INPUT" | tr ',' ' ')
+                # Loop para obrigar o usuário a escolher algo (não aceita enter vazio)
+                while true; do
+                    echo -ne "\n${AMARELO}Escolha o(s) serviço(s) por número ou nome (ex: 0 para todos ou 1 2): ${NC}"
+                    read -u 3 SERV_INPUT
+                    SERV_INPUT=$(echo "$SERV_INPUT" | tr ',' ' ')
+
+                    if [ -n "$SERV_INPUT" ]; then
+                        break
+                    fi
+                    echo -e "${VERMELHO}Você precisa escolher ao menos uma opção (ex: 0 para todos ou o número do serviço). Tente novamente.${NC}"
+                done
 
                 SERVICES_TO_RUN=()
                 
                 # Se o usuário digitou '0', ignora seleções e trata como TODOS
                 if [[ " $SERV_INPUT " =~ \b0\b ]]; then
                     SERVICES_TO_RUN=()
-                elif [ -n "$SERV_INPUT" ]; then
+                else
                     for S_ITEM in $SERV_INPUT; do
                         if [[ "$S_ITEM" =~ ^[0-9]+$ ]]; then
                             S_INDEX=$((S_ITEM - 1))

@@ -78,10 +78,10 @@ Confifure as variáveis de ambiente seguindo os modelos de exemplo de cada ``.en
 ```
 <!-- END_ID:bloco_variaveis -->
 
-3. Criar e subir os containers
+3. Gerenciar projeto Docker
 
 ```bash
-bash scripts/deploy/setup.sh
+bash ./setup.sh
 ```
 
 

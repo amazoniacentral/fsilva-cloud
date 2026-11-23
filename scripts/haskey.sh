@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Caminho absoluto para o arquivo de credenciais do Traefik
+# Caminho absoluto para o diretório proxy e o arquivo de credenciais do Traefik
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-CAMINHO_HTPASSWD="$SCRIPT_DIR/../proxy/.htpasswd"
+PROXY_DIR="$SCRIPT_DIR/../proxy"
+CAMINHO_HTPASSWD="$PROXY_DIR/.htpasswd"
 
 # Verifica se o utilitário htpasswd está instalado
 if ! command -v htpasswd &> /dev/null; then
@@ -19,31 +20,24 @@ echo -n "Digite a senha para o Dashboard do Traefik: "
 read -s USER_PASS
 echo "" # Pula linha após a senha
 
-# Cria o diretório de destino caso ele não exista
-mkdir -p "$(dirname "$CAMINHO_HTPASSWD")"
+# Garante que o diretório proxy exista antes de criar/sobrescrever o arquivo
+mkdir -p "$PROXY_DIR"
 
-# Lógica de criação/atualização:
-# Se o arquivo não existir, usa -c (create). Se existir, remove o -c para apenas adicionar/atualizar.
-if [ ! -f "$CAMINHO_HTPASSWD" ]; then
-    htpasswd -bB -c "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
-else
-    htpasswd -bB "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
-fi
+# O parâmetro -c força a criação de um novo arquivo, sobrescrevendo o anterior se já existir
+htpasswd -bB -c "$CAMINHO_HTPASSWD" "$USER_NAME" "$USER_PASS"
 
 if [ $? -eq 0 ]; then
-    # Garante que o arquivo possa ser lido pelo Docker (Traefik)
+    # Garante que o arquivo possa ser lido pelo container do Traefik
     chmod 644 "$CAMINHO_HTPASSWD"
     
     echo "------------------------------------------------"
-    echo "Sucesso! Credenciais atualizadas."
+    echo "Sucesso! Credenciais criadas/sobrescritas."
     echo "Arquivo gerado em: $CAMINHO_HTPASSWD"
     echo "Usuário definido: $USER_NAME"
     echo "------------------------------------------------"
-    cat $CAMINHO_HTPASSWD
+    cat "$CAMINHO_HTPASSWD"
     echo "------------------------------------------------"
-    echo "Aplicando docker compose up -d"
-    cd $SCRIPT_DIR
-    echo "Finalizado"
 else
     echo "Erro ao gerar o arquivo de credenciais."
+    exit 1
 fi

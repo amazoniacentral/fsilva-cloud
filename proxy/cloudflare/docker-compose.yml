@@ -1,10 +1,12 @@
 # /proxy/traefik/cloudflare/docker-compose.yml
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.7.19
     restart: unless-stopped
     env_file: 
       - .env
+    environment:
+      - DOCKER_API_VERSION=1.40
     hostname: traefik-edge
     dns:
       - 1.1.1.1
@@ -62,6 +64,7 @@ services:
       # PROVIDERS
       # =====================
       - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
     
       - "--providers.file.directory=/etc/traefik/dynamic"

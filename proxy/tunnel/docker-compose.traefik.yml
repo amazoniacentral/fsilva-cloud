@@ -48,14 +48,14 @@ services:
       # =====================
       - "--log.level=INFO"
       - "--accesslog=true"
-    
+      
       # =====================
       # PROVIDERS
       # =====================
       - "--providers.docker=true"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
-    
+      
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
     

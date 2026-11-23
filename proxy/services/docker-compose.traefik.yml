@@ -4,39 +4,6 @@ services:
     networks:
       - net_proxy
 
-  django-nginx:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=net_proxy"
-    
-      # =========================
-      # HTTP (porta 80)
-      # =========================
-      - "traefik.http.routers.nginx-http.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.service=django-nginx"
-    
-      # =========================
-      # HTTPS (porta 443)
-      # =========================
-      - "traefik.http.routers.django-nginx.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.django-nginx.entrypoints=websecure"
-      - "traefik.http.routers.django-nginx.tls=true"
-      - "traefik.http.routers.django-nginx.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.django-nginx.service=django-nginx"
-    
-      - "traefik.http.services.django-nginx.loadbalancer.server.port=80"
-      - "traefik.http.services.django-nginx.loadbalancer.responseForwarding.flushInterval=100ms"
-    
-      # =========================
-      # Middleware
-      # =========================
-      - "traefik.http.middlewares.block-internal-header.headers.customrequestheaders.X-Internal-Secret="
-      - "traefik.http.routers.django-nginx.middlewares=block-internal-header"
-
-    networks:
-      - net_proxy
-
   django:
     labels:
       - "traefik.enable=true"

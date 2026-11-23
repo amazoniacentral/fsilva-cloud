@@ -106,12 +106,16 @@ select ACAO in "${ACOES[@]}"; do
                     echo -e "$((s_i+1))) ${VERDE}${SERVICES[$s_i]}${NC}"
                 done
 
-                echo -ne "\n${AMARELO}Escolha o(s) serviço(s) por número ou nome (ex: 1 2 ou web db): ${NC}"
+                echo -ne "\n${AMARELO}Escolha o(s) serviço(s) por número ou nome (ex: 0 para todos ou 1 2): ${NC}"
                 read -u 3 SERV_INPUT
                 SERV_INPUT=$(echo "$SERV_INPUT" | tr ',' ' ')
 
                 SERVICES_TO_RUN=()
-                if [[ ! " $SERV_INPUT " =~ " 0 " ]] && [ -n "$SERV_INPUT" ]; then
+                
+                # Se o usuário digitou '0', ignora seleções e trata como TODOS
+                if [[ " $SERV_INPUT " =~ \b0\b ]]; then
+                    SERVICES_TO_RUN=()
+                elif [ -n "$SERV_INPUT" ]; then
                     for S_ITEM in $SERV_INPUT; do
                         if [[ "$S_ITEM" =~ ^[0-9]+$ ]]; then
                             S_INDEX=$((S_ITEM - 1))

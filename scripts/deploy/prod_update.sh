@@ -127,7 +127,11 @@ select ACAO in "${ACOES[@]}"; do
                     SERV_INPUT=$(echo "$SERV_INPUT" | tr ',' ' ')
 
                     SERVICES_TO_RUN=()
-                    if [[ ! " $SERV_INPUT " =~ " 0 " ]] && [ -n "$SERV_INPUT" ]; then
+                    
+                    # Se o usuário digitou '0', ignora seleções e trata como TODOS
+                    if [[ " $SERV_INPUT " =~ \b0\b ]]; then
+                        SERVICES_TO_RUN=()
+                    elif [ -n "$SERV_INPUT" ]; then
                         for S_ITEM in $SERV_INPUT; do
                             if [[ "$S_ITEM" =~ ^[0-9]+$ ]]; then
                                 S_INDEX=$((S_ITEM - 1))

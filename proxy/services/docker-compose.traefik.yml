@@ -108,3 +108,4 @@ networks:
 include:
   - ../../database/docker-compose.yml
   - ../../apps/docker-compose.yml
+  - ../errors/docker-compose.yml

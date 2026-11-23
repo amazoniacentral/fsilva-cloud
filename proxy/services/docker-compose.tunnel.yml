@@ -1,5 +1,25 @@
 # /proxy/services/docker-compose.tunnel.yml
 services:
+  error-handler:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net_proxy"
+      
+      # SERVIÇO
+      - "traefik.http.services.error-service.loadbalancer.server.port=80"
+      
+      # MIDDLEWARE
+      - "traefik.http.middlewares.error-pages-middleware.errors.status=400-599"
+      - "traefik.http.middlewares.error-pages-middleware.errors.service=error-service"
+      - "traefik.http.middlewares.error-pages-middleware.errors.query=/{status}.html"
+
+      # ROTEADOR HTTP CATCH-ALL
+      - "traefik.http.routers.catch-all-http.rule=HostRegexp(`^.+$`) && !PathPrefix(`/.well-known/`)"
+      - "traefik.http.routers.catch-all-http.entrypoints=web"
+      - "traefik.http.routers.catch-all-http.priority=1"
+      - "traefik.http.routers.catch-all-http.middlewares=error-pages-middleware"
+      - "traefik.http.routers.catch-all-http.service=error-service"
+
   gvendas:
     networks:
       - net_tunnel
@@ -40,3 +60,5 @@ networks:
 include:
   - ../../database/docker-compose.yml
   - ../../apps/docker-compose.yml
+  - ../errors/docker-compose.yml
+

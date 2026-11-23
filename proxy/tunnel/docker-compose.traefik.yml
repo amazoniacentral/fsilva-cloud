@@ -73,6 +73,7 @@ services:
 
 networks:
   default:
+  net_proxy:
 
 volumes:
   traefik_dynamics:

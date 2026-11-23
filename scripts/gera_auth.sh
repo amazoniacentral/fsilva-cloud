@@ -5,7 +5,6 @@ echo "================================================================"
 echo "       GERADOR DE CREDENCIAIS BASIC AUTH (TRAEFIK)              "
 echo "================================================================"
 
-# Função para garantir que a entrada não seja vazia
 get_input() {
     local prompt="$1"
     local var_name="$2"
@@ -38,28 +37,15 @@ while true; do
 done
 
 echo "----------------------------------------------------------------"
-echo "Gerando o hash bcrypt via Python..."
+echo "Gerando o hash bcrypt via htpasswd..."
 
-# Verifica se o python3 está instalado
-if ! command -v python3 &> /dev/null; then
-    echo "ERRO: python3 não está instalado."
-    exit 1
+# Instala o utilitário htpasswd caso não esteja presente (sem usar pip)
+if ! command -v htpasswd &> /dev/null; then
+    apt-get update -qq && apt-get install -y -qq apache2-utils
 fi
 
-# Garante que a biblioteca bcrypt está disponível no ambiente python
-if ! python3 -c "import bcrypt" &> /dev/null; then
-    echo "Biblioteca 'bcrypt' não encontrada no Python. Instalando via pip..."
-    pip install bcrypt --quiet
-fi
-
-# Executa o comando python para gerar o hash e capturar a string formatada
-AUTH_RESULT=$(python3 -c "
-import bcrypt
-user = '$USER_NAME'
-password = b'$USER_PASS'
-hashed = bcrypt.hashpw(password, bcrypt.gensalt()).decode()
-print(f'{user}:{hashed}')
-")
+# Gera o hash no formato user:hash usando bcrypt (-B)
+AUTH_RESULT=$(htpasswd -nbB "$USER_NAME" "$USER_PASS")
 
 echo "================================================================"
 echo "  CREDENCIAL GERADA COM SUCESSO!"

@@ -1,5 +1,5 @@
 x-django-base: &django-base
-  image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.185
+  image: ghcr.io/amazoniacentral/sgn/sgn:v1.1.186
   restart: always
   working_dir: /code
   env_file:
